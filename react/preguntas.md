@@ -56,6 +56,7 @@ Integración con UI real de flujo\
 
 
 
+Cual es la diferencia entre props y estados? 
 
 
 

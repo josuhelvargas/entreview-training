@@ -1,0 +1,76 @@
+0Como funcioan react rapídito?
+https://react.dev/learn/thinking-in-react
+
+Para dar un pequeño consejo personal, entender cómo usar React implica comprender dos conceptos clave: cómo funciona React y la programación declarativa.
+
+Cómo funciona React:
+
+Esto es crucial para entender React porque la mayoría de las cosas relacionadas con React van a ser gente hablando del estado, y si no entiendes por qué el estado es importante, entonces ya estás perdido.
+
+React es en realidad una fórmula simple que dice: "Dado que conozco el estado de una aplicación, debería poder escribir una función que calcule una vista". Ahora bien, React en sí mismo es esa función, e incluye una forma integrada de indicarle el estado. La fórmula se puede leer así:
+
+Vista = f(estado)
+
+Ahora veamos cómo funciona React. React mantiene un registro de todos los estados de tu aplicación y la vuelve a renderizar cuando algo cambia. Puedes informar del estado a un componente de React de dos maneras: mediante la gestión del estado (hook `useState`, Redux, etc.) o mediante props. Si entiendes la programación funcional, React es simplemente un conjunto de funciones puras (es decir, obtienen todos los datos que necesitan de los argumentos que se les pasan y no obtienen datos de estado de contextos fuera del ámbito de la función). Cuando React detecta que una prop o el estado ha cambiado, recalcula la vista. Entendiendo esto, comprendes que las props son simplemente datos de estado que un componente necesita para renderizarse y que los estados locales del componente son datos que ese componente necesita específicamente para saber cómo renderizarse.
+
+Ahora, tienes que ir a aprender una solución de estado y unirte a las discusiones acaloradas.
+
+Programación declarativa:
+
+En resumen, la programación declarativa consiste en indicarle a un programa qué debe hacer en lugar de decirle cómo hacerlo. Este enfoque implica proporcionar un lenguaje específico del dominio (DSL) para expresar lo que el usuario desea.
+
+Con una herramienta como jQuery, se explica paso a paso cómo renderizar algo en el DOM HTML usando programación imperativa. Se crea un conjunto de instrucciones que explica cada paso necesario para crear un elemento y mostrarlo en la página web. En React, se crean componentes que explican su función, y React se encarga de renderizarlos. Esto significa que en React solo necesitas explicar qué es algo. Cualquier cosa que puedas conceptualizar como un "elemento" puede ser representada por un componente.
+
+
+
+1.Primero resuelve el despliegue de la interfaz de usuario sin funcionalidad dividida en compoenetes (mucho codgio y pensar poco ) 
+
+Por donde empezar? 
+Puedes construir de arriba abajo, comenzando por los componentes superiores en la jerarquía (como FilterableProductTable), o de abajo arriba, 
+trabajando desde los componentes inferiores (como ProductRow). 
+En ejemplos más sencillos, suele ser más fácil hacerlo de arriba abajo, y 
+en proyectos más grandes, de abajo arriba.
+
+
+
+2.Luego piensa en como implementar la funcionalidad ( escribir poco y pensar mucho )
+
+Por donde empezar? 
+Puedes construir de arriba abajo, comenzando por los componentes superiores en la jerarquía (como FilterableProductTable), o de abajo arriba, 
+trabajando desde los componentes inferiores (como ProductRow). 
+En ejemplos más sencillos, suele ser más fácil hacerlo de arriba abajo, y 
+en proyectos más grandes, de abajo arriba.
+
+
+
+
+3.Paso 3: Encontrar la representación mínima pero completa del estado de la interfaz de usuario, para ello 
+efine la representación mínima indispensable del estado que tu aplicación necesita y calcula todo lo demás bajo demanda.( sin repetir )
+
+¿Cuáles de estos son estados? Identifica los que no lo son:
+
+¿Permanece inalterado a lo largo del tiempo? Si es así, no es un estado.
+¿Se pasa desde un padre a través de props? Si es así, no es estado.
+¿Puedes calcularlo basándote en el estado o las propiedades existentes en tu componente? Si es así, ¡ definitivamente no es estado!
+Lo que queda probablemente sea el estado.
+
+Mucho cuidado en teneri identificaada la dfiferencia entre estado y props. !!!
+El estado cambia y s etiene que calcular ahi mismo a partirt de nada , las props se pasan como proipiedades desde otros componentes.
+
+
+
+4.Paso 4: Identifica dónde debería vivir tu estado
+Tras identificar los datos de estado mínimos de tu aplicación, debes determinar qué componente es responsable de modificar dicho estado o qué componente lo gestiona . 
+Recuerda: React utiliza un flujo de datos unidireccional, que se transmite a través de la jerarquía de componentes, desde el componente padre al hijo.
+
+Insturcciones: 
+Identifica cada componente que renderiza algo en función de ese estado.
+Encuentra su componente padre común más cercano: un componente que esté por encima de todos ellos en la jerarquía.
+Decide dónde debería residir el estado:
+A menudo, puedes incluir el estado directamente en su padre común.
+También puedes colocar el estado en algún componente por encima de su componente padre común.
+Si no encuentras un componente donde tenga sentido que este sea el propietario del estado, crea un nuevo componente exclusivamente para almacenar el estado y agrégalo en algún lugar de la jerarquía por encima del componente padre común.
+
+
+
+5.Agrega la funcionalidad con hooks.
