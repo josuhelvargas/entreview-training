@@ -1,0 +1,14 @@
+🧩 Estructura general del curso
+Módulo	  Tema principal	                                                Duración estimada	        Nivel
+1	Fundamentos y entorno de desarrollo AWS	                                        1 semana	        Básico
+2	IAM, CLI y SDK	                                                                1 semana	        Básico
+3	Desarrollo con AWS Lambda y API Gateway	                                        1 semana	        Intermedio
+4	Persistencia con DynamoDB, RDS y S3	                                            1 semana	        Intermedio
+5	Contenedores con ECS y ECR	                                                    1 semana	        Intermedio
+6	Automatización y CI/CD con CodePipeline y CodeBuild	                            1 semana	        Avanzado
+7	Observabilidad y seguridad	                                                    1 semana	        Avanzado
+8	Proyecto final y preparación para certificación AWS Developer Associate	        1 semana
+
+
+aws cdk
+

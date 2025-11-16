@@ -1,0 +1,20 @@
+🧪 6. Primer laboratorio práctico
+🔹 Ejercicio 1: Crear tu primer Bucket S3
+
+En la consola AWS, busca “S3”.
+
+Clic en Create bucket.
+
+Asigna un nombre único global (ej. curso-aws-jv).
+
+Selecciona región (ej. us-east-1).
+
+Desactiva “Block all public access” si deseas probar hosting web.
+
+Clic en Create bucket.
+
+Sube un archivo (index.html) y pruébalo.
+
+Comando CLI equivalente:
+
+aws s3 mb s3://curso-aws-jv --region us-east-1

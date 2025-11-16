@@ -1,0 +1,42 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "AllowS3DeployAllEnvironments",
+      "Effect": "Allow",
+      "Action": [
+        "s3:ListBucket",
+        "s3:PutObject",
+        "s3:DeleteObject"
+      ],
+      "Resource": [
+        "arn:aws:s3:::my-react-app-dev",
+        "arn:aws:s3:::my-react-app-dev/*",
+        "arn:aws:s3:::my-react-app-qa",
+        "arn:aws:s3:::my-react-app-qa/*",
+        "arn:aws:s3:::my-react-app-prod",
+        "arn:aws:s3:::my-react-app-prod/*"
+      ]
+    },
+    {
+      "Sid": "AllowCloudFrontInvalidation",
+      "Effect": "Allow",
+      "Action": [
+        "cloudfront:CreateInvalidation"
+      ],
+      "Resource": "*"
+    }
+  ]
+}
+
+// El rol de servicio de CodeBuild necesita permisos para:
+
+// Leer el repositorio source.
+
+// Construir la app.
+
+// Subir a los 3 buckets (dev/qa/prod).
+
+// Invalidar CloudFront.
+
+// Ejemplo de política simplificada:

@@ -1,0 +1,34 @@
+AWS ofrece ifraestrcutra bajo demanda
+iaaS EC2 EBS VPC
+PaaS Lambda RDS Elastic Beanstalk
+Saas AmazonWorkmail,Chime
+
+
+Ventajas 
+pay as yopu gg(pagar solo por loque usas) 
+alta dispoibilidad y escalabilidad, seguridad certificada, 
+
+
+1.Ejecutar 
+aws configure 
+Obtener credenciales clickando "create credentials"
+la region debe ser us-east-1
+formato output debe ewser json o text o table.
+
+2.ejecutar poara confirma que la config fue correcta: 
+ aws sts get-caller-identity
+
+ 3.probar conexion: 
+ aws s3 ls
+
+
+| Servicio                               | Tipo           | Descripción                                                                                |
+| -------------------------------------- | -------------- | ------------------------------------------------------------------------------------------ |
+| **EC2** (Elastic Compute Cloud)        | Cómputo        | Servidores virtuales (VMs) bajo demanda. Puedes instalar cualquier software.               |
+| **S3** (Simple Storage Service)        | Almacenamiento | Guarda archivos y objetos. Ideal para imágenes, backups y contenido estático.              |
+| **IAM** (Identity & Access Management) | Seguridad      | Controla usuarios, roles y permisos. Define qué recursos puede usar cada uno.              |
+| **Lambda**                             | Serverless     | Ejecuta código sin servidores. Pagas solo por ejecución. Ideal para microservicios y APIs. |
+| **RDS** (Relational Database Service)  | Bases de datos | Proporciona bases de datos administradas como MySQL, PostgreSQL o SQL Server.              |
+
+
+

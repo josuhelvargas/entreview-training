@@ -1,0 +1,55 @@
+version: 0.2
+
+env:
+  variables:
+    REACT_APP_NAME: "my-react-app"
+  parameter-store:
+    ENVIRONMENT: "/my-react-app/environment"   # opcional: se puede pasar por pipeline
+
+phases:
+  install:
+    commands:
+      - echo "Installing dependencies..."
+      - npm ci
+  build:
+    commands:
+      - echo "Building for environment: $ENVIRONMENT"
+      - |
+        if [ "$ENVIRONMENT" = "dev" ]; then
+          cp .env.development .env
+        elif [ "$ENVIRONMENT" = "qa" ]; then
+          cp .env.qa .env
+        else
+          cp .env.production .env
+        fi
+      - npm run build
+  post_build:
+    commands:
+      - echo "Syncing build to S3..."
+      - |
+        if [ "$ENVIRONMENT" = "dev" ]; then
+          BUCKET_NAME="my-react-app-dev"
+        elif [ "$ENVIRONMENT" = "qa" ]; then
+          BUCKET_NAME="my-react-app-qa"
+        else
+          BUCKET_NAME="my-react-app-prod"
+        fi
+
+      - aws s3 sync dist/ s3://$BUCKET_NAME --delete
+
+      - echo "Invalidating CloudFront cache..."
+      - |
+        if [ "$ENVIRONMENT" = "dev" ]; then
+          CLOUDFRONT_ID="E123DEVXXXXX"
+        elif [ "$ENVIRONMENT" = "qa" ]; then
+          CLOUDFRONT_ID="E456QAXXXXX"
+        else
+          CLOUDFRONT_ID="E789PRODXXXX"
+        fi
+
+      - aws cloudfront create-invalidation --distribution-id $CLOUDFRONT_ID --paths "/*"
+
+artifacts:
+  files:
+    - "**/*"
+  base-directory: dist

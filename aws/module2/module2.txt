@@ -1,0 +1,314 @@
+🧩 MÓDULO 2 – IAM, CLI y SDK
+🎯 Objetivo general
+
+Dominar el acceso programático a AWS mediante IAM,
+ configurar la CLI de forma segura y comenzar a 
+ interactuar con AWS usando el SDK oficial.
+
+📚 Clase 1 – Introducción a IAM: usuarios, roles y políticas
+🎯 Objetivos
+
+Entender qué es IAM y cómo controla el acceso.
+
+Diferenciar usuarios, roles, grupos y políticas.
+
+Crear tu primer usuario con acceso programático.
+
+📘 Temas
+1. ¿Qué es AWS IAM?
+
+IAM = Identity and Access Management.
+
+Sistema que controla:
+
+¿Quién eres? (identidad).
+
+¿Qué puedes hacer? (permisos).
+
+¿En qué recursos? (alcance).
+
+2. Elementos centrales
+Componente	Descripción
+User	Identidad para personas que acceden a consola o CLI
+Group	Conjunto de usuarios con permisos compartidos
+Role	Identidad que asumen apps, servicios o usuarios
+Policy	Documento JSON que define permisos
+3. Permisos basados en políticas
+
+Ejemplo de política Allow S3 List:
+
+{
+  "Effect": "Allow",
+  "Action": ["s3:ListBucket"],
+  "Resource": ["arn:aws:s3:::*"]
+}
+
+🧪 Práctica guiada – Crear un usuario IAM seguro
+
+Ve a IAM → “Users” → Create user
+
+Nombre: curso-aws-dev
+
+Tipo de acceso:
+
+☑ Programmatic access (CLI/SDK)
+
+Crear grupo “Developers”
+
+Adjuntar política AmazonS3FullAccess (solo para aprender, no para producción)
+
+Descargar .csv con Access Key / Secret Key
+
+Guardar en lugar seguro
+
+📚 Clase 2 – Configurar AWS CLI y trabajar con comandos esenciales
+🎯 Objetivos
+
+Configurar AWS CLI con tus credenciales IAM.
+
+Ejecutar comandos básicos contra S3, Lambda y STS.
+
+Entender cómo administrar las credenciales locales.
+
+📘 Temas
+1. Configurar la CLI
+aws configure
+
+
+Parámetros:
+
+Access Key ID
+
+Secret Key
+
+Region: us-east-1
+
+Output: json
+
+2. Comandos básicos para pruebas
+aws sts get-caller-identity
+aws s3 ls
+aws lambda list-functions
+
+3. Perfiles múltiples (para trabajar con varias cuentas)
+aws configure --profile dev
+aws configure --profile prod
+
+4. Archivos creados
+~/.aws/credentials
+~/.aws/config
+
+🧪 Práctica guiada – Trabajando con S3 desde CLI
+Crear bucket
+aws s3 mb s3://curso-aws-dev-bucket
+
+Subir archivo
+aws s3 cp archivo.txt s3://curso-aws-dev-bucket
+
+Descargar archivo
+aws s3 cp s3://curso-aws-dev-bucket/archivo.txt .
+
+📚 Clase 3 – Introducción a AWS SDK (Node.js, Python y C#)
+🎯 Objetivos
+
+Conectar una aplicación al SDK de AWS.
+
+Hacer solicitudes reales: listar buckets, crear objetos, invocar Lambda.
+
+📘 Temas
+1. ¿Qué es el SDK?
+
+Librerías oficiales para acceder a AWS desde tu lenguaje.
+
+Disponibles para:
+
+Node.js
+
+.NET
+
+Python
+
+Java
+
+Go
+
+Ruby
+
+🔸 Ejemplo en Node.js
+
+Instalar:
+
+npm install @aws-sdk/client-s3
+
+
+Código:
+
+import { S3Client, ListBucketsCommand } from "@aws-sdk/client-s3";
+
+const client = new S3Client({ region: "us-east-1" });
+
+const run = async () => {
+  const result = await client.send(new ListBucketsCommand());
+  console.log(result.Buckets);
+};
+
+run();
+
+🔸 Ejemplo en .NET C#
+
+Instalar:
+
+dotnet add package AWSSDK.S3
+
+
+Código:
+
+using Amazon.S3;
+using Amazon.S3.Model;
+
+var client = new AmazonS3Client(Amazon.RegionEndpoint.USEast1);
+var response = await client.ListBucketsAsync();
+
+foreach (var b in response.Buckets)
+{
+    Console.WriteLine(b.BucketName);
+}
+
+🔸 Ejemplo en Python
+
+Instalar:
+
+pip install boto3
+
+
+Código:
+
+import boto3
+
+s3 = boto3.client('s3')
+response = s3.list_buckets()
+
+for b in response['Buckets']:
+    print(b['Name'])
+
+🧪 Práctica guiada – Crear un objeto en S3 usando SDK
+Node.js ejemplo:
+import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
+
+const client = new S3Client({ region: "us-east-1" });
+
+const run = async () => {
+  await client.send(new PutObjectCommand({
+    Bucket: "curso-aws-dev-bucket",
+    Key: "hola.txt",
+    Body: "Hola desde SDK!"
+  }));
+
+  console.log("Archivo subido!");
+};
+
+run();
+
+📚 Clase 4 – Roles IAM para Lambda, EC2 y aplicaciones
+🎯 Objetivos
+
+Entender por qué las aplicaciones no deben usar credenciales permanentes.
+
+Crear roles para Lambda y EC2.
+
+Permitir que una Lambda acceda a S3 o DynamoDB.
+
+📘 Temas
+🚫 Malas prácticas
+
+Usar Access Keys dentro del código:
+
+❌ Expuesto en repositorios
+
+❌ Dificultad para rotar claves
+
+❌ Riesgo de seguridad alto
+
+✔ Buenas prácticas
+
+Usar roles:
+
+Lambda → Role con permisos
+
+EC2 → Role con políticas adjuntas
+
+ECS → Task Role
+
+🧪 Práctica guiada – Rol IAM para que una Lambda lea S3
+
+Crear rol para Lambda
+
+Adjuntar política:
+
+AmazonS3ReadOnlyAccess
+
+Crear Lambda con ese rol
+
+Probar que puede listar buckets:
+
+Código Lambda (Node):
+
+const { S3Client, ListObjectsV2Command } = require("@aws-sdk/client-s3");
+const client = new S3Client();
+
+exports.handler = async () => {
+    const result = await client.send(new ListObjectsV2Command({ Bucket: "curso-aws-dev-bucket" }));
+    return result;
+};
+
+📚 Clase 5 – Buenas prácticas avanzadas de IAM para desarrolladores
+🎯 Objetivos
+
+Entender diseño profesional de permisos.
+
+Conocer políticas mínimas necesarias.
+
+Aplicar el principio de least privilege.
+
+📘 Temas
+
+Evitar políticas como AdministratorAccess.
+
+Crear políticas personalizadas.
+
+Separar usuarios por ambientes (dev, qa, prod).
+
+Rotación automática de Access Keys.
+
+Uso seguro de AWS CLI y perfiles.
+
+AWS IAM Access Analyzer.
+
+🧪 Práctica guiada – Crear una política personalizada mínima
+Política mínima para permitir solo subir archivos a un bucket específico:
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": ["s3:PutObject"],
+      "Resource": ["arn:aws:s3:::curso-aws-dev-bucket/*"]
+    }
+  ]
+}
+
+📝 Tarea final del módulo
+
+Crea un usuario IAM con acceso programático.
+
+Configura la CLI con un perfil dev.
+
+Escribe una app en Node, Python o C# que:
+
+Liste buckets
+
+Cree un archivo en S3
+
+Lea los objetos dentro del bucket
+
+Crea una Lambda con un rol IAM que pueda leer tu bucket.
