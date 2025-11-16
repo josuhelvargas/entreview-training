@@ -1,0 +1,129 @@
+🧩 CURSO 1 — “Maven desde Cero: Uso Práctico y Flujo de Trabajo”
+
+Duración: 5 módulos — 1 semana (intensivo)
+Objetivo: Aprender a usar Maven con confianza para construir, probar y empaquetar proyectos Java o Spring Boot.
+
+🔹 Módulo 1 — Introducción a Maven
+
+¿Qué es Maven?
+
+Filosofía y diferencias con Gradle / Ant
+
+Instalación y configuración (Windows, macOS, Linux)
+
+Estructura estándar de un proyecto Maven (src/main/java, src/test/java, pom.xml)
+
+Comandos básicos (mvn compile, mvn test, mvn package, mvn clean, mvn install)
+Práctica: Crear tu primer proyecto Maven simple.
+
+🔹 Módulo 2 — pom.xml en profundidad
+
+Estructura de pom.xml
+
+groupId, artifactId, version, packaging
+
+Dependencias (dependencies, dependencyManagement)
+
+Plugins y build
+
+Perfiles (profiles) para distintos entornos (dev, qa, prod)
+Práctica: Crear un proyecto con perfiles y plugins de compilación y empaquetado.
+
+🔹 Módulo 3 — Repositorios y dependencias
+
+Repositorio local (~/.m2/repository)
+
+Repositorios remotos (Maven Central, JFrog Artifactory, Nexus)
+
+Coordinadas de dependencias y versiones
+
+Importación transitiva
+
+Exclusiones y conflictos de versión (dependency:tree)
+Práctica: Resolver conflictos de dependencias y entender el árbol.
+
+🔹 Módulo 4 — Ciclo de vida y fases
+
+Ciclos de vida de Maven: default, clean, site
+
+Fases (validate, compile, test, package, verify, install, deploy)
+
+Goals de plugins (maven-compiler-plugin, maven-surefire-plugin, maven-jar-plugin)
+Práctica: Personalizar el flujo de build con plugins.
+
+🔹 Módulo 5 — Integración con Spring Boot y CI/CD
+
+Uso de spring-boot-starter-parent y spring-boot-maven-plugin
+
+Empaquetado jar vs war
+
+Configuración de perfiles Spring (application.yml + Maven profile)
+
+Integración con Jenkins / GitHub Actions
+Práctica final: Crear y empaquetar una app Spring Boot lista para desplegar.
+
+
+
+
+
+
+
+
+
+
+
+
+------------------------------------------------------------------------------------------------------
+
+🧠 CURSO 2 — “Maven Internals: Cómo funciona por dentro”
+
+Duración: 4 módulos — nivel intermedio-avanzado
+Objetivo: Entender cómo funciona Maven internamente, cómo resuelve dependencias, ejecuta fases y carga plugins.
+
+🔹 Módulo 1 — Arquitectura interna de Maven
+
+Componentes clave: Project Object Model, Reactor, Plugin Manager, Artifact Resolver
+
+Cómo Maven construye el árbol de proyectos (multi-module build)
+
+El rol del maven-core y maven-model-builder
+
+🔹 Módulo 2 — Dependency Resolution Engine
+
+Mecanismo de resolución de dependencias y sus algoritmos
+
+Concepto de nearest-wins y conflict mediation
+
+Cómo Maven cachea y valida checksums
+
+Cómo funcionan los mirrors y repositorios remotos
+
+🔹 Módulo 3 — Plugin System Internals
+
+Ciclo de vida de un plugin (mojo execution)
+
+Cómo Maven encuentra y carga los plugins
+
+Cómo escribir tu propio plugin (AbstractMojo)
+Práctica: Crear un plugin Maven que valide estructura de código o versiones.
+
+🔹 Módulo 4 — Extensiones, Hooks y Reactor Build
+
+Multi-module reactor y ejecución paralela (-T 1C)
+
+Lifecycle extensions
+
+Configuración avanzada (settings.xml, toolchains.xml)
+
+Análisis de performance y depuración (-X, -e, mvn -Dmaven.repo.local=...)
+
+🧩 Proyecto final
+
+Crea un sistema multi-módulo Maven con:
+
+Un módulo core
+
+Un módulo api
+
+Un módulo plugin propio
+Y compílalo con perfiles, tests y un empaquetado final automatizado.

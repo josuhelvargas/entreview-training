@@ -1,0 +1,336 @@
+🚀 CURSO COMPLETO DE SPRING BOOT (VERSIONES 2024–2025)
+
+Desde fundamentos hasta arquitecturas modernas empresariales
+
+🧩 MÓDULO 1 — Fundamentos de Spring & Spring Boot (2025)
+
+Objetivo: dominar cómo piensa Spring, no solo “usar anotaciones”.
+
+1.1. ¿Qué es Spring Framework hoy?
+
+IoC, DI, AOP
+
+Beans, Scopes, Profiles
+
+Contexto de aplicación
+
+1.2. Spring Boot Actualizado (3.x / 2025)
+
+Starter dependencies
+
+Auto-configuration
+
+Observability con Micrometer
+
+Spring Boot Actuator
+
+Configuración via application.yml y external config
+
+1.3. Proyecto base (Hands-on)
+
+Crear servicio REST
+
+Controladores y excepciones globales
+
+Logging con SLF4J / Logback
+
+Manejo de DTOs y validaciones (Jakarta Validation)
+
+🧩 MÓDULO 2 — Persistencia y Acceso a Datos (2025)
+
+Este módulo es CLAVE en entrevistas.
+
+2.1. Spring Data JPA (lo que realmente importa)
+
+Entities y mappings modernos
+
+Relaciones complejas
+
+Proyecciones
+
+Specifications / QueryDSL
+
+2.2. Transacciones
+
+Declarativas (@Transactional)
+
+Aislamiento y propagación
+
+Casos reales: locking optimista/pesimista
+
+2.3. Bases de datos modernas
+
+PostgreSQL
+
+MySQL 8
+
+MongoDB (Spring Data Mongo)
+
+2.4. Migraciones automatizadas
+
+Flyway vs Liquibase
+
+🧩 MÓDULO 3 — Arquitecturas Modernas con Spring (2025)
+
+Aquí empieza lo jugoso 😎
+
+3.1. API REST a nivel enterprise
+
+Versionado
+
+Paginación extendida
+
+Consistencia de contratos
+
+DTOs vs Entities
+
+Error handling estándar
+
+3.2. Arquitectura Hexagonal (Ports & Adapters)
+
+Incluye:
+
+Domain model
+
+Domain services
+
+Application services
+
+Input/Output ports
+
+Implementaciones en infraestructura
+
+Pruebas aisladas por capas
+
+Patrones demandados:
+
+CQRS
+
+Event-Driven
+
+Repository pattern (correctamente aplicado con Spring Data)
+
+Anti-Corruption Layer
+
+3.3. DDD — Domain-Driven Design aplicado
+
+Aggregates
+
+Domain events
+
+Value Objects
+
+Bounded Contexts
+
+Comunicación entre microservicios
+
+🧩 MÓDULO 4 — Seguridad Moderna (Spring Security 2025)
+
+Lo que SÍ te pedirán en un trabajo:
+
+4.1. Spring Security 6+ (nueva forma sin WebSecurityConfigurerAdapter)
+
+SecurityFilterChain
+
+AuthenticationManager
+
+AuthorizationManager
+
+4.2. Autenticación empresarial
+
+OAuth2
+
+JWT firmado
+
+OIDC (Okta, Auth0, AWS Cognito, Keycloak)
+
+4.3. Autorización basada en atributos
+
+Roles vs Authorities
+
+SpEL avanzado
+
+Method-level security (@PreAuthorize)
+
+🧩 MÓDULO 5 — Integración y Mensajería
+
+Aquí se ve quién sabe enterprise.
+
+Spring Cloud Stream
+
+Kafka
+
+RabbitMQ
+
+Event-driven microservices (high level)
+
+Spring Cloud
+
+Config Server
+
+Eureka / Service Discovery
+
+Load Balancing
+
+Circuit Breaker (Resilience4j)
+
+OpenFeign
+
+Clientes declarativos
+
+Retries, fallback, fault-tolerance
+
+🧩 MÓDULO 6 — DevOps, Observabilidad y Despliegue
+
+Lo que las empresas piden en 2025:
+
+6.1. Observabilidad (O11y)
+
+Micrometer
+
+Prometheus
+
+Grafana
+
+Tracing con OpenTelemetry
+
+6.2. Docker + Spring Boot
+
+Jib (sin Dockerfile)
+
+Multi-stage Dockerfile
+
+Lean images (distroless)
+
+6.3. Kubernetes
+
+Deployments
+
+ConfigMaps
+
+Secrets
+
+Liveness/Readiness probes
+
+HPA (autoscaling)
+
+6.4. CI/CD
+
+GitHub Actions
+
+GitLab CI
+
+Jenkins pipelines
+
+Artefactos con Maven/Gradle
+
+SonarQube (code quality)
+
+🧩 MÓDULO 7 — Librerías y Tecnologías MÁS DEMANDADAS en 2025
+
+Esto te hace match inmediato con vacantes:
+
+🔥 1. MapStruct
+
+Mapping entre DTO/Entity sin overhead.
+
+🔥 2. Lombok (pero sabiéndolo usar bien)
+
+@Builder, @Value, @RequiredArgsConstructor
+
+🔥 3. Resilience4j
+
+Circuit breaker, retry, rate limit.
+
+🔥 4. Spring Cloud + OpenFeign
+
+Microservicios modernos.
+
+🔥 5. Spring Boot Native (GraalVM)
+
+Imágenes nativas ultrarrápidas.
+
+🔥 6. Testcontainers
+
+Pruebas reales con bases de datos vivas (Postgres, Kafka, Redis).
+
+🔥 7. Redis + Spring Data Redis
+
+Caching a nivel enterprise.
+
+🔥 8. Mapstruct + Bean Validation + ModelMapper
+
+Todo un estándar.
+
+🔥 9. Spring Authorization Server
+
+Sustituto moderno para OAuth2 servers.
+
+🔥 10. Spring AI (2024–2025)
+
+Integración con modelos generativos de OpenAI, Azure OpenAI, Bedrock.
+
+🧩 MÓDULO 8 — Pruebas Profesionales
+
+JUnit 5
+
+Mockito
+
+Integration testing
+
+WireMock
+
+Testcontainers
+
+Contract Testing (PACT)
+
+🧩 MÓDULO 9 — Arquitecturas Enterprise para 2025
+
+Estas son las más pedidas en bancos, aseguradoras, fintech, retail, etc.
+
+📌 1. Hexagonal Architecture (la reina 2025)
+
+Spring Boot + DDD + Ports/Adapters
+
+📌 2. Clean Architecture (Onion)
+📌 3. Event-Driven Architecture
+
+Kafka con Spring Cloud Stream
+
+📌 4. Microservices Mesh Architecture
+
+Istio + OpenTelemetry
+
+📌 5. Serverless con Spring Cloud Function
+
+AWS Lambda con Java
+
+🧩 PROYECTO FINAL (estilo empresa real)
+
+Un sistema completo con todo lo que te pedirían en Walmart, BBVA, Santander, Mercado Libre:
+
+⭐ Proyecto: Plataforma de Validación de Promociones (MCR Style)
+
+Módulos:
+
+API Gateway (Spring Cloud Gateway)
+
+Microservicio de Validaciones (DDD + hexagonal)
+
+Microservicio de Catálogos (JPA + Redis cache)
+
+Microservicio de Notificaciones (Kafka → Email/SMS)
+
+Seguridad con OAuth2/JWT
+
+Dashboard con React/Angular
+
+Observabilidad completa en Kubernetes
+
+Incluye:
+
+Testcontainers
+
+Docker/Kubernetes
+
+Autodeployment con GitHub Actions

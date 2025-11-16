@@ -1,0 +1,859 @@
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+----------------------------------------------------------------------
+Que son los profiles, proxies, lifecycles  hooks, scopes, aop? 
+Primero: ¿Qué tiene el contenedor de Spring cuando arranca?
+
+Cuando Spring arranca crea su “mundo interno”, su ApplicationContext, que contiene:
+
+✔️ Beans (objetos administrados)
+✔️ Bean definitions (metadatos)
+✔️ Scopes (cómo viven los beans)
+✔️ Proxies (objetos envoltorio con lógica extra)
+✔️ AOP aspects (lógica transversal: logs, transacciones, seguridad)
+✔️ Profiles (configuración activa por ambiente)
+✔️ Lifecycle hooks (eventos durante el arranque y finalización)
+✔️ Environment (variables, properties, configuración)
+✔️ Event listeners (para eventos internos)
+✔️ Auto-configuraciones (Boot)
+
+Y tú creías que “Spring solo iniciaba clases”…
+Spring monta literalmente un ecosistema completo.
+
+Ahora sí, vamos uno por uno 👇
+
+🟦 1. ¿Qué son los PROFILES? (“Perfiles activos”)
+
+Los perfiles son “modos de funcionamiento” del app según el ambiente.
+
+Ejemplos:
+
+dev
+
+qa
+
+prod
+
+stage
+
+test
+
+local
+
+Cuando defines:
+
+spring.profiles.active=dev
+
+
+Entonces Spring:
+
+Solo carga los beans marcados con @Profile("dev")
+
+Solo aplica configuraciones dev
+
+Usa application-dev.yml
+
+Ignora configs de prod
+
+👉 Internamente:
+
+Spring guarda una lista:
+
+activeProfiles = ["dev"]
+defaultProfiles = ["default"]
+
+
+Cuando analiza cada bean o configuración, evalúa:
+
+¿Este bean requiere un perfil específico?
+¿El perfil está activo?
+
+
+Si no coincide → NO carga ese bean.
+
+🟦 2. ¿Qué son los SCOPES? (Ciclo de vida de un bean)
+
+Un scope dice cómo vive un bean (cuándo se crea, cuántas instancias hay, cuándo muere).
+
+Los más comunes:
+
+✔️ singleton (default)
+
+Una sola instancia en toda la app.
+
+✔️ prototype
+
+Una nueva instancia cada vez que se pide.
+
+✔️ request (web apps)
+
+Una instancia por request HTTP.
+
+✔️ session (web apps)
+
+Una instancia por sesión del usuario.
+
+✔️ application
+
+Un solo objeto compartido en el contexto del servlet.
+
+👉 Internamente:
+
+Spring guarda beans tipo:
+
+singletonObjects.put("userServiceBean", instanciaCreada)
+
+
+Si el bean es prototype:
+
+→ NO se cachea
+→ Se crea cada vez
+
+
+El contenedor decide eso según el scope.
+
+🟦 3. ¿Qué son los PROXIES? (Tu clase NO es realmente tu clase)
+
+Los proxies son clases creadas por Spring para añadir funcionalidad sin que tú lo veas.
+
+Cuando usas:
+
+@Transactional
+
+@Cacheable
+
+@PreAuthorize
+
+@Async
+
+@Retry (Resilience4j)
+
+@Timed (Micrometer)
+
+Spring NO llama tu clase directamente, sino a:
+
+UserService -> UserService$$EnhancerBySpringCGLIB$$Proxy34
+
+
+Ese proxy envuelve tu método:
+
+proxy.saveUser() 
+    → abrir transacción
+    → ejecutar método real
+    → cerrar transacción
+
+👉 Internamente:
+
+Spring usa:
+
+JDK Dynamic Proxies si hay interfaces
+
+CGLIB si es una clase concreta
+
+Estos proxies interceptan métodos y ejecutan código antes/después.
+
+🟦 4. ¿Qué es AOP (Aspect-Oriented Programming)?
+
+AOP es lo que habilita:
+
+transacciones automáticas
+
+seguridad automática
+
+logging automático
+
+auditoría
+
+métricas
+
+validaciones
+
+rate limiting
+
+AOP define:
+
+Aspectos = clases con lógica transversal
+Pointcuts = dónde aplica
+Advice = qué hacer (before, after, around)
+
+Ejemplo mental:
+
+@Before("public * com.app.UserService.*(..)")
+log("Entrando al método X");
+
+
+Spring detecta esos aspectos y los aplica generando proxies.
+
+🟦 5. ¿Qué son los LIFECYCLE HOOKS?
+
+Los hooks son eventos durante:
+
+el arranque,
+
+inicialización,
+
+destrucción.
+
+Los principales:
+
+✔️ @PostConstruct
+
+Después de crear un bean.
+
+✔️ @PreDestroy
+
+Antes de destruir el bean.
+
+✔️ InitializingBean / DisposableBean
+
+Interfaces para inicialización y destrucción.
+
+✔️ ApplicationRunner / CommandLineRunner
+
+Se ejecutan cuando la app está lista.
+
+✔️ Eventos del contexto:
+
+ApplicationStartedEvent
+
+ApplicationReadyEvent
+
+ContextRefreshedEvent
+
+ContextClosedEvent
+
+👉 Internamente:
+
+El contenedor tiene un ciclo:
+
+create → populate → post-process → initialize → ready → destroy
+
+
+Cada hook se ejecuta en una fase específica.
+
+🟦 6. ¿Cómo se unen todos estos elementos dentro del CONTENEDOR?
+
+Cuando Spring arranca:
+
+Fase 1: Crear ApplicationContext
+
+Se crea una instancia de:
+
+AnnotationConfigServletWebServerApplicationContext
+
+Fase 2: Escanear componentes
+
+Busca:
+
+@Component
+
+@Service
+
+@Repository
+
+@Controller
+
+@Configuration
+
+Cada clase encontrada se vuelve un BeanDefinition (metadata, no instancia todavía).
+
+Fase 3: Resolver perfiles
+
+Spring revisa:
+
+activeProfiles
+
+
+Y filtra:
+
+beans permitidos
+
+configuraciones permitidas
+
+yml del profile correcto
+
+beans bloqueados por perfil
+
+Fase 4: Crear y registrar beans
+
+Para cada BeanDefinition:
+
+Decide scope
+
+Decide cómo crear el bean (constructor / setter)
+
+Crea instancia
+
+Cachea si es singleton
+
+Resuelve dependencias
+
+Aplica post-procesadores
+
+Crea proxies si aplica AOP
+
+Aquí es donde aparecen los proxys mágicos.
+
+Fase 5: Inicializar beans (Lifecycle Hooks)
+
+Spring llama:
+
+@PostConstruct
+
+afterPropertiesSet
+
+BeanPostProcessors
+
+BeanFactoryPostProcessors
+
+Fase 6: Arrancar servidor web
+
+Levanta:
+
+Tomcat / Jetty / Undertow / Netty
+
+DispatcherServlet
+
+Mapea endpoints
+
+Inicializa controladores
+
+Fase 7: Aplicar auto-configuración (Spring Boot)
+
+Spring Boot analiza:
+
+AutoConfiguration.imports
+
+
+y carga:
+
+Jackson
+
+Logging
+
+DataSource
+
+JPA/Hibernate
+
+Security
+
+WebMvc
+
+Actuator
+
+Micrometer
+
+Kubernetes integration
+
+más…
+
+Fase 8: Application Ready
+
+Se dispara:
+
+ApplicationReadyEvent
+
+CommandLineRunners
+
+ApplicationRunners
+
+Y la app está viva.
+
+🧩 RESUMEN RÁPIDO
+Concepto	Qué es	Para qué sirve
+Profiles	Modos (dev/prod/test)	Cambiar comportamiento/config
+Scopes	Ciclo de vida de beans	Controlar instancias
+Proxies	Clases generadas automáticamente	Añadir transacciones, seguridad, etc.
+AOP	Programación orientada a aspectos	Lógica transversal sin duplicación
+Lifecycle Hooks	Eventos del ciclo de arranque	Inicializar o limpiar recursos
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-------------------------------------------------------------
+Cual es la dfiferencia entre spring framework y springboot? 
+
+
+
+🏛️ 1. LA DIFERENCIA FUNDAMENTAL (versión corta)
+SPRING FRAMEWORK = El motor. El núcleo. El contenedor IOC.
+
+Spring Framework es un framework general, modular, enorme, que provee:
+
+IoC/DI (Inversión de Control / Dependency Injection)
+
+AOP (Aspect Oriented Programming)
+
+Contexto de aplicación
+
+Spring MVC
+
+Spring Data
+
+Spring Security
+
+Mecanismos de eventos
+
+Infraestructura
+
+Pero NO hace nada “automático”.
+
+Tú tienes que configurarlo MANUALMENTE: XML, Java config, beans, servidores, etc.
+
+SPRING BOOT = Una capa encima. Un auto-configurador. Un acelerador.
+
+Spring Boot es un starter que usa Spring Framework por dentro, pero automatiza:
+
+la configuración,
+
+la inicialización,
+
+el servidor embebido,
+
+la infraestructura básica,
+
+la carga de beans,
+
+los defaults razonables.
+
+Boot te evita tener que hacer todo manualmente.
+
+🧠 2. EN POCAS PALABRAS:
+Spring Framework → biblioteca
+Spring Boot → plataforma de aplicaciones
+🔥 3. Diferencias TÉCNICAS reales entre ambos
+
+Aquí vamos al detalle fino, el que piden en entrevistas de nivel alto.
+
+🟦 I. ARRANQUE / INICIALIZACIÓN
+✔️ Spring Framework
+
+Para iniciar una aplicación Spring Framework tradicional:
+
+tú creas el ApplicationContext
+
+tú configuras los beans
+
+tú inicializas Spring MVC
+
+tú defines dónde están los controllers
+
+tú configuras un servidor (Tomcat, Jetty)
+
+tú lo integras tú mismo
+
+Ejemplo:
+
+AnnotationConfigApplicationContext context =
+   new AnnotationConfigApplicationContext(AppConfig.class);
+
+
+Si quieres web MVC:
+
+necesitas configurar DispatcherServlet
+
+mapearlo manualmente
+
+añadir un web.xml o WebInitializer
+
+Es MUCHO trabajo.
+
+✔️ Spring Boot
+
+Para iniciar una app:
+
+SpringApplication.run(App.class, args)
+
+
+Boot:
+
+crea el ApplicationContext
+
+configura DispatcherServlet
+
+registra controladores
+
+registra filtros
+
+arranca Tomcat embebido
+
+activa auto-configuraciones
+
+carga properties
+
+activa perfiles
+
+inicializa Actuator
+
+escanea clases
+
+👉 Spring Boot hace 50 cosas que en Spring Framework tú harías a mano.
+🟦 II. AUTO-CONFIGURACIÓN
+✔️ Spring Framework
+
+No tiene auto-configuración.
+TODO lo configuras tú.
+
+✔️ Spring Boot
+
+Tiene un mecanismo interno llamado:
+
+AutoConfiguration.imports
+
+
+Spring Boot evalúa cada clase:
+
+@ConditionalOnClass
+@ConditionalOnMissingBean
+@ConditionalOnProperty
+@ConditionalOnResource
+
+
+Y entonces activa automáticamente:
+
+Jackson
+
+DataSource
+
+Hibernate
+
+Spring MVC
+
+Security
+
+Metrics
+
+Logging
+
+Conexión a Redis
+
+WebFlux si no encuentra Servlet API
+
+etc.
+
+👉 Boot decide qué configurar basado en lo que encuentra en el classpath.
+🟦 III. SERVIDOR WEB
+✔️ Framework
+
+NO trae servidor embebido.
+Debes desplegar tu WAR en Tomcat/JBoss/WebLogic/etc.
+
+✔️ Boot
+
+Trae servidores embebidos:
+
+Tomcat (default)
+
+Jetty
+
+Undertow
+
+Netty (para WebFlux)
+
+Boot los inicializa dentro de la app:
+No necesitas WARs ni contenedores externos.
+
+🟦 IV. CONFIGURACIÓN
+✔️ Framework
+
+Necesitas configuraciones enormes:
+
+XML
+
+Java Config
+
+WebInitializer
+
+ViewResolvers
+
+HandlerMappings
+
+DataSource @Bean
+
+SessionFactory
+
+RestTemplate manual
+
+Security config
+
+DateFormat
+
+Exceptions
+
+Logging manual
+
+✔️ Boot
+
+Usa application.yml y auto-configuración.
+
+Ejemplo:
+
+spring.datasource.url=jdbc:postgresql://localhost/db
+spring.jpa.hibernate.ddl-auto=update
+
+
+¿Resultado?
+
+Crea DataSource
+
+Inicializa Hibernate
+
+Crea EntityManager
+
+Crea repositorios
+
+Configura transacciones
+
+Configura pools de conexiones
+
+Configura dialecto
+
+Configura logging SQL
+
+Todo sin que pongas una sola línea de configuración manual.
+
+🟦 V. PROYECTO BASE / ESTRUCTURA
+✔️ Framework
+
+No tienes estructura definida.
+La construyes tú.
+
+✔️ Boot
+
+Spring Initializr genera:
+
+estructura de paquetes
+
+dependencias correctas
+
+versión asegurada
+
+integración con tests
+
+logging
+
+build tool (maven/gradle) preconfigurado
+
+🟦 VI. ACTUATOR / METRICS / OBSERVABILITY
+✔️ Framework
+
+No trae nada de esto.
+
+✔️ Boot
+
+Integra:
+
+Actuator
+
+Micrometer
+
+Health checks
+
+Metrics
+
+Tracing (OpenTelemetry)
+
+Prometheus endpoint
+
+Loggers dinámicos
+
+Esto es crítico en microservicios modernos.
+
+🟦 VII. SECURITY
+✔️ Framework
+
+Spring Security está aparte.
+Debes integrarlo tú.
+
+✔️ Boot
+
+Activa auto-configuración:
+
+login forms
+
+seguridad básica
+
+filtros
+
+CSRF
+
+BCrypt
+
+AuthenticationManager
+
+AuthorizationManager
+
+OAuth2 y JWT auto-configs
+
+🟦 VIII. DEPLOYMENT
+✔️ Framework
+
+Debes empaquetar un WAR.
+
+✔️ Boot
+
+Genera un Fat JAR ejecutable:
+
+java -jar miapp.jar
+
+
+incluye:
+
+servidor
+
+configuraciones
+
+dependencias
+
+recursos
+
+Excelente para Docker / K8s.
+
+🟦 IX. DEPENDENCIAS
+✔️ Framework
+
+Tú administras versiones de:
+
+Spring
+
+Hibernate
+
+Jackson
+
+Tomcat
+
+Logback
+
+Servlet API
+
+etc.
+
+Riesgo alto de conflictos.
+
+✔️ Boot
+
+Incluye un BOM (Bill of Materials):
+
+spring-boot-dependencies
+
+
+que asegura COMPATIBILIDAD y versiones correctas automáticamente.
+
+🟦 X. TESTING
+✔️ Framework
+
+Configurar tests es difícil.
+
+✔️ Boot
+
+Test suite con:
+
+@SpringBootTest
+
+@WebMvcTest
+
+@DataJpaTest
+
+Test slices
+
+Auto-configuración de mocks
+
+TestContainers integrado
+
+🧠 4. INTERNALS: DIFERENCIA ARQUITECTÓNICA PROFUNDA
+✔️ Spring Framework = Contenedor + Librerías
+
+Internamente tiene:
+
+BeanFactory
+
+ApplicationContext
+
+PostProcessors
+
+BeanDefinitionRegistry
+
+Proxies AOP
+
+Scopes
+
+Profiles
+
+Eventos
+
+Pero NO sabe qué app estás construyendo.
+
+✔️ Spring Boot = Superclase configuradora que orquesta todo
+
+Boot añade:
+
+SpringApplication
+
+AutoConfigurationImportSelector
+
+ConfigDataEnvironment
+
+LoggingSystem
+
+FailureAnalyzer
+
+ContextLoader
+
+WebServerFactory
+
+Devtools
+
+BootStrap context
+
+ApplicationRunner
+
+Boot-managed lifecycles
+
+Boot crea un ecosistema completo encima del contenedor de Spring Framework.
+🧨 5. ANALOGÍA PERFECTA
+Spring Framework = Motor de coche
+
+brutal, poderoso pero complejo.
+
+Spring Boot = El coche ya armado
+
+motor, transmisión, carrocería, ruedas, volante, electricidad, todo funcionando.
+
+🎯 6. RESUMEN MASTER (para entrevista)
+Tema	Spring Framework	Spring Boot
+Tipo	Librería	Plataforma completa
+Configuración	Manual	Automática
+Servidor	Externo	Embebido
+Arranque	Complicado	1 línea
+IoC	Sí	Es el mismo IoC
+AOP	Sí	Usa el mismo AOP
+Auto-configuración	No	Sí
+Actuator	No	Sí
+Metrics	No	Sí
+Tracing	No	Sí
+Estructura	Libre	Guiada
+Deployment	WAR	Fat JAR
+Profiles	Sí	Sí (mejorado)
+Scopes	Sí	Sí
