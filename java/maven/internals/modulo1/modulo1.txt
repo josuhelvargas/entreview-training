@@ -1,0 +1,202 @@
+🧩 MÓDULO 1 — Arquitectura Interna de Maven
+🎯 Objetivo del módulo
+
+Comprender los componentes internos de Maven —cómo se comunican y qué responsabilidades tiene cada uno— para entender qué pasa cuando ejecutas un simple:
+
+mvn clean install
+
+🔹 1. Filosofía de Maven: Declarativo y determinista
+
+A diferencia de herramientas imperativas (como Ant o scripts shell), Maven no ejecuta pasos uno por uno escritos por el usuario, sino que:
+
+Lee un modelo declarativo (pom.xml).
+
+Construye un modelo de proyecto (POM) en memoria.
+
+Determina automáticamente qué fases y objetivos deben ejecutarse.
+
+Usa metadatos, convenciones y dependencias para reproducir siempre el mismo resultado.
+
+📌 Maven es un motor de ejecución de “modelos de construcción”, no solo una herramienta de compilación.
+
+
+
+
+🔹 2. Componentes Clave Internos
+
+🧱 a) Project Object Model (POM)
+
+El corazón de Maven.
+Cuando Maven arranca, lo primero que hace es leer el archivo pom.xml y construir un POM model en memoria.
+
+Internamente:
+
+Usa clases de maven-model y maven-model-builder.
+
+Combina:
+
+pom.xml local
+
+POMs padres (<parent>)
+
+BOMs (<dependencyManagement>)
+
+Propiedades del sistema
+
+Perfiles activos
+
+Resultado: un modelo completamente interpolado, listo para construir.
+
+Ejemplo:
+<project>
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-parent</artifactId>
+    <version>3.2.5</version>
+  </parent>
+  <dependencies>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-web</artifactId>
+    </dependency>
+  </dependencies>
+</project>
+
+
+➡️ Maven fusiona este POM con el del parent (Spring Boot Starter Parent), hereda propiedades, plugins y versiones.
+
+
+
+
+⚙️ b) Reactor
+
+El Reactor es el cerebro que coordina la construcción cuando hay múltiples módulos.
+
+Su función:
+
+Lee todos los módulos (<modules> en el POM raíz).
+
+Construye un grafo de dependencias entre módulos locales.
+
+Ordena la compilación en topología (build order).
+
+Ejecuta los módulos en secuencia (o en paralelo si usas -T).
+
+Ejemplo:
+<modules>
+  <module>core</module>
+  <module>api</module>
+  <module>plugin</module>
+</modules>
+
+
+Si api depende de core, el reactor ejecuta primero core, luego api, finalmente plugin.
+
+📘 Internamente:
+Usa ReactorBuildExecutor y MavenSession para coordinar fases y aislar contextos de ejecución.
+
+
+
+
+🧩 c) Plugin Manager
+
+Cada “goal” (mvn clean, mvn compile, etc.) corresponde a un plugin con una o más metas (mojos = Maven plain old Java objects).
+
+Proceso interno:
+
+Maven resuelve el plugin desde el repositorio.
+
+Carga su descriptor (plugin.xml) con las metas disponibles.
+
+Inyecta el contexto del proyecto (MavenProject, Session, Settings).
+
+Ejecuta el método execute() del mojo correspondiente.
+
+Ejemplo:
+mvn compiler:compile
+
+
+🔸 Invoca el maven-compiler-plugin,
+🔸 Busca su meta compile,
+🔸 Llama internamente al mojo CompilerMojo.execute().
+
+
+
+
+📦 d) Artifact Resolver
+
+Encargado de resolver dependencias y plugins desde repositorios.
+
+Flujo interno:
+
+Lee las coordenadas (groupId, artifactId, version, type, classifier).
+
+Busca en el repositorio local (~/.m2/repository).
+
+Si no existe, consulta los remotos definidos en settings.xml o en el POM.
+
+Verifica checksums y firma.
+
+Descarga el .jar y lo almacena localmente.
+
+➡️ Utiliza la librería Aether (hoy parte de org.eclipse.aether) para resolución y caché inteligente.
+
+📘 Importante:
+Maven no descarga dos veces un mismo artifact, y maneja “nearest-wins” en conflictos de versión.
+
+
+
+
+
+
+
+
+
+
+🔹 3. Construcción del árbol de proyectos (Multi-Module Build)
+
+Maven primero analiza todos los pom.xml de los módulos y crea un árbol de dependencias local, que incluye:
+
+Dependencias internas (<dependency> entre módulos locales)
+
+Dependencias externas (resueltas vía repositorio)
+
+Dependencias transitivas
+
+Luego:
+
+Usa el Reactor para ordenar los módulos.
+
+Pasa el control al Lifecycle Executor para ejecutar fases sobre cada uno.
+
+Cada módulo tiene su propio MavenProject en memoria.
+
+📈 Así, Maven garantiza que los módulos dependientes se construyan solo cuando sus dependencias locales estén listas.
+
+
+
+
+
+
+🔹 4. El rol de maven-core y maven-model-builder
+Componente	Rol
+maven-core	Núcleo del sistema: inicializa el MavenSession, gestiona los ciclos de vida (LifecycleExecutor), los repositorios y el reactor.
+maven-model-builder	Encargado de leer y combinar pom.xml, padres, BOMs y perfiles para generar un Model completo.
+maven-artifact	Representa cada artefacto (JAR, POM, WAR).
+maven-plugin-api	Define la interfaz para desarrollar plugins (clases Mojo).
+🧠 En resumen
+
+Cuando ejecutas mvn install, Maven:
+
+Lee y combina los POMs → maven-model-builder
+
+Construye el grafo de módulos → Reactor
+
+Resuelve dependencias → Artifact Resolver
+
+Ejecuta fases → LifecycleExecutor (parte de maven-core)
+
+Invoca plugins → Plugin Manager
+
+Instala artefactos resultantes en el repo local.

@@ -85,4 +85,13 @@ Conocer tanstack query para estado remoto
 
 Saber qué NO meter en Redux
 
-Saber cuándo usar Signals (si migras después
+Saber cuándo usar Signals (si migras después)
+
+
+
+
+
+
+
+Como funciona useForm ( react form hook) /formprovider 
+formstate,. watch , setvalue

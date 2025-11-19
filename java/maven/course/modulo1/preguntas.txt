@@ -1,0 +1,524 @@
+En equ ecosn ite resovler dependecias en maven con usa el mecanismo de “nearest definition”
+
+UN EJEMPLO ULTRA SIMPLE (para que quede clarísimo)
+
+Proyecto A:
+
+A
+└── B
+      └── commons-lang3:3.1
+
+
+Ahora B también depende de D:
+
+A
+└── B
+      └── D
+            └── commons-lang3:3.12
+
+
+Distancias:
+
+commons-lang3:3.1 → 2 saltos (A → B → commons-lang3)
+
+commons-lang3:3.12 → 3 saltos (A → B → D → commons-lang3)
+
+✔️ Resultado → Maven elige 3.1
+
+porque está más cerca del root.
+Sí puedes tener múltiples versiones declaradas en el árbol, porque provienen de dependencias transitivas.
+
+Pero Maven:
+
+solo permite UNA versión en el classpath final
+
+las demás las omite
+
+usa reglas para decidir cuál gana
+
+Reglas, en orden de prioridad:
+
+Versión declarada directamente en <dependency> gana.
+
+Si no, la versión en <dependencyManagement> gana.
+
+Si no, se aplica nearest definition (árbol más corto).
+
+Si hay empate, gana la dependencia listada primero en el pom.
+
+
+
+////////////////////////////////////
+
+
+
+como fuinciona aplicar versiones, scopes y exclusiones   ?
+Esto es exactamente lo que hace el Artifact Resolver antes de elegir qué dependencias entrarán al classpath final.
+Regla 1 — Si tú defines una versión directa en <dependency>, gana esa.
+
+Ejemplo:
+
+<dependency>
+  <groupId>com.google.guava</groupId>
+  <artifactId>guava</artifactId>
+  <version>31.0</version>
+</dependency>
+
+
+Aunque dependencias transitivas traigan guava 19, 20, 21…
+
+👉 Maven siempre usará la 31.0 porque tú lo definiste directamente.
+
+Regla 2 — Si no declaras versión, manda <dependencyManagement>
+
+
+
+Regla 3 — Si no hay versión directa ni management → “Nearest Definition”
+
+Ya te lo expliqué antes:
+
+👉 “cercano” = menor profundidad en el árbol de dependencias
+
+
+
+Regla 4 — Si hay empate → gana la que aparece primero en tu <dependencies>
+
+
+🎯 Resumen de versiones
+
+Orden de prioridad:
+
+Declarada directamente
+
+Declarada en dependencyManagement
+
+Nearest definition
+
+Orden en el pom
+
+
+
+
+Exclisones:
+🧨 3. ¿Qué son las EXCLUSIONES?
+
+Las exclusiones sirven para evitar que una dependencia transitiva entre al árbol.
+
+Ejemplo práctico:
+
+Tu proyecto usa:
+
+<dependency>
+  <groupId>com.example</groupId>
+  <artifactId>lib-A</artifactId>
+</dependency>
+
+
+Pero lib-A depende de:
+
+slf4j-log4j12
+
+
+Y tú NO quieres log4j
+porque usas Logback.
+
+Entonces excluyes:
+
+<dependency>
+  <groupId>com.example</groupId>
+  <artifactId>lib-A</artifactId>
+  <exclusions>
+      <exclusion>
+         <groupId>org.slf4j</groupId>
+         <artifactId>slf4j-log4j12</artifactId>
+      </exclusion>
+  </exclusions>
+</dependency>
+
+
+Ahora:
+
+⚡ Maven ignora el JAR conflictivo.
+⚡ No aparece en el árbol.
+⚡ No se descarga.
+⚡ No entra al classpath.
+
+
+/////////////////////////////////
+
+
+
+
+qwue msignifica que maven al finalizar su ejecucion crea: 
+estados de ejecución
+
+logs estructurados
+???
+
+🧠 Primero: Maven NO solo “compila y ya”.
+Durante un build, Maven va registrando:
+
+
+decisiones que tomó
+
+
+fases que ejecutó
+
+
+resultados de cada plugin
+
+
+tiempos
+
+
+errores
+
+
+warnings
+
+
+rutas
+
+
+configuraciones
+
+
+versiones seleccionadas
+
+
+dependencias omitidas
+
+
+Y todo eso termina en:
+👉 execution state (estado de ejecución)
+👉 structured logs (logs estructurados)
+Vamos a verlos uno por uno.
+
+🟦 1. ¿QUÉ ES EL “ESTADO DE EJECUCIÓN” (Execution State)?
+Cuando Maven termina de compilar, internamente deja un registro de TODAS las decisiones y resultados del build.
+No lo ves como un archivo separado,
+pero sí existe dentro del output y en estructuras internas.
+Incluye:
+
+✔️ 1.1. Qué fases se ejecutaron
+Ejemplo:
+validate
+compile
+test
+package
+install
+
+
+✔️ 1.2. Qué plugins (goals) se ejecutaron en cada fase
+Ejemplo:
+maven-clean-plugin:3.2.0:clean
+maven-resources-plugin:3.3.1:resources
+maven-compiler-plugin:3.10.1:compile
+maven-surefire-plugin:3.0.0-M8:test
+maven-jar-plugin:3.3.0:jar
+maven-install-plugin:3.1.0:install
+
+
+✔️ 1.3. Resultado de cada ejecución
+
+
+SUCCESS
+
+
+SKIPPED
+
+
+FAILED
+
+
+ERROR
+
+
+NOT REQUIRED
+
+
+Maven sabe exactamente qué ejecutó y qué omitió.
+
+✔️ 1.4. Qué dependencias se resolvieron y cuáles se omitieron
+Por ejemplo:
+commons-io:2.6 (omitted for conflict with 2.8)
+
+
+✔️ 1.5. Qué perfiles quedaron activos
+Ejemplo:
+Active Profiles: dev, docker
+
+
+✔️ 1.6. Qué versiones de plugins y dependencias se usaron
+Ejemplo:
+Using compiler: javac 17
+Using plugin maven-compiler-plugin:3.10.1
+Effective Java version: 17
+
+
+✔️ 1.7. Qué ruta tuvo el classpath final
+Es decir, qué JARs quedaron incluidos.
+
+🎯 ¿Por qué es importante?
+Porque los plugins posteriores pueden consultar esta data,
+así como herramientas de análisis, release plugins, etc.
+
+🟨 Entonces: “Execution State” = el registro completo del build
+No es un archivo único.
+Es un estado interno que Maven guarda durante la ejecución
+y representa:
+👉 TODO lo que Maven decidió
+👉 TODO lo que Maven ejecutó
+👉 TODO lo que Maven omitió
+👉 TODO lo que resultó bien o mal
+
+🟧 2. ¿Qué son los “LOGS ESTRUCTURADOS”?
+Esto sí lo ves tú, porque aparece en consola.
+Los logs estructurados son:
+✔️ mensajes con formato predecible
+✔️ generados por cada plugin
+✔️ categorizados
+✔️ jerárquicos
+✔️ con niveles (INFO, WARNING, ERROR, DEBUG)
+✔️ con prefijos por plugin
+Ejemplo típico:
+[INFO] --- maven-clean-plugin:3.2.0:clean (default-clean) ---
+[INFO] Deleting /target
+[INFO] --- maven-resources-plugin:3.3.1:resources (default-resources) ---
+[INFO] Copying resources
+[INFO] --- maven-compiler-plugin:3.10.1:compile (default-compile) ---
+[INFO] Changes detected - recompiling the module!
+
+Observa cómo:
+
+
+cada sección tiene nombre de plugin
+
+
+cada paso está documentado
+
+
+se incluyen versiones
+
+
+los logs son reproducibles
+
+
+son entendibles por herramientas CI/CD
+
+
+
+🔥 ¿Por qué se llaman “estructurados”?
+Porque siguen una convención estricta que permite a:
+
+
+Jenkins
+
+
+GitHub Actions
+
+
+GitLab
+
+
+SonarQube
+
+
+IDEs
+
+
+Analyzers
+
+
+Parsing tools
+
+
+interpretarlos automáticamente.
+Por ejemplo:
+[WARNING] Using platform encoding (UTF-8 actually) invalid 
+
+Siempre tiene:
+
+
+Nivel del log → [WARNING]
+
+
+Plugin que lo emitió
+
+
+Mensaje estandarizado
+
+
+La estructura es intencional.
+
+🧩 ¿Qué incluye un log estructurado?
+
+
+Inicio de plugins
+
+
+Fin de plugins
+
+
+Configuraciones aplicadas
+
+
+Propiedades leídas
+
+
+Fases ejecutadas
+
+
+Mensajes de error
+
+
+Depuración (-X)
+
+
+Árbol de dependencias
+
+
+Artefactos omitidos
+
+
+Artefactos ordenados
+
+
+Versiones aplicadas
+
+
+Información de performance
+
+
+
+💡 Tip: Con -X ves TODO el estado interno
+Ejecuta:
+mvn -X clean install
+
+y verás:
+
+
+el execution plan completo
+
+
+el árbol interno exacto
+
+
+los profiles cargados
+
+
+resolución de dependencias
+
+
+decisiones tomadas
+
+
+plugins y sus configuraciones internas
+
+
+el classpath final
+
+
+logs estructurados extendidos
+
+
+Es literalmente:
+👉 EL DIARIO INTERNO COMPLETO DEL BUILD.
+
+🎯 RESUMEN SUPER SIMPLE
+✔️ “Estados de ejecución”
+= Registro interno de qué Maven hizo, cómo lo hizo, en qué orden, qué skipped, qué falló.
+✔️ “Logs estructurados”
+= Impresión en consola de esos estados, organizada y formateada para lectura y análisis.
+
+Si quieres te hago un ejemplo REAL:
+Corro virtualmente un mvn clean install y te explico:
+
+
+cada línea
+
+
+cada fase
+
+
+cada plugin
+
+
+cómo se genera su estado
+
+
+cómo se interpreta el log
+
+
+¿Quieres eso?
+
+
+
+
+
+
+
+//////////
+
+que significa eso de hewrencia a traves del pom
+
+En Maven:
+
+POM hijo → “extiende” → POM padre
+
+
+El hijo hereda:
+
+versiones de dependencias
+
+configuraciones de plugins
+
+repositorios
+
+propiedades
+
+perfiles
+
+distribución
+
+build defaults
+
+módulos
+
+encoding
+
+ciclo de compilación preconfigurado
+
+información del proyecto
+
+Es decir:
+
+👉 Un POM no necesita repetir configuraciones
+👉 Puede definir SOLO lo que cambia
+👉 Puede centralizar configuraciones en un “super POM”
+👉 Se vuelve más fácil mantener proyectos grandes
+
+
+
+
+
+
+
+
+
+
+
+
+'///////////////////
+difernecia entre plugins y dependencias 
+
+que son las feses  explica , 
+
+
+qiue son los goals
+
+Como se solucionan los problemas de dependencias? 
+Maven decide una versión usando:
+nearest-wins
+dependency management
+path de resolución

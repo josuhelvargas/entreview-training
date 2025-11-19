@@ -1,0 +1,405 @@
+
+Lee el POM actual
+
+Busca el parent POM
+
+Fusiona configuraciones
+
+Expande propiedades ${ }
+
+Activa perfiles
+
+Aplica herencia
+
+Construye un modelo completo del proyecto:
+
+
+
+② Resolver dependencias
+
+El Artifact Resolver:
+
+analiza dependencias declaradas
+
+analiza dependencias transitivas
+
+aplica reglas de conflicto
+
+usa el mecanismo de “nearest definition”
+
+descarga artefactos al repositorio local
+
+aplica versiones, scopes y exclusiones
+
+③ Construir el “Execution Plan”
+
+Maven evalúa:
+
+packaging (jar, war, pom)
+
+ciclo de vida que corresponde
+
+fases necesarias
+
+plugins default para cada fase
+
+Ejemplo para un proyecto jar:
+
+Fase	         Plugin Default
+validate	    maven-enforcer-plugin
+compile	      maven-compiler-plugin
+test	        maven-surefire-plugin
+package	      maven-jar-plugin
+install	      maven-install-plugin
+
+
+
+
+④ Ejecutar fases en orden
+
+Cada fase llama plugins (goals) que ejecutan lógica Java.
+
+Ejemplo real:
+
+mvn clean install produce:
+
+clean → remove target directory
+
+validate → validate structure
+
+compile → javac
+
+test → run JUnit
+
+package → empaquetar .jar
+
+install → copiar al .m2
+
+
+
+
+⑤ Reportar resultado
+
+Al final Maven crea:
+
+un árbol de dependencias
+
+un artefacto empaquetado
+
+estados de ejecución
+
+logs estructurados
+
+
+
+
+📘 3. Componentes internos de Maven
+
+Aquí tienes los módulos internos que trabajan detrás del build.
+
+🟦 1. POM Model Builder
+
+Construye el modelo completo a partir del POM:
+
+herencia
+
+perfiles
+
+propiedades
+
+repositorios
+
+plugins
+
+Clase interna clave:
+
+DefaultModelBuilder
+
+🟩 2. MavenProject
+
+Representación en memoria del proyecto, contiene:
+
+modelo completo
+
+rutas
+
+configuración build
+
+lista de plugins
+
+lista de dependencias
+
+ejecución activa
+
+Es el objeto principal dentro del ciclo de vida.
+
+🟧 3. Plugin Manager
+
+Invoca plugins y goals.
+
+Responsabilidades:
+
+localizar el plugin
+
+cargar su metadata
+
+descargarlo si no existe
+
+crear su ClassLoader
+
+ejecutar el goal
+
+inyectar configuraciones del POM
+
+🟩 4. Lifecycle Executor
+
+Define qué fases ejecutar.
+
+Arquitectura:
+
+LifecycleMapping
+ExecutionPlan
+MojoExecutor
+
+
+MOJO = "Maven plain Old Java Object" (un plugin).
+
+🟫 5. Artifact Resolver
+
+Es el responsable de:
+
+resolver dependencias
+
+conflictos de versiones
+
+descargar JARs
+
+leer POMs transitivos
+
+aplicar exclusions
+
+Implementación clave:
+
+Aether (Apache Maven Resolver)
+
+🟥 6. Repositories System
+
+Administra:
+
+repositorio local (.m2)
+
+repositorios remotos
+
+mirrors
+
+snapshots vs releases
+
+🟩 4. Ejercicios prácticos para entender la arquitectura
+
+Estos ejercicios están diseñados para mostrarte “lo que Maven esconde”.
+
+🧪 EJERCICIO 1 – Observa cómo Maven construye el modelo del POM
+
+Ejecuta:
+
+mvn help:effective-pom
+
+
+👉 Verás cómo Maven:
+
+combinó tu POM
+
+combinó el padre
+
+añadió configuraciones default
+
+añadió plugins default
+
+añadió propiedades extra
+
+Esto es literalmente el modelo en memoria.
+
+🧪 EJERCICIO 2 – Observa el árbol real de dependencias
+
+Ejecuta:
+
+mvn dependency:tree
+
+
+Preguntas:
+
+¿qué dependencias vienen transitivamente?
+
+¿Maven resolvió conflictos?
+
+¿de dónde viene cada versión?
+
+🧪 EJERCICIO 3 – Observa el Execution Plan
+
+Ejecuta:
+
+mvn -X package
+
+
+Busca la sección:
+
+--- execution plan for jar:jar ---
+
+
+Allí encontrarás:
+
+fases
+
+goals
+
+plugins ejecutados
+
+orden de ejecución
+
+🧪 EJERCICIO 4 – Observa cómo Maven resuelve un plugin
+
+Ejecuta:
+
+mvn help:describe -Dplugin=compiler
+
+
+Preguntas:
+
+¿Qué goals tiene el plugin?
+
+¿Qué vida del ciclo soporta?
+
+¿Qué configuraciones acepta?
+
+🧪 EJERCICIO 5 – Crea un error de conflicto de versiones
+
+Modifica una dependencia con dos versiones distintas:
+
+<dependency>
+  <groupId>commons-io</groupId>
+  <artifactId>commons-io</artifactId>
+  <version>2.5</version>
+</dependency>
+
+<dependency>
+  <groupId>commons-io</groupId>
+  <artifactId>commons-io</artifactId>
+  <version>2.11.0</version>
+</dependency>
+
+
+Luego ejecuta:
+
+mvn dependency:tree -Dverbose
+
+
+Verás cómo Maven decide una versión usando:
+
+nearest-wins
+
+dependency management
+
+path de resolución
+
+🧪 EJERCICIO 6 – Crea tu propio plugin MOJO
+
+Crea un módulo con:
+
+mvn archetype:generate -Dfilter=mojo
+
+
+Implementa un plugin sencillo que imprima:
+
+System.out.println("Hola desde un plugin!");
+
+
+Instálalo:
+
+mvn install
+
+
+Y ejecútalo:
+
+mvn tuplugin:hello
+
+
+Aquí verás:
+
+cómo los plugins son artefactos como cualquier dependencia
+
+cómo Maven los carga con su propio ClassLoader
+
+cómo tus goals se integran al ciclo
+
+🟪 EJERCICIO 7 – Modifica el ciclo de vida
+
+En tu POM agrega:
+
+<plugin>
+  <groupId>org.apache.maven.plugins</groupId>
+  <artifactId>maven-antrun-plugin</artifactId>
+  <executions>
+    <execution>
+      <phase>validate</phase>
+      <goals>
+        <goal>run</goal>
+      </goals>
+      <configuration>
+        <target>
+          <echo>Validando proyecto... 🔍</echo>
+        </target>
+      </configuration>
+    </execution>
+  </executions>
+</plugin>
+
+
+Ejecuta:
+
+mvn validate
+
+
+Verás cómo Maven integra el nuevo goal dentro de su Execution Plan.
+
+🎉 Cierre del Módulo
+
+Ya entiendes:
+
+cómo piensa Maven
+
+cómo construye su modelo
+
+cómo resuelve dependencias
+
+cómo decide la ejecución
+
+qué módulos participan
+
+cómo funciona el ciclo de vida
+
+cómo instalar y ejecutar plugins
+
+cómo inspeccionar la arquitectura interna
+
+
+
+
+
+
+
+
+
+
+
+El POM da info respecto a la calidad  del proyecto :
+    1.Registro de cambios creado directamente desde el control de código fuente
+    2.Fuentes con referencias cruzadas
+    3.Listas de correo gestionadas por el proyecto
+    4.Dependencias utilizadas por el proyecto
+    5.Informes de pruebas unitarias
+
+
+
+
+Que es mejor: 
+Hacer que los casos de prueba configuren su propio entorno en lugar de personalizar la compilación para la preparación de pruebas?    
