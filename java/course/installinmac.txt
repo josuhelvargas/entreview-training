@@ -1,0 +1,1 @@
+Para utilizar Este proyecto por favor instala primeramente sdkman en la mac , este programa te permitira isntalar multiples VERSIONESde Javay tambien maven.
