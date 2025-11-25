@@ -1,5 +1,5 @@
 
-Con ngZone:
+// Con ngZone:
 @Component({
   template: `{{ value }}`
 })
@@ -14,7 +14,7 @@ export class Demo {
 
 
 
-Sin ngZone: 
+// Sin ngZone: 
 @Component({
   template: `{{ value() }}`
 })
