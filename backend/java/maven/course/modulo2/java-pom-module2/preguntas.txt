@@ -1,0 +1,402 @@
+1.Como funciona junit 5?
+  Explica sus Internals y Componentes mas importantes.
+  Crea un plan de estudio para aprender los fundamentos y tener unabase fuerte aprenderapoder armamr pruebas unitarias con JUnit 5.
+
+2.¿Cual es la diferencia entre JUnit 4 y JUnit 5?
+  Explica las principales diferencias entre JUnit 4 y JUnit 5.
+
+3.¿Cual es la diferencia entre JUnit 5 y TestNG?
+
+
+4.Explica ¿Cuales la diferencia entreconfig.properties y application.properties y env.properties (dev,qa,prod.properties) Que informacion deberia venir encada uno de ellos paratener un proyectodesacoplado y facilmente de mantenimiento?
+
+
+5.A quete refieres con BOM y POM , ¿Cual es la diferencia entre ellos?
+| Concepto          | POM                                          | BOM                                     |
+| ----------------- | -------------------------------------------- | --------------------------------------- |
+| Significado       | Project Object Model                         | Bill Of Materials                       |
+| Propósito         | Define un proyecto Maven                     | Gestiona versiones de dependencias      |
+| Contiene          | Dependencias, plugins, perfiles, build, etc. | Solo dependencias y versiones           |
+| Produce artefacto | Sí (JAR, WAR, etc.)                          | No (solo se importa)                    |
+| Se usa en         | Cualquier proyecto Maven                     | Dentro de `<dependencyManagement>`      |
+| Ejemplo típico    | `pom.xml` de tu aplicación                   | `spring-boot-dependencies`, `junit-bom` |
+
+
+6.Explica cada una de las siguientes tags de unarchivo pom.xml:
+
+
+
+
+  <dependencyManagement>
+    <properties>
+
+Para qué sirven?
+
+Centralizar versiones.
+
+Definir parámetros del build (Java version, encoding…).
+
+Usarlas dentro de plugins, dependencias, perfiles, resources, etc.
+
+Cambiar una versión en un solo lugar y que todo el proyecto se actualice.
+
+📌 Ejemplo típico:
+<properties>
+    <java.version>21</java.version>
+    <spring.boot.version>3.3.4</spring.boot.version>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+</properties>
+
+
+Luego usas esas propiedades así:
+
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-web</artifactId>
+    <version>${spring.boot.version}</version>
+</dependency>
+
+
+
+
+
+dependencymanagement: 
+Para qué sirven?
+
+Centralizar versiones.
+
+Definir parámetros del build (Java version, encoding…).
+
+Usarlas dentro de plugins, dependencias, perfiles, resources, etc.
+
+Cambiar una versión en un solo lugar y que todo el proyecto se actualice.
+
+📌 Ejemplo típico:
+<properties>
+    <java.version>21</java.version>
+    <spring.boot.version>3.3.4</spring.boot.version>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+</properties>
+
+
+Luego usas esas propiedades así:
+
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-web</artifactId>
+    <version>${spring.boot.version}</version>
+</dependency>
+
+Importante: <dependencyManagement> NO añade nada al classpath
+
+Esto NO funciona:
+
+<dependencyManagement>
+    <dependencies>
+        <dependency>
+            <groupId>org.example</groupId>
+            <artifactId>foo</artifactId>
+            <version>1.0</version>
+        </dependency>
+    </dependencies>
+</dependencyManagement>
+
+
+Porque si intentas usar foo en el código, te dará error.
+
+Tienes que declararlo también en <dependencies>:
+
+<dependencies>
+    <dependency>
+        <groupId>org.example</groupId>
+        <artifactId>foo</artifactId>
+    </dependency>
+</dependencies>
+
+
+
+
+
+
+
+7. Explica en el siguiente segmento de codigo que es scope  y type(pom)
+<dependency>
+        <groupId>org.junit</groupId>
+        <artifactId>junit-bom</artifactId>
+        <version>5.10.2</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+
+
+✔️ Significa que esta dependencia no es un JAR, sino un POM.
+Un BOM (Bill of Materials) es un POM especial que no contiene clases ni código; solo contiene versiones de dependencias.
+
+
+✔️ import es un scope especial usado solo dentro de <dependencyManagement>.
+Su función:
+📌 Importar el contenido del POM (el BOM) dentro del dependencyManagement del proyecto.
+En otras palabras:
+➡️ “Trae todas las versiones definidas en este POM (BOM) y úsalas como versiones oficiales del proyecto.”
+
+
+
+
+este segmento de codigo tambien: 
+ <executions>
+              <execution>
+                <phase>package</phase>
+                <goals>
+                  <goal>shade</goal>
+                </goals>
+                <configuration>
+                  <createDependencyReducedPom>true</createDependencyReducedPom>
+                  <transformers>
+                    <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                      <mainClass>com.example.app.App</mainClass>
+                    </transformer>
+                  </transformers>
+                  <finalName>app-sample-${project.version}-prod</finalName>
+                </configuration>
+              </execution>
+            </executions>
+
+Este fragmento configura Maven Shade Plugin, utilizado para generar un fat JAR (también llamado uber JAR): un archivo .jar que contiene:
+todas tus clases
+todas las dependencias necesarias
+un MANIFEST.MF que permite ejecutar tu JAR con java -jar
+
+<executions>
+Define una o varias ejecuciones del plugin.
+El Shade plugin necesita que le digas cuándo correr y qué meta ejecutar.
+
+2. <execution> ... </execution>
+Una ejecución específica del plugin.
+Puedes tener varias ejecuciones en un mismo plugin, con distintos goals o fases.
+
+3. <phase>package</phase>
+Esta línea es clave.
+Le dice a Maven:
+➡️ Ejecuta este plugin durante la fase package.
+Recordemos el ciclo de vida de Maven:
+
+compile → test → package → verify → install → deploy
+
+Así que al llegar a:
+mvn package
+El Shade plugin se activa y genera el fat JAR.
+
+4. <goals><goal>shade</goal></goals>
+El goal del plugin que queremos ejecutar es:
+shade
+
+Los transformers modifican recursos (META-INF, MANIFEST, archivos de servicios, etc.) dentro del JAR final.
+En este caso, usamos:
+ManifestResourceTransformer
+Sirve para generar un MANIFEST.MF válido para un JAR ejecutable
+
+5. <configuration> ... </configuration>
+Bloque de configuración del plugin Shade.
+Aquí definimos lo que queremos que haga cuando se ejecute.
+
+6. <createDependencyReducedPom>true</createDependencyReducedPom>
+
+Este ajuste indica:
+➡️ Crear un nuevo POM reducido que elimina dependencias ya incluidas dentro del fat JAR.
+Ejemplo:
+Si logback-classic se empaqueta dentro del JAR, no debería aparecer como dependencia externa.
+
+
+7. <transformers> ... </transformers>
+Los transformers modifican recursos (META-INF, MANIFEST, archivos de servicios, etc.) dentro del JAR final.
+En este caso, usamos:
+ManifestResourceTransformer
+Sirve para generar un MANIFEST.MF válido para un JAR ejecutable.
+
+
+8. <transformer implementation="...ManifestResourceTransformer">
+Este transformer modifica el MANIFEST dentro del JAR.
+Lo que hace es crear este archivo interno:
+META-INF/MANIFEST.MF
+con contenido como:
+Main-Class: com.example.app.App
+
+
+9. <mainClass>com.example.app.App</mainClass>
+Indica la clase principal del JAR.
+Esta es la clase que contiene public static void main(String[] args).
+Es lo que permite ejecutar:
+java -jar app-sample-1.0.0-prod.jar
+Sin esta línea, el jar sería no ejecutable.
+
+
+10. <finalName>app-sample-${project.version}-prod</finalName>
+Define el nombre final del archivo generado.
+Con un pom cuyo version es 1.0.0, el archivo final será:
+app-sample-1.0.0-prod.jar
+
+
+
+Resumen visual:
+<phase>package</phase>
+     ↓
+Shade se ejecuta durante el empaquetado
+
+<goal>shade</goal>
+     ↓
+Crea un fat JAR con todas las dependencias
+
+<createDependencyReducedPom>true</createDependencyReducedPom>
+     ↓
+Genera un POM reducido para evitar duplicidades
+
+<transformers>ManifestResourceTransformer</transformers>
+     ↓
+Genera un MANIFEST.MF correcto
+
+<mainClass>com.example.app.App</mainClass>
+     ↓
+El JAR es ejecutable con "java -jar"
+
+<finalName>app-sample-${project.version}-prod</finalName>
+     ↓
+Define el nombre del archivo final
+
+
+
+
+
+
+Explica cadauno de los siguientes plugins de maven.Como funcionan y una base solida paras aber Como utilizarlos correctamente, Cual es la diferencia entrelos pluginsy las dependencias
+
+1. maven-compiler-plugin
+permite la compilacion en unaversion especifica de java
+
+
+2. maven-surefire-plugin
+permite ejecutar tests
+
+3. maven-jar-plugin
+permite crearun JAR
+
+
+4. maven-resources-plugin
+👉 Copia y filtra archivos de recursos
+✔ ¿Qué hace?
+Copia recursos (.properties, .yaml, .xml, imágenes)
+Permite filtrar variables dentro de esos archivos (${propiedad})
+Puede copiar recursos distintos para cada entorno (dev/qa/prod)
+
+
+
+5. maven-shade-plugin (fase package)
+Crea un fat JAR (uber JAR con dependencias)
+Este es uno de los plugins más poderosos.
+✔ ¿Qué hace?
+Fusiona TODAS las dependencias dentro de un solo JAR.
+Genera un JAR ejecutable con MANIFEST.
+Resuelve conflictos entre archivos duplicados.
+Permite renombrar paquetes (shading) para evitar conflictos.
+Cambia el nombre del artefacto final.
+
+
+
+6.Maven Failsafe Plugin (El MÁS importante en verify)
+👉 Se usa para ejecutar tests de integración
+(no unit tests).
+¿Cuándo se ejecutan los plugins?
+Maven ejecuta phases (fases):
+validate → compile → test → package → verify → install → deploy
+Los plugins se enganchan a una fase.
+
+Ejemplos comunes de cosas que se hacen en verify:
+ejecución de análisis estático de código
+validaciones de calidad (Sonar, Checkstyle, PMD)
+validaciones de contratos (OpenAPI, Avro)
+validaciones de firmas o integridad
+validación de dependencias (versiones prohibidas)
+ejecución de test de integración (cuando no van en la fase test)
+verificaciones de seguridad
+
+
+
+| Plugin                     | Para qué sirve            | Fase                | Produce             |
+| -------------------------- | ------------------------- | ------------------- | ------------------- |
+| **maven-compiler-plugin**  | Compilar Java             | `compile`           | `.class`            |
+| **maven-surefire-plugin**  | Ejecutar pruebas          | `test`              | resultados de test  |
+| **maven-jar-plugin**       | Crear JAR estándar        | `package`           | `*.jar`             |
+| **maven-resources-plugin** | Copiar y filtrar recursos | `process-resources` | recursos procesados |
+| **maven-shade-plugin**     | Crear fat JAR ejecutable  | `package`           | `my-fat-jar.jar`    |
+| **maven-failsafe-plugin**  | Ejecutar pruebas          | `verify`            | resultados de test  |
+| **maven-install-plugin**   | Instalar JAR en repo local| `install`           | `*.jar` |
+| **maven-deploy-plugin**    | Deployar JAR en repo remot| `deploy`            | `*.jar` |
+
+
+maven fase clean (limpia folder target)
+
+
+
+
+
+
+Que es el classpath 
+¿Por qué existe el classpath?
+Java no sabe automáticamente dónde están tus clases o librerías.
+Necesita que tú le digas:
+dónde encontrar tu código
+dónde encontrar librerías externas
+dónde encontrar dependencias transitivas
+El classpath le da esa información.
+
+
+
+🚀 ¿Cuándo se usa el classpath?
+1) Al compilar
+javac -cp libs/* src/Main.java
+Java necesita el classpath para compilar usando librerías externas.
+
+2) Al ejecutar
+java -cp target/classes:libs/* com.example.Main
+Java necesita el classpath para cargar:
+Main.class
+todas las clases que usa Main
+todas las clases de librerías
+
+3) En Maven / Gradle
+Estos build tools generan el classpath automáticamente:
+mvn test → crea un classpath con dependencias + clases de test
+mvn package → build + classpath para plugins
+Spring Boot crea un fat JAR con su propio classpath interno
+
+
+
+🎯 Errores típicos relacionados con el classpath
+
+❌ ClassNotFoundException
+Java no encontró una clase.
+Ejemplo:
+Exception in thread "main" java.lang.ClassNotFoundException: org.slf4j.Logger
+
+Causa → esa librería no está en el classpath.
+
+❌ NoClassDefFoundError
+Java encontró la clase durante la compilación, pero no durante la ejecución.
+Esto casi siempre significa:
+compilaste con una dependencia
+pero no la pusiste en el classpath al ejecutar
+
+
+❌ Could not find or load main class
+No pusiste el directorio de Main.class en el classpath.
+Ejemplo:
+java Main
+pero tu clase está en:
+target/classes/com/example/Main.class
+
+
+🔥 Resumen ultra rápido
+Concepto	Explicación
+Classpath	Lista de rutas donde Java busca clases y librerías
+Para qué sirve	Para encontrar .class, .jar y recursos
+Si falla	Errores “ClassNotFound” o “NoClassDefFoundError”
+Quién lo genera	Tú manualmente o herramientas como Maven/Gradle
