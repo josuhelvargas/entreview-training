@@ -1,0 +1,110 @@
+JUnit 5: Internals, Componentes y Plan de Estudio
+
+1. Arquitectura de JUnit 5
+A diferencia de JUnit 4, que era un solo jar monolítico, JUnit 5 está compuesto por tres sub-proyectos principales. Esta arquitectura modular permite una mayor flexibilidad y extensibilidad.
+
+Los 3 Pilares
+
+JUnit Platform:
+Es la base sobre la que se lanzan los frameworks de pruebas en la JVM.
+Define la API TestEngine para desarrollar frameworks de pruebas que se ejecuten en la plataforma.
+Provee un Console Launcher para lanzar la plataforma desde la línea de comandos y un JUnit Platform Suite Engine para ejecutar suites de pruebas personalizadas.
+Es lo que permite que IDEs (IntelliJ, Eclipse) y herramientas de construcción (Maven, Gradle) se integren fácilmente.
+
+JUnit Jupiter:
+Es la combinación del nuevo modelo de programación (anotaciones como @Test, @BeforeEach) y el modelo de extensión para escribir pruebas y extensiones en JUnit 5.
+Provee un TestEngine propio para ejecutar pruebas basadas en Jupiter en la plataforma.
+
+JUnit Vintage:
+Provee un TestEngine para ejecutar pruebas basadas en JUnit 3 y JUnit 4 en la plataforma.
+Esencial para la compatibilidad hacia atrás y migraciones graduales.
+
+
+2. Internals y Componentes Clave
+El Ciclo de Vida de Ejecución
+Cuando ejecutas un test, sucede lo siguiente a nivel interno:
+Discovery: El Launcher usa un TestEngine para descubrir los tests disponibles (basado en selectores como paquetes, clases o métodos).
+Execution: El Launcher ejecuta los tests descubiertos.
+Componentes Importantes
+Extension Model (El corazón de Jupiter):
+
+En JUnit 4 existían Runner, TestRule y MethodRule, lo cual era confuso y limitante.
+JUnit 5 unifica todo esto en una sola API: Extension.
+Puntos de extensión clave:
+ExecutionCondition: Decide si un test debe ejecutarse (ej. @EnabledOnOs).
+TestInstancePostProcessor: Inyecta dependencias en la instancia del test.
+ParameterResolver: Resuelve parámetros para constructores y métodos de test (ej. inyección de TestInfo o Mocks).
+Callbacks de ciclo de vida: BeforeAllCallback, BeforeEachCallback, etc.
+Test Context:
+Mantiene el estado y contexto de la ejecución actual, permitiendo a las extensiones almacenar y recuperar datos de manera segura (Store).
+
+
+3. Plan de Estudio: De Novato a Experto
+Este plan está diseñado para construir una base sólida y avanzar progresivamente.
+
+
+
+
+
+----------------------------------------
+Fase 1: Fundamentos Sólidos (Semana 1)
+Objetivo: Entender la sintaxis básica y el ciclo de vida estándar.
+
+ Anotaciones Básicas:
+@Test, @DisplayName
+Ciclo de vida: @BeforeAll, @AfterAll, @BeforeEach, @AfterEach (Entender la diferencia entre métodos estáticos y de instancia).
+ Aserciones (Assertions):
+Clase org.junit.jupiter.api.Assertions.
+assertEquals, assertTrue, assertThrows (Crucial para probar excepciones).
+assertAll (Grouped Assertions - para no fallar en el primer error).
+ Asunciones (Assumptions):
+assumeTrue (Abortar test si no se cumple condición, no es fallo).
+
+
+
+
+Fase 2: Estructura y Datos (Semana 2)
+Objetivo: Escribir tests más limpios, organizados y flexibles.
+
+Tests Parametrizados (@ParameterizedTest):
+Evita duplicar código para probar la misma lógica con diferentes datos.
+Fuentes: @ValueSource, @EnumSource, @CsvSource, @MethodSource.
+Organización:
+@Nested: Crear jerarquías de tests para agrupar casos relacionados (BDD style).
+@Tag: Filtrar tests (ej. "fast", "integration", "slow").
+Nombres de Tests:
+Generadores de nombres personalizados en tests parametrizados.
+
+
+
+----------------------------------------
+Fase 3: El Poder de JUnit 5 (Semana 3)
+Objetivo: Dominar las características avanzadas y el modelo de extensiones.
+
+ Modelo de Extensiones:
+Entender ExtendWith.
+Escribir una extensión simple (ej. medir tiempo de ejecución).
+ Tests Dinámicos (@TestFactory):
+Generar tests en tiempo de ejecución (útil para escenarios complejos no cubiertos por tests parametrizados).
+ Ejecución Paralela:
+Configuración en junit-platform.properties.
+Sincronización de recursos compartidos (@ResourceLock).
+ Timeouts:
+assertTimeout vs assertTimeoutPreemptively.
+
+----------------------------------------
+Fase 4: Integración y Ecosistema (Semana 4)
+Objetivo: Aplicar JUnit en el mundo real.
+
+ Mockito con JUnit 5:
+Uso de MockitoExtension.
+@Mock, @InjectMocks.
+ Spring Boot Test (si aplica):
+@SpringBootTest, @WebMvcTest.
+Entender cómo Spring se integra mediante el modelo de extensiones de JUnit 5.
+ Arquitectura de Tests:
+Patrón "Test Data Builder".
+AssertJ (Librería de aserciones fluida, muy recomendada sobre las nativas de JUnit).
+Recursos Recomendados
+Documentación Oficial: La User Guide de JUnit 5 es excelente.
+Repositorio de Ejemplos: junit-team/junit5-samples en GitHub.
