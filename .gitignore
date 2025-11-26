@@ -1,0 +1,248 @@
+############################################################
+# UNIVERSAL GITIGNORE FOR MULTI-LANGUAGE MONOREPO
+# Java, .NET, Angular, React, Node, Python, PHP,
+# Salesforce (Apex, LWC, Aura), Objective-C/iOS
+############################################################
+
+###############
+# GLOBAL TEMP #
+###############
+*.tmp
+*.temp
+*.log
+*.lock
+*.DS_Store
+*.swp
+*.swo
+Thumbs.db
+
+###################
+# OS ARTIFACTS    #
+###################
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+###################
+# ==================
+#    JAVA
+# ==================
+###################
+
+# Maven
+target/
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+release.properties
+
+# Gradle
+.gradle/
+build/
+!gradle/wrapper/gradle-wrapper.jar
+*.class
+*.jar
+*.war
+*.ear
+
+# IntelliJ / Eclipse
+*.iml
+.idea/
+*.ipr
+*.iws
+*.classpath
+*.project
+.settings/
+
+###################
+# ==================
+#    .NET / C#
+# ==================
+###################
+
+# Build
+bin/
+obj/
+[Bb]uild/
+[Ll]og/
+
+# NuGet
+*.nupkg
+*.snupkg
+*.nuspec
+packages/
+project.lock.json
+project.assets.json
+Artifacts/
+
+# Rider / Visual Studio
+*.user
+*.suo
+*.cache
+*.vscode/
+*.vs/
+*.snk
+
+###################
+# ==================
+#    ANGULAR
+# ==================
+###################
+
+# Angular CLI
+dist/
+out-tsc/
+coverage/
+*.ngsummary.json
+.angular/
+.angular-cache/
+
+###################
+# ==================
+#    REACT / NODE
+# ==================
+###################
+
+# Node
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-store/
+.pnp/
+.pnp.js
+
+# Build
+dist/
+build/
+
+# Environment files
+.env
+.env.*.local
+
+###################
+# ==================
+#    PYTHON
+# ==================
+###################
+
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.pdb
+*.egg
+*.egg-info/
+dist/
+build/
+pip-log.txt
+pip-delete-this-directory.txt
+venv/
+.env/
+
+###################
+# ==================
+#    PHP
+# ==================
+###################
+
+vendor/
+composer.lock
+composer.phar
+*.cache
+*.log
+
+###################
+# ==================
+#    SALESFORCE
+# ==================
+###################
+
+# SFDX
+.sfdx/
+sf/
+.localdevserver/
+coverage/
+
+# Apex
+*.cls-meta.xml
+*.trigger-meta.xml
+
+# Lightning Components
+**/lwc/**/__tests__/
+**/lwc/**/coverage/
+**/aura/**/*.png
+**/aura/**/*.svg
+
+# Deploy/Package artifacts
+deploy/
+*.xml
+
+###################
+# ==================
+#    OBJECTIVE-C / SWIFT / iOS
+# ==================
+###################
+
+# Xcode
+build/
+DerivedData/
+*.pbxuser
+!default.pbxuser
+*.mode1v3
+*.mode2v3
+*.perspectivev3
+*.xccheckout
+*.moved-aside
+*.xcuserstate
+*.xcscmblueprint
+*.xcworkspace/
+
+# CocoaPods
+Pods/
+Podfile.lock
+
+# Carthage
+Carthage/
+
+# Swift PM
+.swiftpm/
+.build/
+
+# Archives
+*.ipa
+*.dSYM.zip
+*.dSYM
+
+###################
+# ==================
+#    PACKAGING / ARTIFACTS
+# ==================
+###################
+*.zip
+*.tar.gz
+*.7z
+*.rar
+*.gz
+*.bak
+
+###################
+# ==================
+#    ENV VARIABLES
+# ==================
+###################
+# .env
+# .env.local
+# .env.*
+
+
+############################################################
+# END OF UNIVERSAL GITIGNORE
+############################################################

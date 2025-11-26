@@ -33,9 +33,16 @@ sdk use java 25-tem
 **Objetivo:** Centralizar versiones via BOM.
 
 ## 4) Plugins y fases
-1. Cambia `maven-compiler-plugin` para compilar con otra `release` (por ejemplo 17) y observa el fallo si tu JDK no coincide.
+1. Cambia `maven-compiler-plugin` para compilar con otra `release` (por ejemplo 17) y observa el fallo si tu JDK no coincide. 
+//cambiar la version de java en el properties ( misma variable utilizada en el plugin de compiler)
 2. Añade ejecución de `maven-jar-plugin` en `package` con un `Classifier` distinto.
 3. Ejecuta `mvn help:describe -Dplugin=<pluginId>` para inspeccionar documentación.
+
+👉 “con un classifier distinto”
+El classifier es como un “apellido” del JAR.
+Formato del nombre:
+<artifactId>-<version>-<classifier>.jar
+
 
 **Objetivo:** Comprender configuración y ejecución de plugins por fase.
 

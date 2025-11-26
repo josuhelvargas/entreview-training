@@ -95,7 +95,30 @@
             </manifest>
           </archive>
         </configuration>
-      </plugin>
+      <!--Se agrega classifier para crear un jar con un nombre distinto-->
+      <executions>
+            <!-- Ejecución “normal” (opcional, muchas veces Maven la da por default) -->
+        <execution>
+          <id>default-jar</id> <!-- app-sample-1.0.0.jar → JAR “principal” -->
+          <phase>package</phase>
+          <goals>
+            <goal>jar</goal>
+          </goals>
+
+        </execution>
+          <!-- ⭐ Ejecución extra con classifier -->
+        <execution>
+          <id>plain-jar</id> 
+          <phase>package</phase>
+          <goals>
+            <goal>jar</goal> 
+          </goals>
+          <configuration>
+            <classifier>plain</classifier><!-- app-sample-1.0.0-plain.jar → JAR “secundario -->
+          </configuration>
+        </execution>
+      </executions>
+    </plugin>
 
       <!-- Filtrado de resources -->
       <plugin>
