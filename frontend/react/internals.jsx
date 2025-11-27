@@ -9,7 +9,7 @@
 
 
 
-            //0.Como fuinciona Babel?
+            //0.Como funciona Babel?
                 //Babel es un compilador de JavaScript.
                 // Su trabajo principal es convertir código moderno (ES6+, ES2020+, etc.) a código JavaScript más antiguo para que los navegadores que no soportan nuevas características puedan ejecutarlo.
 

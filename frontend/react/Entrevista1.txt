@@ -1,0 +1,577 @@
+Sección 1 – Conceptos fundamentales (corto–respuesta)
+
+Explica la diferencia entre:
+
+JSX
+JSX is syntax sugar that looks like HTML but is not HTML.
+It gets compiled by Babel/TypeScript into React.createElement(...) calls, producing React Elements.
+JSX is just a declarative way to describe the UI tree.
+
+
+React Element
+It is the “blueprint” for a Fiber.
+
+
+what is a Fiber
+Fiber is a mutable node in React’s internal tree.
+It stores:
+component type
+pendingProps & memoizedProps
+memoizedState (hook state)
+updateQueue
+child, sibling, return pointers
+effect flags
+alternate (previous version for diffing)
+Fiber is the engine that enables React to pause, resume, prioritize, reuse, and efficiently update UI.
+
+DOM real
+It's the real dom that is updated by react during the commit phase.(browser dom)
+
+¿Qué hace exactamente Babel/TypeScript con este JSX?
+It transforms the JSX into pure javascript calls using the react api  (react.Creacteelement()).
+
+<Button onClick={onBuy}>Comprar</Button>
+
+
+¿Qué propiedades mínimas tiene un React Element?
+React.CreateElement('button', {onClick: onBuy}, 'Comprar');
+1.type,
+2.props,
+3.key 
+
+¿Por qué decimos que es inmutable?
+It doesnt change after creation.
+If something needs to update, React creates a new element object, triggering reconciliation.
+
+
+
+¿Qué problema venía a resolver el Fiber architecture comparado con la implementación antigua de React (stack reconciler)?
+The old reconciler was synchronous and uninterruptible.
+Once React started rendering, it could block the UI for hundreds of milliseconds.
+Fiber introduced:
+incremental work (split work into small units)
+interruptible rendering
+priorities (user input > background updates)
+pausing/resuming work
+time slicing
+Result: React apps stay smooth and responsive even under heavy rendering.
+
+
+
+¿Qué es el Virtual DOM en React y en qué se diferencia del Fiber Tree?
+
+Virtual DOM
+The React Elements tree — immutable descriptions of what the UI should look like.
+Fiber Tree
+The internal structure where React keeps:
+component state
+queues
+effects
+alternate pointers
+mutations to apply
+VDOM = description
+Fiber Tree = execution engine + work scheduler
+
+
+Define en una frase clara:
+
+Define Render Phase
+A pure, interruptible phase where React:
+executes components
+creates/updates the work-in-progress Fiber Tree
+calculates what needs to change (flags)
+No DOM mutations happen here.
+
+Define Commit Phase
+A fast, non-interruptible phase where React applies mutations to the real DOM:
+insert/update/remove DOM nodes
+run useLayoutEffect
+browser paints
+run useEffect
+
+
+
+¿En qué fase se ejecutan useEffect y useLayoutEffect?
+in commit phase.
+
+| Hook                | Runs in                     | Description                                                        |
+| ------------------- | --------------------------- | ------------------------------------------------------------------ |
+| **useLayoutEffect** | Commit Phase (before paint) | Sync. Blocks UI. Use for layout measurements.                      |
+| **useEffect**       | After paint                 | Async. Non-blocking. Use for data fetching, subscriptions, timers. |
+
+
+
+
+¿Cuál es la diferencia práctica entre ellos?
+useEffect is async and useLayoutEffect is sync.
+also useEffect is used for side effects and useLayoutEffect is used for dom measurements.
+by example useEffect is used for fetching data and useLayoutEffect is used for dom measurements like scroll position and size and it blocks the ui.
+
+¿Qué es el scheduler en React 18 y por qué es importante para la fluidez de la UI?
+
+scheduler is the algorithm that react uses to schedule the work in chunks and schedule them in the next frame.
+This means in practice that when react is updating the real dom it will do it in chunks and schedule them in the next frame.
+
+¿Qué son los planes (prioridades) y qué tipo de actualizaciones suelen tener prioridad más alta?
+
+Plans are the priority that react uses to schedule the work in chunks and schedule them in the next frame.
+the priority in react is this way: 
+
+
+Explica la diferencia entre render, re-render y reconciliation.
+
+Render
+
+React calls your component function to produce React Elements.
+Happens on first mount.
+
+Re-render
+
+React calls the component function again because:
+
+props changed
+
+state changed
+
+context changed
+
+parent re-rendered
+
+A re-render does not guarantee DOM changes.
+
+Reconciliation
+
+The algorithm where React compares:
+
+previous React Element tree vs. new one
+
+previous Fiber tree vs. new one
+
+React decides:
+
+what DOM nodes to keep
+
+what to update
+
+what to remove
+
+what to insert
+
+Reconciliation → prepares changes
+Commit → applies changes
+
+
+
+
+
+| Hook              | Fase   | Cuándo corre exactamente                                                     |
+| ----------------- | ------ | ---------------------------------------------------------------------------- |
+| `useLayoutEffect` | Commit | Justo después de aplicar cambios al DOM, **antes** de que el navegador pinte |
+| `useEffect`       | Commit | Después del **pintado**, en “segundo plano”                                  |
+
+
+useLayoutEffect bloquea el paint si es pesado → úsalo poco y solo para cosas visuales críticas.
+Obtener offsetHeight, scrollTop, posiciones, etc.
+Sincronizar scroll.
+Ajustar estilos que dependen del layout.
+
+
+
+
+useEffect no bloquea la UI → úsalo para lógica de negocio, fetches, logs, etc.
+
+
+
+
+
+Como opera el hook tras bambalinas con ejemplos de una funcioanlidad concreta? : 
+
+Paso a paso “tras bambalinas”
+
+1) Usuario hace clic en “Buscar”
+
+El navegador dispara un evento nativo click.
+
+React tiene su sistema de Synthetic Events, centralizado en el root.
+
+React llama al onClick={handleSearch} de tu botón.
+
+2) Dentro del handler
+
+Llamas setLoading(true):
+
+React no cambia el estado “al instante”; encola una update en la cola de updates del Fiber de este componente.
+
+Haces fetch(...), que corre en el navegador (no dentro de React).
+
+Cuando se resuelve:
+
+Llamas setUsers(data).
+
+Llamas setLoading(false).
+
+Cada setX añade una actualización a la cola. React hace batching (las agrupa si ocurren en el mismo tick de evento).
+
+3) Scheduler y Render Phase
+
+El scheduler de React ve: “hay trabajo pendiente” en el Fiber de SearchUsers.
+
+Asigna una prioridad alta (es interacción de usuario).
+
+Inicia la render phase:
+
+Ejecuta la función SearchUsers() de nuevo.
+
+Dentro, ahora loading será true o false, users tendrá datos.
+
+Devuelves nuevo JSX:
+
+Puede aparecer <p>Cargando...</p> o la lista <ul> con más <li>.
+
+Durante esta fase:
+
+Se construyen nuevos React Elements (virtual DOM descriptivo).
+
+Esos elements se usan para actualizar el árbol work-in-progress de Fibers.
+
+Se marcan flags (insertar, actualizar, borrar nodos DOM).
+
+4) Commit Phase
+
+React toma los flags y aplica cambios mínimos al DOM real:
+
+Añade/quita la etiqueta <p>Cargando...>.
+
+Agrega/elimina <li> según el diff de la lista.
+
+Luego:
+
+Ejecuta useLayoutEffect (si hubiera).
+
+El navegador pinta el frame.
+
+Ejecuta useEffect.
+
+Resultado: la UI se actualiza, pero React nunca “mutó el DOM entero”, solo tocó lo necesario siguiendo el diff.
+
+3.2. Historia 2: llenar un formulario
+
+Caso simple con estado local (sin RHF aún):
+
+function SignupForm() {
+  const [form, setForm] = useState({ name: '', email: '' });
+
+  const handleChange =
+    (field: 'name' | 'email') =>
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      setForm((prev) => ({ ...prev, [field]: e.target.value }));
+    };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    console.log('Enviar datos:', form);
+    // aquí podrías hacer un fetch POST
+  };
+
+  return (
+    <form onSubmit={handleSubmit}>
+      <input
+        value={form.name}
+        onChange={handleChange('name')}
+        placeholder="Nombre"
+      />
+      <input
+        value={form.email}
+        onChange={handleChange('email')}
+        placeholder="Email"
+      />
+      <button type="submit">Enviar</button>
+    </form>
+  );
+}
+
+¿Qué pasa en cada tecla?
+
+Usuario escribe una letra en Nombre.
+
+El input nativo del browser cambia su value.
+
+React captura el evento onChange (synthetic event).
+
+Llamas setForm(...):
+
+React crea un nuevo objeto { ...prev, name: 'nuevo valor' }.
+
+Encola la actualización en el Fiber de SignupForm.
+
+Scheduler dispara render phase para este componente:
+
+React ejecuta SignupForm() otra vez.
+
+form.name ahora es el nuevo valor.
+
+React genera nuevos React Elements; el <input value="..."> tiene la nueva prop value.
+
+Commit phase:
+
+React hace input.value = 'nuevo valor' en el DOM real.
+
+El cursor se mantiene, el usuario casi no nota la re-renderización.
+
+Clave: cada cambio en el formulario es:
+
+Evento → setState → nueva versión inmutable del objeto → nuevo render → diff → commit → DOM actualizado.
+
+En RHF (React Hook Form), el patrón interno es similar, pero:
+
+Usa refs y proxies para no re-renderizar todo el formulario en cada tecla.
+
+Solo dispara re-renders cuando realmente necesitas actualizar la UI.
+
+3.3. Click + form + fetch juntos (caso típico real)
+
+Imagina un formulario de búsqueda:
+
+Usuario llena campos.
+
+Clic en “Buscar”.
+
+Envías esos filtros al backend.
+
+Renderizas lista de resultados (users).
+
+Flujo completo:
+
+Teclas en el formulario
+→ múltiples re-renders ligeros solo para los inputs (estado local inmutable).
+
+Click en “Buscar”
+→ handleSearch usa el estado actual del formulario, llama a fetch, dispara setLoading(true).
+
+Respuesta del fetch
+→ setResults(data) + setLoading(false) encolan updates.
+
+Scheduler + Render Phase
+→ React vuelve a ejecutar el componente con:
+
+filtros iguales,
+
+loading=false,
+
+results con datos.
+
+Commit Phase
+→ actualiza DOM (quita spinner, añade lista <ul>), luego corre efectos.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Sección 2 – Hooks (cuándo usarlos y cómo funcionan por dentro)
+
+¿Por qué las “reglas de los hooks” prohíben llamarlos dentro de if, loops o funciones internas? Relaciónalo con la lista enlazada de hooks en el Fiber.
+
+Internamente, ¿qué guarda React para un useState en el Fiber?
+Menciona al menos dos campos relevantes.
+
+¿Cuál es la diferencia entre estas dos llamadas y cuándo es más segura cada una?
+
+setCount(count + 1);
+setCount((c) => c + 1);
+
+
+¿Qué tipo de información guarda useRef y por qué no dispara un re-render cuando cambia current?
+
+Explica un caso concreto de UI donde usarías useRef en lugar de useState y qué problema evitarías.
+
+¿Cómo decide React si debe volver a ejecutar un useEffect?
+Explica el papel del array de dependencias.
+
+¿Qué diferencia hay entre optimizar con React.memo vs useMemo vs useCallback?
+
+¿En qué situaciones useMemo o useCallback pueden perjudicar el rendimiento en lugar de ayudar?
+
+¿Qué hace internamente React con la lista de efectos (useEffect) durante la Commit Phase?
+
+Explica brevemente el tipo de información que cada hook guarda en el Fiber (según esta tabla):
+
+Hook	Se procesa en	Ejemplo de dato guardado
+useState	Render Phase	state, queue
+useEffect	Commit Phase	effectFn, deps, cleanupFn
+useRef	Render Phase	current
+useMemo	Render Phase	valor memoizado + deps
+useCallback	Render Phase	función memoizada + deps
+Sección 3 – Estado, props y flujo de datos
+
+Define con tus palabras la diferencia entre props y state.
+
+Da un ejemplo donde un dato debería ser prop y otro donde debería ser state dentro del mismo componente.
+
+¿Por qué mutar un array/objeto del state directamente (state.items.push(x)) es peligroso en React? Relaciónalo con la detección de cambios por referencia.
+
+Explica cómo funciona la cola de updates de un useState cuando se llaman varios setState en el mismo evento de click.
+
+¿Qué es el batching de actualizaciones y cómo cambió su comportamiento a partir de React 18?
+
+Sección 4 – Reconciliación, diff y Fiber
+
+Explica el algoritmo de diff de React a grandes rasgos:
+¿qué compara primero para decidir si recicla un nodo?
+
+¿Qué ocurre cuando React detecta que el tipo del elemento cambió, por ejemplo de <PriceCard /> a <SummaryCard /> en el mismo lugar del árbol?
+
+¿Por qué las key son cruciales en listas?
+Da un ejemplo de bug que puede aparecer al usar el índice del array como key.
+
+¿Qué es el campo alternate en un Fiber y cómo habilita el “double buffering”?
+
+Menciona al menos 4 campos importantes dentro de un Fiber y explica para qué sirven:
+
+tag
+
+type
+
+stateNode
+
+child / sibling / return
+
+pendingProps / memoizedProps
+
+flags
+
+¿Qué es un “bailout” durante la reconciliación y en qué condiciones ocurre?
+
+Explica paso a paso qué sucede internamente cuando el usuario hace clic en un botón que llama setState.
+
+Sección 5 – Hooks en escenarios reales
+
+Paginador que debe:
+
+recordar página actual,
+
+disparar un fetch al cambiar de página.
+¿Qué hooks usarías y cómo se reparten responsabilidades?
+
+Formulario complejo con varios campos, validación y manejo de errores.
+¿En qué situaciones usarías solo React (useState/useReducer) y en cuáles preferirías una librería como React Hook Form?
+
+En un buscador con autocompletado (input + lista filtrada):
+
+¿Qué pondrías en useState?
+
+¿Dónde usarías useMemo?
+
+¿Cómo podrías usar useTransition para evitar UI congelada?
+
+Necesitas guardar un ID de interval para limpiarlo después.
+¿Qué hook usarías para almacenar ese ID y por qué?
+
+Para integrar un mapa (Google Maps) que expone una API imperativa sobre un <div>:
+
+¿Qué hook usarías para guardar la referencia al nodo DOM?
+
+¿Qué hook usarías para inicializar el mapa después de que el DOM exista?
+
+¿Qué patrón seguirías para sincronizar el título de la página (document.title) con el estado de tu componente?
+
+Sección 6 – React DOM, eventos y renderers
+
+Explica el rol de react-dom como renderer.
+¿Qué tipo de operaciones realiza durante la Commit Phase?
+
+¿Qué son los “synthetic events” en React y qué beneficios aportan?
+
+A partir de React 17, ¿dónde se registran los event listeners globales y qué cambia respecto a versiones anteriores?
+
+¿Por qué decimos que React no pinta directamente la UI, sino que delega en renderers como react-dom, react-native, react-three-fiber, etc.?
+
+Sección 7 – Babel, TypeScript y JSX
+
+Muestra (sin usar herramientas) cómo se transformaría aproximadamente este código:
+
+<PriceCard
+  key={product.id}
+  price={product.price}
+  onBuy={() => handleBuy(product.id)}
+>
+  Comprar
+</PriceCard>
+
+
+a llamadas React.createElement.
+
+¿Por qué es correcto decir que los tipos de TypeScript desaparecen en runtime?
+¿Qué implica eso para la validación en tiempo de ejecución?
+
+¿Qué ventajas tiene usar TypeScript en un proyecto React grande, más allá de “tener autocompletado”?
+
+¿Qué tipo de problemas puede introducir una configuración incorrecta de Babel/TS en un proyecto React (piensa en JSX runtime, @babel/preset-react, etc.)?
+
+Sección 8 – React Hook Form (RHF) y formularios
+
+¿Cómo logra React Hook Form minimizar los re-renders en formularios grandes?
+Explica el uso de refs y proxies a alto nivel.
+
+¿Cuál es la diferencia entre un input controlado y uno no controlado en React?
+¿Cómo se posiciona RHF respecto a estos dos enfoques?
+
+Explica el flujo interno cuando haces submit con RHF + Zod:
+
+usuario pulsa submit,
+
+validación,
+
+resultado disponible para el componente.
+
+En un formulario con 50 campos, ¿qué ventajas ofrece RHF frente a manejar todo el estado con useState y onChange en cada input?
+
+Sección 9 – Rendimiento y patrones “senior”
+
+Enumera al menos 5 cosas que revisaría un senior React cuando detecta que una pantalla está lenta al interactuar.
+
+Explica un caso concreto donde useMemo y useCallback pueden empeorar el rendimiento de la aplicación.
+
+¿Cómo usarías React.memo junto con useCallback para optimizar una lista de 500 ítems que tienen un botón “Seleccionar”?
+
+¿Qué problema resuelve startTransition?
+Da un ejemplo de interacción donde su uso tiene sentido.
+
+¿Cómo ayuda la virtualización de listas (ej. @tanstack/react-virtual) en conjunto con el modelo de render de React?
+
+¿Qué harías si ves que un componente vuelve a renderizarse muchas veces sin necesidad?
+Describe pasos de diagnóstico (sin entrar en código específico).
+
+Sección 10 – Preguntas de diseño y debugging
+
+Diseña cómo estructurarías los componentes y hooks personalizados para un flujo de registro con extras:
+
+selección de upsells (como el iTab),
+
+un kickstart donation,
+
+validación con Zod,
+
+navegación por pasos.
+Menciona al menos 3 hooks personalizados que crearías.
+
+Estás depurando un bug donde un useEffect se ejecuta en bucle infinito.
+¿Qué pasos sigues para identificar la causa y corregirlo?
+
+Tienes un componente que depende de un valor caro de calcular (por ejemplo, una agregación sobre una lista grande) y notas lag.
+¿Qué combinaciones de hooks usarías para optimizarlo y por qué?
+
+Explica cómo te asegurarías de que tu código React es:
+
+fácil de probar,
+
+fácil de refactorizar,
