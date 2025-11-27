@@ -6,7 +6,7 @@
 
 ivy
 Compialdor que paso a ser oficial desde la v9 
-Compialdor con trueshaking 
+Compialdor con treeshaking 
 bundle 35-40% menores
 menores intrucciones y a bajo nivel  eetext eeproperty 
  La letra `ɵ` la usa el equipo de Angular para indicar que un método es privado del framework y no debe ser llamado directamente por el usuario, ya que no se garantiza la estabilidad de la API de estos métodos entre versiones de Angular (de hecho, diría que es casi seguro que se romperá)
