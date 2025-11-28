@@ -1,0 +1,263 @@
+1. ¿Qué ventaja tiene usar una versión SNAPSHOT?
+
+Cuando pones en tu pom.xml algo como:
+
+<version>1.0-SNAPSHOT</version>
+
+
+estás diciendo: “esta versión es inestable / en desarrollo”.
+
+Ventajas principales
+
+Compartir builds de desarrollo entre equipos
+Si subes tu artefacto SNAPSHOT a Nexus/Artifactory:
+
+Otro proyecto puede depender de 1.0-SNAPSHOT.
+
+Cuando tú vuelves a hacer mvn deploy, se sube una nueva build con el mismo número de versión, pero con un timestamp diferente.
+
+Al hacer mvn clean install -U, los demás bajan la última versión del SNAPSHOT.
+
+Iterar rápido sin cambiar la versión todo el tiempo
+En lugar de:
+
+1.0.1, 1.0.2, 1.0.3 por cada cambio
+usas 1.0-SNAPSHOT mientras estás desarrollando y solo cuando se “congela” para producción la cambias a 1.0.0 (release estable).
+
+Separar claro “en desarrollo” vs “liberado”
+
+1.0-SNAPSHOT → CI, QA, integración, rama develop.
+
+1.0.0 → release estable, reproducible, etiquetada.
+
+Regla sana: SNAPSHOT para cosas que aún pueden cambiar sin garantía de estabilidad. Release (sin SNAPSHOT) para producción.
+
+
+
+-----------------------------------
+2. ¿En qué momento se usan los JAR de ~/.m2/repository?
+
+¿Se meten al proyecto? ¿Se incluyen en target?
+
+Importante: hay dos cosas distintas
+
+Usar las dependencias en el classpath (compilar / test / ejecutar).
+
+Empaquetar dependencias dentro de tu artefacto final (JAR, WAR, fat JAR, etc.).
+
+a) ¿Se usan los JAR de ~/.m2/repository?
+
+Sí, SIEMPRE.
+Cuando haces:
+
+mvn compile
+mvn test
+mvn package
+
+
+Maven:
+
+arma un classpath con:
+
+tus clases compiladas (target/classes)
+
+las dependencias que están en ~/.m2/repository
+
+y así el maven-compiler-plugin, maven-surefire-plugin, etc., pueden compilar, ejecutar tests, etc.
+
+Los JAR no se copian al código fuente, pero sí se usan desde ~/.m2/repository para compilar y probar.
+
+b) ¿Qué hay realmente en target/?
+
+En un proyecto Java simple con empaquetado jar y sin Shade ni Spring Boot, al hacer:
+
+mvn clean package
+
+
+tendrás algo como:
+
+target/
+  classes/              # tus .class
+  test-classes/         # clases de test
+  app-sample-1.0.0.jar  # tu JAR principal (solo TU código + recursos)
+
+
+Ese app-sample-1.0.0.jar normalmente NO incluye las dependencias externas.
+Incluye:
+
+tus .class
+
+tus resources (.properties, etc.)
+
+META-INF/MANIFEST.MF
+
+Pero las dependencias se siguen leyendo desde:
+
+el classpath, apuntando a ~/.m2/repository o a libs externas.
+
+c) ¿Cuándo SÍ se incluyen dependencias en el JAR?
+
+Cuando usas plugins como:
+
+maven-shade-plugin → crea fat JAR (todas las dependencias dentro del JAR).
+
+spring-boot-maven-plugin → crea app-sample-1.0.0.jar con un layout especial de Boot que contiene todas las deps.
+
+Ahí sí, el JAR incluye:
+
+tu código
+
+todas las dependencias (JARs reempaquetados)
+
+Y lo ejecutas con:
+
+java -jar target/app-sample-1.0.0-prod.jar
+
+
+
+--------------------------------
+3. Comandos para una “reinstalación limpia” de dependencias
+
+Depende de qué tan “limpio” quieras dejar todo 😅
+
+✅ Limpiar solo el build (no toca deps)
+mvn clean
+
+
+Esto borra target/, pero no toca ~/.m2/repository.
+
+✅ Forzar actualización de dependencias desde remoto
+mvn clean install -U
+
+
+-U = update snapshots (y puede actualizar también releases).
+Útil cuando cambió algo en el repo remoto y tu repo local tiene una versión cacheada.
+
+✅ Borrar una dependencia específica del repo local
+
+Por ejemplo, quieres que JUnit se vuelva a descargar:
+
+rm -rf ~/.m2/repository/org/junit
+mvn clean test
+
+
+Maven volverá a descargar justo lo que falte.
+
+✅ Purge del repositorio local con Maven
+
+Más “elegante” que rm -rf:
+
+mvn dependency:purge-local-repository
+
+
+Puedes combinarlo con opciones:
+
+mvn dependency:purge-local-repository -DreResolve=false
+
+
+o
+
+mvn dependency:purge-local-repository -DactTransitively=false -DreResolve=false
+
+✅ Borrar TODO el repo local (bruto pero efectivo 😈)
+rm -rf ~/.m2/repository
+
+
+Luego, el siguiente mvn clean install va a descargar todo de cero.
+
+
+-----------------------------------
+4. ¿Cómo se configura un repositorio remoto?
+
+Tienes dos niveles:
+
+En el POM → para decir de dónde bajar dependencias.
+
+En settings.xml → para credenciales, mirrors, etc.
+
+a) Repositorios remotos en el pom.xml
+
+Para decirle a Maven “además de Maven Central, usa este Nexus/Artifactory”:
+
+<repositories>
+  <repository>
+    <id>company-central</id>
+    <url>https://nexus.miempresa.com/repository/maven-public/</url>
+  </repository>
+</repositories>
+
+
+Si tienes plugins en un repo diferente:
+
+<pluginRepositories>
+  <pluginRepository>
+    <id>company-plugins</id>
+    <url>https://nexus.miempresa.com/repository/maven-plugins/</url>
+  </pluginRepository>
+</pluginRepositories>
+
+b) Repositorio para subir artefactos (releases / snapshots)
+
+Esto va en pom.xml → <distributionManagement>:
+
+<distributionManagement>
+  <repository>
+    <id>company-releases</id>
+    <url>https://nexus.miempresa.com/repository/maven-releases/</url>
+  </repository>
+  <snapshotRepository>
+    <id>company-snapshots</id>
+    <url>https://nexus.miempresa.com/repository/maven-snapshots/</url>
+  </snapshotRepository>
+</distributionManagement>
+
+
+Luego haces:
+
+mvn deploy
+
+
+y Maven sube el artefacto al repo correspondiente (releases o snapshots según la versión del proyecto).
+
+c) Credenciales y mirrors en settings.xml
+
+En ~/.m2/settings.xml:
+
+<servers>
+  <server>
+    <id>company-releases</id>
+    <username>tu_usuario</username>
+    <password>tu_password_o_token</password>
+  </server>
+  <server>
+    <id>company-snapshots</id>
+    <username>tu_usuario</username>
+    <password>tu_password_o_token</password>
+  </server>
+</servers>
+
+
+Y un mirror para que TODO lo resuelva via Nexus/Artifactory:
+
+<mirrors>
+  <mirror>
+    <id>company-mirror</id>
+    <name>Company Maven Mirror</name>
+    <url>https://nexus.miempresa.com/repository/maven-public/</url>
+    <mirrorOf>*</mirrorOf>
+  </mirror>
+</mirrors>
+
+
+Con esto:
+
+Aunque tu POM diga “central”,
+
+Maven en realidad usa el mirror de tu empresa.
+
+Si quieres, en el siguiente paso armamos:
+
+un ejemplo real de settings.xml corporativo,
+
+y un POM con distributionManagement + repositories + SNAPSHOT vs release,
+como si fueras a usar tu propio Nexus en la chamba.

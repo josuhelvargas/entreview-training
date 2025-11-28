@@ -1,0 +1,231 @@
+Aquí tienes un temario profesional, estructurado y enfocado en arquitectura y buenas prácticas, que te permite analizar la evolución del lenguaje Java desde la versión 8 → 25, para integrar sus capacidades modernas y optimizar tus proyectos actuales y futuros.
+
+El enfoque es:
+✔️ cambios del lenguaje
+✔️ cambios de APIs
+✔️ cambios de JVM, GC, JIT/AOT
+✔️ cambios de seguridad y performance
+✔️ cambios relevantes para aplicaciones corporativas, microservicios y alta escala
+
+📚 TEMARIO — Evolución del lenguaje Java (del 8 al 25)
+
+Enfocado en analizar qué mejoras adoptar en proyectos profesionales.
+
+🟦 MÓDULO 1 — Java 8 (2014): La base moderna
+🔹 Cambios clave del lenguaje
+
+Lambdas y funciones como ciudadanos de primera clase
+
+Interfaces con métodos default y static
+
+Referencias a métodos
+
+Streams API (programación declarativa)
+
+Optional<T> para evitar NullPointerException
+
+🔹 Cambios de APIs
+
+Nueva Date & Time API (java.time.*)
+
+Mejoras en ConcurrentHashMap
+
+Nuevos Collectors y pipelines funcionales
+
+🔹 Cambios en JVM
+
+Metaspace (reemplaza PermGen)
+
+🔹 ¿Qué adoptar en tu proyecto hoy?
+
+Eliminación de ciclos for manuales si se puede usar Streams
+
+Separar lógica usando funciones (mejora testabilidad)
+
+Reemplazo de fechas antiguas por LocalDate, Instant, ZonedDateTime
+
+🟦 MÓDULO 2 — Java 11 (2018): Modernización del lenguaje
+🔹 Cambios clave del lenguaje
+
+var para inferencia de tipos locales
+
+Strings API mejorada:
+
+lines()
+
+repeat()
+
+strip()
+
+Lambdas con var en parámetros
+
+🔹 Cambios de librerías
+
+Nuevo HttpClient (sin necesidad de OkHttp)
+
+Flight Recorder y Mission Control para perf
+
+🔹 Cambios de JVM
+
+Eliminación completa del sistema modular "experimental"
+
+Comienza la transición hacia ZGC
+
+🔹 ¿Qué adoptar en tu proyecto hoy?
+
+Migrar llamadas HTTP a HttpClient
+
+Reemplazar código boilerplate con var
+
+Migrar a Java 11 como baseline LTS mínimo para microservicios
+
+🟦 MÓDULO 3 — Java 17 (2021) — Nuevo baseline empresarial LTS
+🔹 Cambios clave del lenguaje
+
+Records (POJOs inmutables con menos código)
+
+Sealed classes (control de jerarquías)
+
+Pattern Matching (instanceof)
+
+🔹 Cambios de APIs
+
+Switch expressions:
+
+return switch(value) { case 1 -> "A"; default -> "B"; };
+
+
+Interfaz Stream con toList()
+
+Nueva API para memoria externa (Foreign Memory Access, incubando)
+
+🔹 Cambios de JVM
+
+ZGC estabilizado
+
+Shenandoah introducido
+
+Mejoras masivas en startup, throughput, footprint
+
+🔹 ¿Qué adoptar hoy?
+
+Reemplazar POJOs con Lombok por records cuando aplica
+
+Reemplazo de cadenas if/else por switch expressions
+
+Control exhaustivo de jerarquías de modelos con sealed classes
+
+🟦 MÓDULO 4 — Java 21 (2023) — LTS con capacidades revolucionarias
+🔹 Cambios clave del lenguaje
+
+Pattern matching para switch
+
+Records mejorados
+
+String templates (preview)
+
+Sequenced Collections
+
+Virtual Threads (Project Loom) — GAME CHANGER
+
+millones de threads sin bloquear kernel threads
+
+🔹 Cambios de APIs
+
+Nuevos métodos en List, Map, Set (ordenadas)
+
+🔹 Cambios de JVM
+
+Virtual threads incorporados en la JVM nativa
+
+Optimización del scheduler de la JVM
+
+AOT + GraalVM más integrados
+
+🔹 ¿Qué adoptar hoy?
+
+Reemplazar Executors tradicionales por Virtual Threads
+
+Programación reactiva más simple gracias a Loom
+
+Reemplazar patrones tipo Visitor por pattern matching en switch
+
+🟦 MÓDULO 5 — Java 25 (2025, futuro inmediato)
+
+Basado en roadmap oficial del OpenJDK.
+
+🔹 Cambios clave del lenguaje
+
+Pattern matching completo para jerarquías complejas
+
+Valhalla progress: Value Objects (sin identidad)
+
+Generics con reificación parcial (Q-types)
+
+Record patterns finalizados
+
+Enhanced String Templates
+
+🔹 Cambios de JVM esperados
+
+Value types → permitir estructuras como C++/Rust, pero en Java
+
+Primitivos universales en el heap (sin boxing)
+
+Mejoras profundas en GC para cargas IA/ML
+
+🔹 ¿Qué adoptar pronto?
+
+Diseñar modelos pensando en value types
+
+Menos necesidad de DTOs (records + patterns + sealed + values)
+
+Infraestructura optimizada para microservicios y serverless Java
+
+🔥 MÓDULO 6 — Comparativa Arquitectónica (8 → 25)
+Versión	Visión arquitectónica
+Java 8	Programación funcional básica, Streams, Optional
+Java 11	Modernización, mejoras de productividad
+Java 17	Modelos más robustos (records, sealed), switches expresivos
+Java 21	Concurrencia del futuro → Virtual Threads
+Java 25	Value Types → ultra performance, interoperabilidad con sistemas nativos
+🛠️ MÓDULO 7 — Cómo integrar estas mejoras en tus proyectos
+✔ Modernizar modelos
+
+Reemplazar POJOs mutables → record
+
+Jerarquías seguras → sealed classes
+
+✔ Migrar concurrencia a Virtual Threads
+
+Sustituir:
+
+Executors.newFixedThreadPool
+
+CompletableFuture innecesario
+
+Simplificar llamadas I/O bloqueantes
+
+✔ Reescribir reglas complejas usando Pattern Matching
+
+De if-else a switch(value) con patrones
+
+✔ Reducir boilerplate
+
+Usar var donde mejora legibilidad
+
+Reemplazar Lombok donde sea viable
+
+✔ Mejorar performance y footprint
+
+Adoptar ZGC / Shenandoah
+
+Aplicar GraalVM Native Image cuando necesites startup rápido
+
+✔ Prepararse para Java 25
+
+Diseñar entidades pensando en Value Types
+
+Minimizar la mutabilidad
+
+Evitar boxeo innecesario desde hoy
