@@ -1,0 +1,332 @@
+🟩 MÓDULO 1 – FUNDAMENTOS (BÁSICO)
+
+Objetivo: entender la base del tipado estático, sintaxis esencial y diferencias con JavaScript.
+
+1.1. ¿Qué es TypeScript y por qué usarlo?
+
+Historia y propósito
+
+Ventajas vs JavaScript
+
+Tipado estático vs dinámico
+
+TS como “superset” de JS
+
+1.2. Configuración básica
+
+Instalación (npm i -g typescript)
+
+tsc y compilación a JavaScript
+
+tsconfig.json: opciones más importantes
+
+Target, module, strict mode
+
+1.3. Tipos primitivos
+
+string, number, boolean
+
+undefined, null, void, never
+
+bigint, symbol
+
+1.4. Tipos compuestos
+
+Arreglos: number[], Array<number>
+
+Tuplas: [string, number]
+
+Objetos literales
+
+Alias de tipos (type)
+
+Interfaces (interface)
+
+1.5. Funciones básicas tipadas
+
+Tipos de parámetros
+
+Tipos de retorno
+
+Parámetros opcionales
+
+Parámetros con valor por default
+
+Funciones anónimas y flechas (() => {})
+
+1.6. Union Types y Narrowing básico
+
+string | number
+
+Type narrowing con typeof, in, instanceof
+
+Chequeos condicionales
+
+🟧 MÓDULO 2 – TIPADO INTERMEDIO Y ESTRUCTURAS AVANZADAS
+
+Objetivo: dominar la estructura del lenguaje y escribir código profesional.
+
+2.1. Interfaces vs Types (diferencias reales)
+
+Ampliación (extends)
+
+Unión e intersección
+
+Cuándo usar interface o type
+
+2.2. Tipado de funciones avanzado
+
+Overloads
+
+Formas de declarar funciones
+
+this en funciones
+
+2.3. Enumeraciones
+
+enum numérico
+
+enum string
+
+const enums (optimización)
+
+2.4. Tipos literales
+
+"success" | "error"
+
+Narrowing automático
+
+2.5. Clases y OOP en TypeScript
+
+class, constructor
+
+Propiedades readonly
+
+Accesibilidad: public, private, protected
+
+Métodos estáticos
+
+Herencia y abstracción
+
+2.6. Módulos e importaciones
+
+Import/export
+
+Namespaces (por qué evitarlo)
+
+Resolución de módulos
+
+2.7. Manejo de errores tipado
+
+Error, unknown, never
+
+Cómo tipar un try/catch
+
+🟦 MÓDULO 3 – GENERICS (GENÉRICOS) – NIVEL INTERMEDIO/AVANZADO
+
+Objetivo: entender profundamente una de las herramientas más poderosas de TS.
+
+3.1. Introducción
+
+Por qué existen los genéricos
+
+Funciones genéricas básicas
+
+Inferencia automática
+
+3.2. Restricciones (bounded generics)
+
+extends
+
+Genéricos con condiciones
+
+3.3. Genéricos en interfaces y tipos
+
+interface ApiResponse<T>
+
+type Pair<A, B>
+
+3.4. Genéricos en clases
+
+Repositorios, listas, mappers
+
+3.5. Genéricos avanzados en React
+
+FC<Props>
+
+useState<T>
+
+Componentes genéricos
+
+Formularios fuertemente tipados
+
+🟥 MÓDULO 4 – TIPOS AVANZADOS (DOMINIO PROFESIONAL)
+
+Objetivo: entrar en los “superpoderes” del sistema de tipos.
+
+4.1. Intersection Types
+
+A & B: combinación de tipos
+
+Mezcla de comportamientos
+
+4.2. Tipos condicionales
+
+T extends U ? X : Y
+
+Distribución de tipos
+
+Inferencia con infer
+
+4.3. Mapped Types
+
+Transformaciones de tipos
+
+[K in keyof T]
+
+Ejemplos prácticos (Required, Partial)
+
+4.4. Utility Types (los más usados)
+
+Partial<T>
+
+Required<T>
+
+Readonly<T>
+
+Pick<T>
+
+Omit<T>
+
+Record<K, T>
+
+ReturnType<T>
+
+Parameters<T>
+
+InstanceType<T>
+
+4.5. Template Literal Types
+
+Tipos construidos con strings
+
+Generación de rutas, mensajes, keys
+
+4.6. Key Remapping
+
+Remapeo dinámico de claves
+
+🟪 MÓDULO 5 – TYPESCRIPT EN EL MUNDO REAL (AVANZADO)
+
+Objetivo: aplicar TS profesionalmente en proyectos grandes.
+
+5.1. TypeScript en Node.js
+
+ts-node
+
+nodemon + ts-node
+
+Arquitectura por capas
+
+Tipado de express
+
+Middlewares tipados
+
+5.2. TypeScript en React
+
+Tipado de componentes
+
+Props, children, handlers
+
+Custom Hooks tipados
+
+useReducer con acciones tipadas
+
+Formularios tipados (React Hook Form + zod)
+
+Context API tipado
+
+Patrones por componentes
+
+5.3. Manejo de API y Axios tipado
+
+AxiosResponse<T>
+
+Tipado de errores
+
+Uso con DTOs
+
+5.4. Patrones avanzados de TypeScript
+
+Builder Pattern
+
+Strategy Pattern
+
+Factory Pattern
+
+Observer
+
+Repository Pattern con TS
+
+5.5. Tipado para orquestadores o engines
+
+Discriminated unions
+
+State Machines
+
+Árboles de decisiones tipados
+
+Pipelines
+
+🟫 MÓDULO 6 – TESTING CON TYPESCRIPT
+
+Objetivo: asegurar calidad total en proyectos profesionales.
+
+6.1. Tipado de Jest / Vitest
+6.2. Mocks tipados
+6.3. Tipar factories de test
+6.4. Tipado de pruebas de React
+🟩 MÓDULO 7 – TYPESCRIPT AVANZADO / METAPROGRAMACIÓN
+
+Objetivo: dominar los temas más complejos del sistema de tipos.
+
+7.1. Programación en el sistema de tipos
+
+Algoritmos en tipos
+
+Tipos recursivos
+
+7.2. Inferencia completa en tipos condicionales complejos
+7.3. DeepReadonly, DeepPartial, DeepMerge
+7.4. Tipos para JSON y estructuras dinámicas
+7.5. Brand Types
+7.6. Pattern Matching de tipos
+🟦 MÓDULO 8 – BUENAS PRÁCTICAS Y ESTÁNDARES
+
+Objetivo: escribir código robusto, mantenible y profesional.
+
+8.1. Reglas de estilo de TS recomendadas
+8.2. Strict Mode y por qué SIEMPRE usarlo
+8.3. Anti-patrones comunes
+8.4. Estructura de carpetas
+8.5. Convenciones para DTOs, hooks, entidades
+8.6. Cómo documentar tipos
+🟧 MÓDULO 9 – PROYECTO FINAL (APRENDE DE VERDAD)
+
+Construiremos un proyecto completo:
+
+TypeScript + React + Node + Testing
+
+Tipado de rutas
+
+Validaciones con zod
+
+Hooks genéricos
+
+Context con reducers discriminados
+
+API profesional tipada
+
+Repositorios genéricos
+
+Pruebas completas con Vitest
