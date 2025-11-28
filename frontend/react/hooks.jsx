@@ -21,6 +21,21 @@ function Pager({ total }: { total: number }) {
   );
 }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+///////UseEffect
+
 //B) Con lazy init + función set (evitar trabajo caro en cada render)
 function Chart({ raw }: { raw: number[] }) {
   const [stats, setStats] = useState(() => heavyCompute(raw)); // solo 1er render
@@ -39,8 +54,10 @@ function Chart({ raw }: { raw: number[] }) {
 
 
 // 2) useEffect
+//Si no estás intentando sincronizar con algún sistema externo, probablemente no necesites un efecto.
 // A) Efecto pasivo para petición HTTP (sin lib)
-function Products() {
+// Si tu efecto se genera mediante una interacción (como un clic), React podría ejecutarlo antes de que el navegador pinte la pantalla actualizada . 
+//A que ser efeie al coducmentacion con introducri las dependencias en el segundo aprametro  (array ) y la funcion de limpieza. function Products() {
   const [items, setItems] = useState<string[]>([]);
   useEffect(() => {
     let alive = true;
