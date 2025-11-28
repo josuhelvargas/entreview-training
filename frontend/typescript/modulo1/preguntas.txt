@@ -1,0 +1,198 @@
+Como funciona typescript? Los internals? Como es que es un superset de js?
+
+TypeScript solo existe en tiempo de compilación.
+El navegador no sabe que es 
+
+✔️ Internamente TypeScript hace tres tareas:
+1. Parsing (leer tu código .ts y construir un AST) (arbol sintactico)
+2. Type Checking (comprobar que todo está bien tipado)
+3. Code Generation (generar código .js)
+
+
+➡ Todo JavaScript válido ES válido en TypeScript
+➡ TypeScript agrega una capa extra:
+
+
+-----------
+Por que hay 2 tipos de tipado y no solo uno? Que sucede intermanete que lleva a esta diferencia fucniomal para tener tanto ptipado estatico como tipado dianmico ( un en tiempo de compilacion , y el otro en tiempo de ejecucion respectivamente)
+
+1. Tipado estático (TypeScript)
+Sucede en compilación
+Detecta errores ANTES de ejecutar
+No existe en runtime
+Ayuda al editor y al compilador
+Ejemplo:
+let x: number = 10;
+x = "hola"; // ❌ Error de compilación
+
+
+✔️ 2. Tipado dinámico (JavaScript)
+Sucede durante ejecución
+Los tipos se determinan en runtime
+Puedes reasignar tipos fácilment
+
+
+---------------
+
+Explica los cambios de javascript ( ecmascript de 2015 a 2025) para tener un entendeimiento evolutivo del leguaje pricipalmente para saber las poteincaius de js y como se relaciona con typescript
+
+🟨 4. Evolución de JavaScript (ES2015 → ES2025)
+
+🟦 ES2015 (ES6) → revolucionó JavaScript
+Fue la versión MÁS grande de la historia.
+let, const
+Arrow functions
+Classes
+Template strings
+Modules import / export
+Promises
+Destructuring
+Spread/rest
+Map, Set
+Symbol
+Default parameters
+
+➡ Aquí nació el JS moderno que TypeScript adopta.
+🟧 ES2016–2020
+async/await
+includes()
+Object.entries, Object.values
+Optional catch binding
+BigInt
+Nullish coalescing (??)
+Optional chaining (?.)
+Promise.allSettled
+
+🟩 ES2021–2025
+Logical assignment (&&=, ||=, ??=)
+WeakRefs
+Temporal API (fechas moderna)
+RegExp improvements
+Top-level await
+Decorators (finalized)
+Records & Tuples (in proceso ES2025+)
+➡ Muchas de estas mejoras se reflejan en TS, que se adelanta al estándar.
+
+
+
+
+Explica esta parte del compilador como funciona de manera interna y en detalle explica : 
+"module": "commonjs",        // Sistema de módulos (Node) o "esnext" para esm
+Esto controla cómo TypeScript genera import/export en JavaScript.
+ejemplos: 
+✔️ commonjs (Node clásico)
+
+Genera: 
+const fs = require("fs");
+module.exports = ...
+Usado en Node.js antes de ESModules.
+
+
+✔️ esnext / es2020 / esmodule (import/export moderno)
+Genera:
+import fs from "fs";
+export default ...
+Usado en:
+frontend moderno
+bundlers
+Node 14+ con "type": "module"
+-----------------------
+
+Explica  como funciona undefined y null en typescript 
+Esplcia cuando utilia run o u otro 
+✔️ undefined
+Significa “variable declarada pero sin valor”.
+let x: number | undefined;
+
+✔️ null
+Significa “ausencia intencional de valor”.
+let y: string | null;
+
+❗ En modo strict
+null y undefined no pueden asignarse a otros tipos.
+
+
+
+
+
+
+
+Provee algunos ejemplos del modo strict. 
+
+
+
+no entiendo cual es la ventaja de utilizar never como tipo de retorno en una funcion 
+➡ Es una herramienta brutal para validación exhaustiva en arquitecturas complejas.
+
+
+
+provee ejemplos de cuando utilizar type y cuando utilizar interface y cuando class de maner aqu epermtia codigo esaclable consistenrte y mantenible 
+por que utilizar una tupla como esta en lugar de un objeto : [string, number, boolean] que represente: nombre, edad, estáActivo.
+
+🟦 10. ¿Por qué usar una tupla en lugar de un objeto?
+Tupla:
+const user: [string, number, boolean] = ["Josue", 33, true];
+
+Objeto:
+const user = { name: "Josue", age: 33, isActive: true };
+✔️ Ventajas de tupla
+Tamaño fijo
+Orden fijo
+Más eficiente
+Útil en programación funcional
+Ejemplos comunes:
+[key, value] en Map
+Retornos múltiples:
+const [data, error] = useFetch();
+
+❌ Desventaja
+Menos legible
+No se sabe qué significa cada posición sin contexto
+Por eso en la mayoría de proyectos preferimos objetos, excepto para casos muy específicos.
+
+
+
+
+Cuando utilizar instanceof y cuando utilizar "in" 
+
+
+✔️ Cuando usar instanceof (clases reales)
+Solo funciona con clases reales (constructores).
+if (obj instanceof Person) { ... }
+
+
+✔️ Cuando usar "in" (objetos literales y types)
+
+Funciona con objetos literales y types.
+if ("bark" in animal) { ... } //valida ai existe una funcion en el type o en el objeto. 
+
+Úsalo cuando:
+-Trabajas con unions:
+type Dog = { bark: () => void }
+type Cat = { meow: () => void }
+
+-Trabajas con interfaces
+No tienes clases
+----------
+
+
+Cuando utilizar cada una de las siguientes opciones del compilador: 
+| Método          | Uso recomendado                             |
+| --------------- | ------------------------------------------- |
+| **tsc + node**  | Para proyectos reales, builds serios        |
+| **ts-node**     | Scripts rápidos, práctica, desarrollo local |
+| **npx ts-node** | Para ejecutar TS sin instalaciones          |
+
+
+
+como funciona cada una de estas caracteristicas de ES: 
+Nullish coalescing (??) - validar nulos o undefined
+Optional chaining (?.)
+Promise.allSettled
+Logical assignment (&&=, ||=, ??=)
+WeakRefs
+Temporal API (fechas moderna)
+RegExp improvements
+Top-level await
+Decorators (finalized)
+Records & Tuples (in proceso ES2025+)

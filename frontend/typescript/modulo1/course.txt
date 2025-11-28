@@ -1,0 +1,149 @@
+En un proyecto cualquiera instalacion:
+npm install --save-dev typescript
+
+Y para usar el compilador:
+npx tsc --version
+
+//compilar
+npx tsc index.ts
+
+
+npx tsc --init
+{
+  "compilerOptions": {
+    "target": "ES2020",          // Versión JS de salida
+    "module": "commonjs",        // Sistema de módulos (Node) o "esnext" para esm
+    "strict": true,              // Activa todas las comprobaciones estrictas
+    "rootDir": "src",            // Carpeta donde están tus .ts
+    "outDir": "dist",            // Carpeta de salida .js
+    "esModuleInterop": true      // Facilita imports de librerías comunes
+  }
+}
+
+
+////tipos primitivos 
+
+let name: string = "Josue";
+let age: number = 33;
+let isActive: boolean = true;
+undefined y null
+let something: undefined = undefined;
+let nothing: null = null;
+
+
+// En modo strict, TS es más estricto con asignar null/undefined a otros tipos.
+
+
+//never
+//Significa: esta función nunca termina correctamente (siempre lanza error o entra en bucle infinito):
+
+function crash(message: string): never {
+  throw new Error(message);
+}
+
+function loopForever(): never {
+  while (true) {}
+}
+
+///bigint
+let big: bigint = 9007199254740991n;
+
+//symbol 
+const d1 = Symbol("id");
+
+
+//Arrays
+let numbers: number[] = [1, 2, 3];
+let names: Array<string> = ["Ana", "Luis"];
+
+//tuplas
+let person: [string, number] = ["Ana", 25];
+
+
+//objetos literales
+let person: {
+  name: string;
+  age: number;
+  isAdmin: boolean;
+} = {
+  name: "Josue",
+  age: 33,
+  isAdmin: true,
+};
+
+
+//type da nombre a un tipo 
+type UserId = number;
+type UserRole = "admin" | "user" | "guest";
+
+type User = {
+  id: UserId;
+  name: string;
+  role: UserRole;
+};
+
+//interface se usa principalmente para objetos y se puede extender/mergear.
+
+//type sirve para cualquier cosa: unions, funciones, etc.
+
+//parametros opcionales; 
+
+function greet(name: string, title?: string): string {
+  if (title) {
+    return `Hola ${title} ${name}`;
+  }
+  return `Hola ${name}`;
+}
+
+greet("Josue");          // ok
+greet("Josue", "Sr.");   // ok
+
+
+//Parámetros con valor por defecto
+
+function power(base: number, exponent: number = 2): number {
+  return base ** exponent;
+}
+
+power(3);      // 9
+power(3, 3);   // 27
+
+
+
+//Funciones anónimas y flecha
+const multiply = (a: number, b: number): number => {
+  return a * b;
+};
+
+const log = (message: string): void => {
+  console.log(message);
+};
+
+Con in
+type Dog = { type: "dog"; bark: () => void };
+type Cat = { type: "cat"; meow: () => void };
+
+function makeSound(animal: Dog | Cat) {
+  if ("bark" in animal) {
+    animal.bark();  // animal es Dog aquí
+  } else {
+    animal.meow();  // animal es Cat aquí
+  }
+}
+
+Con instanceof (cuando son clases)
+class Person {
+  constructor(public name: string) {}
+}
+
+class Car {
+  constructor(public model: string) {}
+}
+
+function printInfo(x: Person | Car) {
+  if (x instanceof Person) {
+    console.log("Person:", x.name);
+  } else {
+    console.log("Car:", x.model);
+  }
+}

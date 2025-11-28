@@ -1,0 +1,287 @@
+🟦 1. Nullish Coalescing (??)
+❓ ¿Qué hace?
+
+Devuelve el lado derecho SOLO si el valor del lado izquierdo es:
+
+null
+
+undefined
+
+Es decir:
+Solo coalesce valores "ausentes", no valores falsy.
+
+✔️ Ejemplo
+const x = null ?? "default";  // "default"
+const y = undefined ?? 10;    // 10
+
+const z = 0 ?? 50;            // 0 (NO usa el default)
+const w = "" ?? "hola";       // "" (NO usa el default)
+
+✔️ Caso de uso real
+
+Evitar que valores válidos como 0, "", false sean reemplazados:
+
+const count = userInput ?? 0;
+
+🟩 2. Optional Chaining (?.)
+❓ ¿Qué hace?
+
+Permite acceder a propiedades sin causar error si alguna es null o undefined.
+
+✔️ Ejemplo
+const user = { profile: null };
+
+console.log(user.profile?.name); // undefined (no error)
+
+
+Sin esto, tirarías:
+
+TypeError: Cannot read properties of null
+
+✔️ Cadena completa
+user?.address?.street?.name
+
+✔️ Optional call
+user.getName?.();
+
+🟧 3. Promise.allSettled
+❓ ¿Qué hace?
+
+Ejecuta todas las promesas, aunque alguna falle.
+
+Devuelve:
+
+{status: "fulfilled", value: ...}
+
+{status: "rejected", reason: ...}
+
+✔️ Ejemplo
+const results = await Promise.allSettled([
+  fetch("/ok"),
+  fetch("/missing"),    // falla
+  Promise.resolve(123),
+]);
+
+console.log(results);
+
+
+✔️ En allSettled ninguna promesa detiene el proceso.
+❌ En Promise.all, una falla rompe todo.
+
+🟦 4. Logical Assignment (&&=, ||=, ??=)
+
+Estas combinan operadores lógicos con asignación.
+
+✔️ ||= — Asigna si el valor es falsy:
+let name = "";
+name ||= "Anon";  
+console.log(name); // "Anon"
+
+
+Similar a: name = name || "Anon"
+
+✔️ &&= — Asigna si el valor es truthy:
+let a = 5;
+a &&= 10; // 10
+
+let b = 0;
+b &&= 10; // 0
+
+✔️ ??= — Asigna si el valor es nullish:
+let age = null;
+age ??= 18;  
+console.log(age); // 18
+
+
+Es la combinación natural de ?? con =.
+
+🟪 5. WeakRefs
+❓ ¿Qué son?
+
+Permiten referenciar objetos sin evitar que el GC (garbage collector) los elimine.
+
+Sirven para:
+
+caches automáticas
+
+estructuras para objetos temporales
+
+listeners débiles
+
+✔️ Ejemplo básico
+let obj = { name: "Josue" };
+
+const ref = new WeakRef(obj);
+
+console.log(ref.deref().name); // "Josue"
+
+obj = null;           // El GC puede eliminarlo
+
+❗Advertencia
+
+Los WeakRefs deben usarse con cuidado.
+No garantizan cuándo se elimina el objeto — es no determinista.
+
+🟫 6. Temporal API (Fechas modernas – ES2025+)
+
+Javascript tenía un problema enorme: Date es inconsistente.
+
+La nueva Temporal API es la solución moderna.
+
+✔️ Objetos clave
+
+Temporal.Now
+
+Temporal.PlainDate
+
+Temporal.PlainDateTime
+
+Temporal.TimeZone
+
+Temporal.Duration
+
+✔️ Ejemplo
+const today = Temporal.Now.plainDateISO();
+console.log(today.toString()); // "2025-03-12"
+
+
+Fechas sin zona horaria:
+
+const date = Temporal.PlainDate.from("2025-10-13");
+console.log(date.add({ days: 5 }).toString()); 
+
+
+Duraciones:
+
+const d = Temporal.Duration.from({ days: 3, hours: 4 });
+
+
+✔️ Mucho más consistente, predecible y seguro que new Date().
+
+🟥 7. RegExp Improvements
+✔️ Nuevas flags
+
+d — indices (.indices)
+
+s — dotAll
+
+u — unicode full escapes
+
+v — unicode sets (más moderno)
+
+✔️ Ejemplo .indices (ES2022)
+const r = /(hello)/d;
+const m = r.exec("hello world");
+
+console.log(m.indices); 
+// [[0, 5], [0, 5]]
+
+
+Permite saber exactamente dónde empieza y termina cada grupo.
+
+✔️ Unicode Sets (ES2024+)
+/\p{Letter}/v.test("ñ"); // true
+
+
+Unicode real, no hacks.
+
+🟦 8. Top-Level Await
+
+Antes solo podías usar await dentro de funciones async.
+
+Ahora puedes usarlo directamente en módulos ES.
+
+✔️ Ejemplo:
+const data = await fetch("https://api.com/user").then(r => r.json());
+console.log(data);
+
+
+Solo funciona en módulos import/export.
+
+✔️ Implica:
+
+Módulos pueden “bloquearse” mientras esperan datos
+
+Permite inicialización asincrónica más limpia
+
+🟩 9. Decorators (Finalizados ES2023/2024)
+
+Decorators permiten añadir comportamiento a:
+
+clases
+
+métodos
+
+propiedades
+
+getters/setters
+
+✔️ Ejemplo básico:
+function Log(target: any, name: string, descriptor: PropertyDescriptor) {
+  const original = descriptor.value;
+
+  descriptor.value = function (...args: any[]) {
+    console.log("Llamando:", name);
+    return original.apply(this, args);
+  }
+}
+
+class User {
+  @Log
+  sayHi() {
+    console.log("Hola!");
+  }
+}
+
+new User().sayHi();
+
+
+Salida:
+
+Llamando: sayHi
+Hola!
+
+
+➡️ En TypeScript ya se usan hace años, pero ahora están estandarizados.
+
+🟫 10. Records & Tuples (In-process ES2025+)
+
+Son valores inmutables profundamente.
+
+✔️ Record (#{})
+const r = #{
+  name: "Josue",
+  age: 33
+};
+
+console.log(r.name); // "Josue"
+
+
+Profundamente inmutable
+
+Estructuralmente comparado (no por referencia)
+
+✔️ Tuple (#[])
+const t = #[1, 2, 3];
+
+t[0] = 10; // ❌ Error — inmutable
+
+✔️ Comparación profunda:
+#[1, 2] === #[1, 2]; // true
+[1, 2] === [1, 2];   // false (referencia)
+
+
+Esto es enorme para programación funcional y modelos de datos inmutables.
+
+🎁 RESUMEN (CLARO Y PROFESIONAL)
+Feature	Qué resuelve
+??	Valores nullish
+?.	Acceso seguro a propiedades
+Promise.allSettled	Ejecutar promesas sin cancelar por errores
+`&&=	
+WeakRefs	Memoria flexible y caches
+Temporal API	Fechas modernas
+RegExp improvements	Regex modernas y unicode real
+Top-Level Await	Módulos asincrónicos
+Decorators	Metaprogramación
+Records & Tuples	Inmutabilidad profunda
