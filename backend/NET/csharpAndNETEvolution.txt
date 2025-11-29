@@ -1,0 +1,217 @@
+📘 CURSO COMPLETO: Evolución Interna de C# y .NET (2017–2025+)
+Incluye .NET Framework → .NET Core → .NET moderno 5–10, y C# 6 → C# 13/14 (preview)
+Optimizado para entrevistas técnicas, arquitectura y código mantenible de alto rendimiento.
+🧩 MÓDULO 1 — Línea del tiempo del ecosistema .NET
+1.1 Panorama completo
+El cambio filosófico: de “ecosistema cerrado de Microsoft” → “open-source, cloud-native, multiplataforma”.
+Unificación de runtimes: .NET 5 como punto de convergencia.
+Ciclo anual y LTS (6, 8, 10).
+1.2 Cronología resumida
+2017 → .NET Core 2.0 / C# 7
+2019 → .NET Core 3.1 / C# 8
+2020 → .NET 5
+2021 → .NET 6 (LTS)
+2022 → .NET 7
+2023 → .NET 8 (LTS)
+2024/2025 → .NET 9, .NET 10 (futuro LTS)
+
+
+
+🧩 MÓDULO 2 — .NET Framework 4.5 → 4.8/4.9
+2.1 Cambios del runtime
+GC mejorado: compactación del LOH.
+HttpClientHandler moderno.
+BCL ampliada: System.Net.Http, System.Threading, System.Numerics.
+SIMD inicial con System.Numerics.Vectors.
+Roslyn como base del compilador (desde VS 2015).
+Soporte final para TLS 1.2/1.3.
+2.2 Características relevantes para entrevistas
+Diferencias fundamentales entre CLR clásico vs CoreCLR moderno.
+Por qué .NET Framework ya no continúa evolucionando.
+Problemas comunes: AppDomains, Remoting, WebForms (legacy).
+
+
+
+🧩 MÓDULO 3 — Evolución de C# (C# 6 → C# 13/14)
+A continuación se listan solo las características que realmente importan en entrevistas y arquitectura moderna.
+⭐ C# 6 (2015)
+Interpolated strings
+Null-conditional operator (?.)
+Expression-bodied members
+Using static
+Auto-properties inicializadas
+nameof
+✔ Hito: calidad de vida, reducción de boilerplate.
+
+⭐ C# 7.0 – 7.3 (2017–2018)
+Tuplas modernas ((x, y))
+Pattern matching inicial (is, switch)
+Local functions
+Out variables con out var
+ref returns, ref locals
+Binary literals
+Digit separators
+✔ Hito: base moderna de performance y sintaxis funcional.
+
+⭐ C# 8 (2019)
+Nullable Reference Types (NRT)
+Async streams (await foreach)
+Ranges (1..^1) e indices (^n)
+Default interface methods
+Pattern matching avanzado (switch expressions)
+Readonly members
+✔ Hito: el lenguaje adopta seguridad en nulls + paradigmas funcionales.
+⭐ C# 9 (2020)
+records (inmutables)
+init-only setters
+with expressions
+pattern matching reforzado
+top-level statements
+✔ Hito: modelo inmutable funcional oficial → ideal para DDD y microservicios.
+
+⭐ C# 10 (2021)
+Record structs
+file-scoped namespaces
+global usings
+constant interpolated strings
+✔ Hito: más performance, sintaxis limpia, cero ruido.
+
+⭐ C# 11 (2022)
+Raw string literals
+Generic attributes
+required members
+UTF-8 literals ("hola"u8)
+Más pattern matching
+✔ Hito: APIs más expresivas, interoperabilidad moderna, rendimiento.
+
+⭐ C# 12 (2023–2024)
+Primary constructors para cualquier tipo
+Collection expressions ([1,2,3])
+Default lambda parameters
+Inline arrays
+Interceptors (preview)
+Alias de tipos definidos por el usuario (UDT alias)
+✔ Hito: lenguaje unifica sintaxis funcional y orientada a objetos.
+
+⭐ C# 13 y 14 (2025+ - roadmap)
+(basado en propuestas activas)
+New shapes and interfaces enhancements
+Improved slices & inline spans
+Más optimización para AOT
+Records mutables opcionales
+Pattern matching aún más expresivo
+Interceptors estables
+✔ Hito: C# se mueve hacia mayor rendimiento y expresividad para AOT y cloud.
+
+
+
+🧩 MÓDULO 4 — .NET Core 1.0 → 3.1
+4.1 Core 1.0 → 1.1
+Reescritura total del runtime
+Multiplataforma real
+Kestrel (nuevo servidor web super rápido)
+4.2 Core 2.0 → 2.2
+Span<T>
+System.IO.Pipelines
+SignalR Core
+EF Core 2.x
+Mejoras enormes en JIT
+4.3 Core 3.0 → 3.1
+C# 8
+Windows Desktop (WPF/WinForms)
+gRPC
+JSON rápido (System.Text.Json)
+Single-file publishing basic
+Tiered JIT primera versión estable
+
+
+🧩 MÓDULO 5 — .NET 5 (2020)
+Unificación de runtimes
+Mejora de GC concurrente
+WebAssembly para Blazor
+Source generators (preview)
+Mejores contenedores
+
+
+🧩 MÓDULO 6 — .NET 6 (LTS, 2021)
+Minimal APIs
+Hot Reload
+File-scoped namespaces (C# 10)
+System.Text.Json más rápido
+Mejoras masivas en EF Core
+Mejoras en ThreadPool
+Mejoras ARM64
+✔ LTS que aún se usa en empresas.
+
+
+🧩 MÓDULO 7 — .NET 7 (2022)
+Generic math
+Regex source generation automático
+Mejoras en Kestrel (+20-40% rendimiento)
+Mejoras en contenedores
+Mejoras en MAUI
+GC más eficiente en multiproceso
+✔ Primera versión que pone performance como prioridad absoluta.
+
+
+🧩 MÓDULO 8 — .NET 8 (LTS, 2023)
+Native AOT en ASP.NET Core
+Request Delegate Generator
+Dynamic PGO por defecto
+Mejoras en GC (fragmentación, LOH compacting)
+GC.RefreshMemoryLimit()
+Blazor unificado (SSR + SPA + WASM)
+MAUI estabilizado
+Nuevos analizadores Roslyn
+✔ Versión más rápida hasta la fecha.
+
+
+🧩 MÓDULO 9 — .NET 9 (2024/2025 — confirmado)
+.NET 9 está enfocado en AOT, contenedores y web modernos.
+Principales características confirmadas:
+Native AOT más completo (mayor compatibilidad API)
+Mejoras a Request Delegate Generator
+Rendimiento adicional en JSON y Kestrel
+GC mode incremental mejorado
+Mejoras en ARM64
+Blazor más ligero para SSR
+MAUI performance improvements
+EF Core 9:
+Mapeo más flexible
+Materialización más rápida
+
+
+🧩 MÓDULO 10 — .NET 10 (2025 — futuro LTS)
+Se espera que .NET 10 sea el próximo LTS después de .NET 8.
+Roadmap probable:
+AOT como objetivo principal (First-class development model)
+Performance ultra agresivo (nativo, contenedores, WASM)
+System.Text.Json totalmente generador por defecto
+Nuevas extensiones al GC incremental
+Mejoras en vectorización automática y hardware intrinsics
+IA integrada en el BCL (primeras APIs oficiales .NET AI Toolkit)
+Integración más fuerte con WebAssembly+WASI
+EF Core 10 con nuevas optimizaciones
+✔ .NET 10 será el estándar empresarial entre 2025–2029.
+
+
+🧩 MÓDULO 11 — Internals para entrevistas senior
+Cómo funciona el GC generacional
+Tiered JIT + Dynamic PGO
+Qué es Native AOT
+Cómo funciona System.Text.Json internamente
+Qué es Span<T> y por qué evita el heap
+Rendimiento en ASP.NET Core (Kestrel pipeline)
+Single file, trimming, linking
+Async/await internals
+
+
+🧩 MÓDULO 12 — Laboratorio final
+Microservicio ultra optimizado usando:
+Minimal APIs
+C# 12 avanzado
+Records + structs inmutables
+JSON source generators
+Políticas resilientes (Polly)
+Docker con límites dinámicos del GC
+Pipeline optimizado con benchmarks

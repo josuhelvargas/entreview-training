@@ -1,0 +1,244 @@
+🔹 SECCIÓN 1 — Fundamentos de SQL Server desde dentro (Internals básicos)
+1.1. ¿Qué es un motor de base de datos realmente?
+Arquitectura general de un RDBMS
+Procesamiento de consultas
+Lenguajes: DDL, DML, TCL, DCL
+
+1.2. Arquitectura interna de SQL Server (visión de 10 mil pies)
+Relational Engine vs Storage Engine
+Query Processor
+Filegroups, Data Files (.mdf, .ndf) y Log Files (.ldf)
+Espacios de páginas y extensiones (pages, extents)
+1.3. ¿Cómo SQL Server almacena realmente los datos?
+Páginas de 8 KB
+Tipos de páginas: datos, índices, IAM, PFS, GAM, SGAM
+Heaps vs Tablas con Clustered Index
+Cómo se leen / escriben los datos físicamente
+1.4. Cómo funciona el Transaction Log internamente
+Write-Ahead Logging (WAL)
+Checkpoints
+LSN (Log Sequence Number)
+Implicaciones en recuperación y ETLs
+
+
+
+
+
+🔹 SECCIÓN 2 — Internals intermedio: performance y ejecución de consultas
+2.1. El ciclo completo de una consulta
+Parsing → Binding → Optimization → Execution
+Optimizer/Query Plan → Plan Cache
+2.2. Internals del Optimizer
+Árbol lógico y físico
+Transformaciones del optimizador
+Estrategias: Nested Loops, Hash, Merge Join
+2.3. Internals del Indexing
+B-Tree
+Clustered vs Nonclustered
+Fillfactor
+Fragmentación interna vs externa
+Rebuild vs Reorganize
+2.4. Contención, bloqueos y concurrencia
+Lock Manager
+Lock types: Shared, Update, Exclusive
+Isolation Levels
+Deadlocks (internals y prevención)
+
+
+
+
+
+
+🔹 SECCIÓN 3 — Internals avanzados + cargas masivas
+3.1. Internals del Bulk Insert
+Minimally logged operations
+Trace flags
+Tablas con/o sin índices
+Cómo evitar el log excesivo
+TempDB internals
+3.2. Columnstore Internals
+Row Groups
+Vertipaq Engine
+Delta Store
+Batch execution mode
+Por qué Columnstore es ideal para Data Warehousing
+3.3. Query Store y Telemetría Avanzada
+Forzar planes
+Captura de regresiones de performance
+Historias de ejecución
+
+
+
+
+
+
+
+🔹 SECCIÓN 4 — Introducción a ETLs desde cero (conceptual + práctica)
+4.1. ¿Qué es un ETL moderno?
+ETL vs ELT
+Pipelines
+Data Lake vs Data Warehouse
+Arquitectura Lambda vs Medallion
+4.2. ¿Qué significa transformar datos?
+Cleansing
+Deduplicación
+SCD1 / SCD2 (Slowly Changing Dimensions)
+Normalización y validación
+4.3. Extract
+Conectores
+Drivers
+Lectura incremental vs completa
+CDC (Change Data Capture)
+Change Tracking
+4.4. Load
+Batch loads
+Microbatch
+Streaming ingestion
+
+
+
+
+
+
+
+🔹 SECCIÓN 5 — ETL On-Premise (SQL Server Integration Services — SSIS)
+5.1. Arquitectura de SSIS
+Control Flow
+Data Flow
+Orígenes / Destinos
+Variables / Parámetros / Expresiones
+5.2. Transformations
+Lookup
+Merge
+Derived Columns
+Aggregations
+Conditional Split
+5.3. Despliegue y automatización
+Deployment Model
+Catálogo SSISDB
+Agendamiento con SQL Agent
+5.4. Buenas prácticas
+Logging
+Reintentos
+Paquete modular
+Encriptación
+
+
+
+
+
+
+
+
+🔹 SECCIÓN 6 — ETL Cloud Moderno: Azure Data Factory (ADF)
+6.1. Arquitectura de ADF
+Linked Services
+Integration Runtimes (Self-hosted / Azure)
+Datasets
+Pipelines
+6.2. Data Flows vs Mapping Data Flows
+Cleaning
+Joins
+Derived Columns
+Data Lakehouse ingestion
+6.3. Master pipeline orchestration
+Triggers
+Condiciones
+Wait
+Reintentos
+6.4. Integración con SQL Server
+Copiar desde SQL OnPrem → Cloud
+Sincronización incremental
+CDC con ADF
+
+
+
+
+
+
+
+🔹 SECCIÓN 7 — ETL Cloud Avanzado: Apache Spark + Databricks
+7.1. Arquitectura
+Driver / Workers
+Resilient Distributed Datasets (RDDs)
+DataFrames y Catalyst Optimizer
+7.2. ELT con Spark
+Lectura desde Data Lake
+Transformación distribuida
+Escritura optimizada
+7.3. Delta Lake
+Versioning
+Time Travel
+ACID en Data Lakes
+7.4. End-to-end Pipeline Databricks
+Bronze → Silver → Gold
+Jobs
+Notebooks
+Automatización
+
+
+
+
+🔹 SECCIÓN 8 — Pipelines de Orquestación Avanzada: Apache Airflow
+8.1. Arquitectura de Airflow
+DAG
+Scheduler
+Executors
+Workers
+8.2. Construcción de DAGs reales
+Operadores (SQL, Python, Bash)
+XCom
+Sensors (file, time, external table)
+8.3. Deployment
+Docker + Kubernetes
+Logs
+Monitoring
+
+
+
+
+
+🔹 SECCIÓN 9 — Procesamiento en Tiempo Real: Kafka + Spark Streaming
+9.1. Kafka internals
+Topics
+Partitions
+Consumers
+Offsets
+9.2. ETL en streaming
+Spark Structured Streaming
+Microbatches
+Ventanas deslizantes
+9.3. Integración SQL Server + Kafka
+Debezium CDC Connector
+Streams hacia un Data Lakehouse
+
+
+
+
+🔹 SECCIÓN 10 — Caso práctico completo (Proyecto Final)
+Construirás un pipeline real:
+
+🎯 Objetivo:
+Procesar datos de un sistema transaccional SQL Server y llevarlos a un Data Lake y/o Data Warehouse.
+Fases:
+Extracción:
+CDC desde SQL Server
+Export incremental
+Transformación:
+Limpieza con ADF
+Normalización con Spark
+Deduplicación
+SCD Type 2
+Carga:
+Carga final en Synapse, BigQuery, Snowflake o SQL DW
+
+Orquestación:
+Airflow o ADF
+Alertas
+Reintentos
+Optimización:
+Indexing internals
+Columnstore
+Delta Lake Optimization
+Dashboard:
+Power BI, Looker, Tableau

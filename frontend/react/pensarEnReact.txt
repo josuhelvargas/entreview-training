@@ -45,7 +45,7 @@ en proyectos más grandes, de abajo arriba.
 
 
 3.Paso 3: Encontrar la representación mínima pero completa del estado de la interfaz de usuario, para ello 
-efine la representación mínima indispensable del estado que tu aplicación necesita y calcula todo lo demás bajo demanda.( sin repetir )
+define la representación mínima indispensable del estado que tu aplicación necesita y calcula todo lo demás bajo demanda.( sin repetir )
 
 ¿Cuáles de estos son estados? Identifica los que no lo son:
 

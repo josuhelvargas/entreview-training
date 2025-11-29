@@ -1,0 +1,109 @@
+
+Curso kudvenkat:
+
+!!!!!!!
+https://www.youtube.com/watch?v=7GVFYt6_ZFM&list=PL08903FB7ACA1C2FB
+
+
+
+
+
+
+Perfecto — con gusto te preparo un **temario** estructurado en español basado en los tópicos del curso Kudvenkat (lista de videos: PL08903FB7ACA1C2FB) para que puedas usarlo como guía de estudio de Microsoft SQL Server. ([youtube.com][1])
+
+
+
+## Temario sugerido: Curso completo de SQL Server
+### 1. Introducción y configuración
+* Conexión a SQL Server usando SQL Server Management Studio (SSMS) — Métodos de autenticación. ([youtube.com][2])
+* Instalación (cuando aplique), visión general de SQL Server como RDBMS. ([Pragim Tech][3])
+
+
+
+### 2. Gestión de bases de datos y tablas
+* Crear, modificar y eliminar bases de datos. ([youtube.com][1])
+* Crear tablas, definir columnas y tipos de datos. ([youtube.com][4])
+* Definir restricciones: clave primaria (PRIMARY KEY), clave foránea (FOREIGN KEY), NOT NULL, UNIQUE, etc. ([youtube.com][4])
+
+
+
+
+### 3. Operaciones básicas con datos (CRUD) y SELECT
+* INSERT, UPDATE, DELETE — modificar datos en tablas. (aunque no todos los videos lo mencionan explícitamente en los títulos, CRUD usualmente forma parte de un curso integral)
+* SELECT: cómo recuperar datos — columnas específicas o todas, uso de `SELECT *`. ([youtube.com][5])
+* Filtrado con `WHERE`, uso de condiciones con `AND`/`OR`, comparaciones, operadores lógicos. ([youtube.com][5])
+* Uso de comodines (wildcards) para búsquedas con patrones. ([youtube.com][5])
+* Ordenar resultados con `ORDER BY`. ([youtube.com][5])
+* Obtener filas distintas: `DISTINCT`. ([youtube.com][5])
+* Seleccionar top N o top porcentaje de filas. ([youtube.com][5])
+
+
+
+
+
+### 4. Operaciones con múltiples tablas / relaciones / joins
+* Uniones/join entre tablas: INNER JOIN, LEFT/RIGHT JOIN, etc. (y en general combinar datos de múltiples tablas) ([csharp-video-tutorials.blogspot.com][6])
+* Uso de claves foráneas para garantizar relaciones referenciales. ([youtube.com][4])
+
+
+
+
+
+### 5. Funciones, agregaciones y agrupaciones
+* Funciones de agregación: SUM, COUNT, AVG, etc. (para sumar, contar, promediar, etc.) — aunque la playlist de Kudvenkat no siempre las lista, son parte fundamental de SQL. ([csharp-video-tutorials.blogspot.com][6])
+* Agrupar resultados por categorías con `GROUP BY` (y eventualmente `HAVING`).
+* Subconsultas (subqueries) / consultas anidadas.
+
+
+
+
+### 6. Programación en SQL / Objetos de base de datos
+* Procedimientos almacenados (stored procedures): creación, con parámetros, modificación, eliminación, visualización de su texto, encriptación (cuando aplica). ([youtube.com][7])
+* Funciones definidas por el usuario (user-defined functions), si la serie las cubre. (Típico en cursos completos de SQL Server)
+* Vistas (views), tablas temporales (temp tables), expresiones comunes (CTE — Common Table Expressions), como parte de organización de consultas. (Aunque no siempre explícito en la lista, usual en cursos amplios).
+
+
+
+
+
+### 7. Optimización, diseño y administración básica de base de datos
+* Índices: cómo funcionan, cuándo usarlos para optimizar consultas. ([Pragim Tech][3])
+* Conceptos sobre cómo se almacena la data internamente (heap tables vs tables con índices) — para entender performance. ([Pragim Tech][3])
+* Buenas prácticas de diseño de bases de datos: normalización, integridad referencial, esquema de tablas, claves, constraints, etc. (Fundamental para evitar redundancia y mantener consistencia)
+
+
+
+### 8. Seguridad, permisos y administración de usuarios / roles
+* Gestión de acceso: usuarios, roles, permisos. Aunque no siempre tratado en detalle por Kudvenkat, es parte esencial de administración de bases en SQL Server. ([Pragim Tech][3])
+
+
+
+### 9. Casos prácticos y ejercicios / escenarios reales
+* Ejercicios de consultas reales: joins, agregaciones, subconsultas, manipulación de datos, transacciones, etc.
+* Proyectos pequeños de ejemplo: creación de base de datos, diseño de tablas, inserción de datos, consultas, informes.
+
+
+
+
+
+
+
+---
+
+## Cómo aprovechar este temario con tu perfil / proyectos
+
+Dado que ya tienes experiencia con SQL (por tu proyecto en .NET) — puedes usar este temario para:
+
+* **Estructurar tu estudio**: avanzar sección por sección — primero refrescar lo básico (conexión, creación de tablas), luego CRUD, luego queries complejas y lógica, luego objetos (SP, funciones), y finalmente optimización.
+* **Practicar con ejemplos reales de tus proyectos**: por ejemplo, aplicar joins, constraints, stored procedures, índices, etc. en tus tablas reales (como las de incentivos, invitados, etc.).
+* **Evaluar tus necesidades reales**: en funciones de tu sistema — tal vez no necesites vistas, pero sí procedimientos almacenados, consultas optimizadas, constraints, etc.
+
+
+
+[1]: https://www.youtube.com/playlist?list=PL08903FB7ACA1C2FB&utm_source=chatgpt.com "SQL Server tutorial for beginners"
+[2]: https://www.youtube.com/watch?v=ZNObiptSMSI&utm_source=chatgpt.com "Connecting to SQL Server using SSMS - Part 1"
+[3]: https://www.pragimtech.com/courses/sql-server-tutorial-for-beginners/?utm_source=chatgpt.com "Sql server tutorial for beginners with examples"
+[4]: https://www.youtube.com/watch?v=JLeaM8pK8dE&utm_source=chatgpt.com "Creating and working with tables - Part 3"
+[5]: https://www.youtube.com/watch?v=R9pXnHIFj_8&utm_source=chatgpt.com "Select statement in sql server - Part 10"
+[6]: https://csharp-video-tutorials.blogspot.com/p/free-sql-server-video-tutorials-for.html?utm_source=chatgpt.com "Free sql server video tutorials for beginners"
+[7]: https://www.youtube.com/watch?v=Qu3E-oncF3g&utm_source=chatgpt.com "Stored procedures in sql server Part 18"

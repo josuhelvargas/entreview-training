@@ -1,0 +1,45 @@
+1.Primero resuelve el despliegue de la interfaz de usuario sin funcionalidad dividida en compoenetes (mucho codgio y pensar poco ) 
+
+contenedor principal
+cajas  de colores diferentes y 
+elemtnos drag and drop en la parte inferior.
+
+
+
+
+2.Luego piensa en como implementar la funcionalidad ( escribir poco y pensar mucho )
+
+El conteneor pricipal contiene los 2 componentes. 
+las cajas estan asociadas a un id unico por su color 
+los elemtnos drag and drop estan asociados a un id unico por su tipo 
+Al arrojar un elemento se anade al array de lemntos aosciados ( tupla? ) 
+Las cajas de colores  y los elemtnos drag and drop  son elemntos visuales repsuesta a una peticion de datos que se cargan en el frontend.
+el conjunto de cajas de colores siguen un patron de carrousell.
+el efecto dde drag and drop es 100% visual? 
+
+
+
+
+
+
+3.Paso 3: Encontrar la representación mínima pero completa del estado de la interfaz de usuario, para ello 
+define la representación mínima indispensable del estado que tu aplicación necesita y calcula todo lo demás bajo demanda.( sin repetir )
+
+estado contenedor 
+llamadas a api <Container /> 
+  boxesarray (id, color) <ItemListBox items= {} /> 
+  draganddroparray (id, type) <BreadCrumbList items= {} />
+  
+<Container> 
+  <ItemListBox items= {} /> 
+  <BreadCrumbList items= {} />
+</Container>
+
+<ItemBox id="" color=""/>
+<BreadCrumb id="" type="" />
+
+4.Paso 4: Identifica dónde debería vivir tu estado
+Tras identificar los datos de estado mínimos de tu aplicación, debes determinar qué componente es responsable de modificar dicho estado o qué componente lo gestiona
+ . 
+
+5.Agrega la funcionalidad con hooks.
