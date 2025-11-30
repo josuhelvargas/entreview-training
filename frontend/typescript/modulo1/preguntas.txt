@@ -196,3 +196,217 @@ RegExp improvements
 Top-level await
 Decorators (finalized)
 Records & Tuples (in proceso ES2025+)
+
+--------------------
+
+
+
+////////Modulo 2 
+
+Como se debe utilizar el tipado en typescript para optimizar el codigo?
+b) Evita any, usa unknown o tipos específicos
+
+c) Usa tipos de dominio, no solo string | number everywhere
+En lugar de:
+type Role = string; // poco informativo
+Mejor:
+type Role = 'admin' | 'editor' | 'viewer'; // unión literal
+
+1.3. Usa utilidades de TS para reducir código repetido
+Partial<T> – todos los campos opcionales.
+Pick<T, K> – sub-tipo con algunas propiedades.
+Record<K, T> – objetos-indexados tipados (lo veremos abajo).
+
+
+///////Como utilizar symbol ? 
+
+symbol es un tipo primitivo que representa un identificador único.
+const s1 = Symbol('id');
+const s2 = Symbol('id');
+console.log(s1 === s2); // false (siempre únicos)
+
+Se usan sobre todo para:
+Claves “ocultas” en objetos (no colisionan con otras keys).ejemplo: 
+const internalId = Symbol('internalId');
+
+type WithInternal = {
+  [internalId]: string;
+  name: string;
+};
+
+const obj: WithInternal = {
+  [internalId]: 'abc-123',
+  name: 'Josue',
+};
+
+// No sale en for...in
+for (const key in obj) {
+  console.log(key); // solo 'name'
+}
+
+Proteger propiedades internas.
+Implementar protocolos con well-known symbols (Symbol.iterator, etc.).
+
+
+
+
+///////Como utilizar bigint? cuando? 
+
+3.1. ¿Qué es?
+JS number es un double (64 bits), con máximo seguro 2^53 - 1.
+bigint permite manejar enteros arbitrariamente grandes:
+
+const normalMax = Number.MAX_SAFE_INTEGER; // 9007199254740991
+const big: bigint = 9007199254740991n + 10n; // OK
+
+Creación:
+const a = 123n;           // literal
+const b = BigInt('123');  // función
+
+
+3.2. Reglas importantes
+No se pueden mezclar directamente con number:
+const x = 10n + 5; // ❌ Error
+const x2 = 10n + BigInt(5); // ✅
+
+
+No se pueden usar en Math.*.
+JSO
+3.3. ¿Cuándo usarlo?
+IDs muy grandes (por ejemplo, IDs de DB o blockchains).
+Contadores gigantes (logs, eventos, etc.).
+Cálculos matemáticos donde no quieres perder precisión de enteros.
+Ejemplo simple:
+type BigIntId = bigint;
+
+interface Entity {
+  id: BigIntId;
+  name: string;
+}
+
+const entity: Entity = {
+  id: 12345678901234567890n,
+  name: 'Big Entity',
+};
+
+
+En front puro (React/Angular), no es muy común salvo que:
+El backend te dé IDs como bigint (ej. GraphQL scalars), o
+Hagas lógica criptográfica / blockchain en el navegador.
+
+
+
+
+Cuando y como utilizar weakrefs  y records en react  y angular? utiliza ejemplos tambien.
+
+
+WeakRef (y WeakMap, WeakSet) → API de JS para referencias débiles.
+
+Record<K, T> → utility type de TypeScript (muy útil).
+
+4.1. WeakRef / WeakMap / WeakSet
+¿Qué es una referencia débil?
+Una WeakRef NO evita que el GC (garbage collector) borre el objeto.
+Te permite decir: “si el objeto existe, úsalo; si el GC lo limpió, no pasa nada”.
+
+const obj = { name: 'heavy' };
+const ref = new WeakRef(obj);
+
+// En algún momento...
+const deref = ref.deref();
+if (deref) {
+  console.log(deref.name);
+} else {
+  // El objeto fue recogido por GC
+}
+
+
+En la práctica:
+Son muy avanzadas.
+Se usan para caches que no deben impedir GC.
+WeakMap / WeakSet (más comunes que WeakRef)
+const wm = new WeakMap<object, string>();
+
+const key = {};
+wm.set(key, 'valor');
+// Si “key” se queda sin referencias en el código,
+// el GC puede limpiar la entrada del WeakMap.
+
+
+
+
+
+
+
+
+
+Record.
+
+
+4.2. Record<K, T> en TypeScript: este sí lo usarás un montón
+
+Record<K, T> es un tipo utilitario que representa:
+
+“Un objeto cuyas claves son de tipo K y el valor de cada clave es tipo T”.
+
+type ParticipantType = 'gold' | 'silver' | 'bronze';
+
+type ConfigPorTipo = Record<ParticipantType, { color: string; priority: number }>;
+
+const config: ConfigPorTipo = {
+  gold: { color: 'gold', priority: 1 },
+  silver: { color: 'silver', priority: 2 },
+  bronze: { color: 'brown', priority: 3 },
+};
+
+
+Ventajas:
+
+El compilador te obliga a definir todas las keys.
+
+Si agregas un nuevo ParticipantType, el error te lleva directo a todos los sitios donde falta.
+
+React – usar Record en estado
+type ParticipantType = 'gold' | 'silver' | 'bronze';
+
+interface Participant {
+  id: string;
+  name: string;
+  type: ParticipantType;
+}
+
+// Mapa tipo -> lista de participantes
+type ParticipantsByType = Record<ParticipantType, Participant[]>;
+
+const [byType, setByType] = useState<ParticipantsByType>({
+  gold: [],
+  silver: [],
+  bronze: [],
+});
+
+
+Si mañana agregas 'volunteer' a ParticipantType, TS te dirá que byType ya no está completo.
+
+Angular – usar Record en configs / servicios
+export type Channel = 'web' | 'app' | 'kiosk';
+
+export interface ChannelConfig {
+  baseUrl: string;
+  timeout: number;
+}
+
+@Injectable({ providedIn: 'root' })
+export class ChannelConfigService {
+  private readonly config: Record<Channel, ChannelConfig> = {
+    web:   { baseUrl: '/api/web', timeout: 5000 },
+    app:   { baseUrl: '/api/app', timeout: 7000 },
+    kiosk: { baseUrl: '/api/kiosk', timeout: 9000 },
+  };
+
+  getConfig(channel: Channel): ChannelConfig {
+    return this.config[channel];
+  }
+}
+
+
+Con Record, si agregas un nuevo Channel, TS obliga a definir su config.

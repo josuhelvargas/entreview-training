@@ -1,0 +1,203 @@
+
+interface User {
+  id: number;
+  name: string;
+}
+
+// Extender interfaces
+interface AdminUser extends User {
+  role: "admin";
+}
+
+
+
+🔹 Formas de declarar funciones
+// Declaración tradicional
+function sum(a: number, b: number): number {
+  return a + b;
+}
+
+// Función como expresión
+const sum2 = (a: number, b: number): number => a + b;
+
+// Type alias de función
+type BinaryFn = (a: number, b: number) => number;
+
+const multiply: BinaryFn = (a, b) => a * b;
+
+🔹 Overloads (sobrecarga)
+
+Permiten describir múltiples firmas para una misma función:
+
+function parseInput(input: string): string[];
+function parseInput(input: number): number[];
+function parseInput(input: string | number): (string | number)[] {
+  if (typeof input === "string") {
+    return input.split(",");
+  }
+  return [input];
+}
+
+const a = parseInput("a,b,c"); // string[]
+const b = parseInput(10);      // number[]
+
+
+Las firmas “expuestas” se ponen arriba, y la implementación abajo.
+
+🔹 this en funciones
+
+En TS puedes tipar this en funciones normales (no en arrow functions):
+
+interface Logger {
+  prefix: string;
+  log(this: Logger, msg: string): void;
+}
+
+const logger: Logger = {
+  prefix: "[APP]",
+  log(msg) {
+    console.log(this.prefix, msg); // `this` es Logger
+  },
+};
+
+🔹 Tipar un try/catch correctamente
+async function fetchJson(url: string): Promise<unknown> {
+  const res = await fetch(url);
+  if (!res.ok) {
+    throw new Error(`HTTP ${res.status}`);
+  }
+  return res.json();
+}
+
+async function safeCall() {
+  try {
+    const data = await fetchJson("/api/participants");
+    // aquí puedes validar `data` antes de usarlo
+  } catch (err: unknown) {
+    if (err instanceof Error) {
+      console.error("Error:", err.message);
+    } else {
+      console.error("Unknown error:", err);
+    }
+  }
+}
+
+🔹 Métodos estáticos
+class MathUtils {
+  static sum(a: number, b: number) {
+    return a + b;
+  }
+}
+
+MathUtils.sum(1, 2);
+
+🔹 Herencia y clases abstractas
+abstract class Shape {
+  constructor(public color: string) {}
+  abstract area(): number; // debe implementarse en las hijas
+}
+
+class Rectangle extends Shape {
+  constructor(color: string, public width: number, public height: number) {
+    super(color);
+  }
+
+  area(): number {
+    return this.width * this.height;
+  }
+} 
+
+
+
+Formas de declarar funciones
+// Declaración tradicional
+function sum(a: number, b: number): number {
+  return a + b;
+}
+
+// Función como expresión
+const sum2 = (a: number, b: number): number => a + b;
+
+// Type alias de función
+type BinaryFn = (a: number, b: number) => number;
+
+const multiply: BinaryFn = (a, b) => a * b;
+🔹 Enum numérico
+enum Role {
+  Admin,      // 0
+  Editor,     // 1
+  Viewer,     // 2
+}
+
+const r: Role = Role.Admin;
+
+Internamente se compila a un objeto con mapeo numérico y reverso.
+
+🔹 Enum string
+enum Status {
+  Active = "ACTIVE",
+  Inactive = "INACTIVE",
+  Pending = "PENDING",
+}
+
+
+
+
+🔹 Literal types
+type ResultStatus = "success" | "error";
+
+function handleResult(status: ResultStatus) {
+  if (status === "success") {
+    // TS sabe que status es exactamente "success"
+  } else {
+    // aquí status es "error"
+  }
+} 
+
+
+🔹 Namespaces (por qué evitarlos)
+
+Antiguo patrón TS para agrupar cosas:
+
+namespace MyLib {
+  export function foo() {}
+}
+
+
+Hoy no se recomienda en aplicaciones modernas porque:
+
+Rompe el modelo de módulos nativos de ES.
+
+El estándar es usar ESModules (import/export).
+
+Se siguen usando a veces en definiciones .d.ts antiguas, pero para código nuevo → usa módulos normales.
+
+
+
+✅ Ventaja principal: unknown obliga a validar antes de usar; any no.
+Tipo	Permite usar el valor sin validar	Obliga a comprobar el tipo antes de usar	¿Seguridad de tipos?
+any	✔️ Sí	❌ No	❌ Baja
+unknown	❌ No	✔️ Sí	✔️ Alta
+
+Contexto profesional
+Use unknown cuando:
+
+No conoces el tipo de un valor externo:
+
+JSON.parse
+
+Respuestas de APIs externas
+
+catch(err)
+
+mensajes de websockets
+
+cualquier entrada no confiable
+
+Use any solo cuando:
+
+Estás migrando código viejo.
+
+Estás prototipando algo rápido temporalmente.
+
+Estás interactuando con una librería que TS no tipa correctamente.

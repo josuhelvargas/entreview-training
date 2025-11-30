@@ -1,126 +1,90 @@
+
 🟩 MÓDULO 1 – FUNDAMENTOS (BÁSICO)
-
 Objetivo: entender la base del tipado estático, sintaxis esencial y diferencias con JavaScript.
-
 1.1. ¿Qué es TypeScript y por qué usarlo?
-
 Historia y propósito
-
 Ventajas vs JavaScript
-
 Tipado estático vs dinámico
-
 TS como “superset” de JS
 
+
 1.2. Configuración básica
-
 Instalación (npm i -g typescript)
-
 tsc y compilación a JavaScript
-
 tsconfig.json: opciones más importantes
-
 Target, module, strict mode
 
+
+
 1.3. Tipos primitivos
-
 string, number, boolean
-
 undefined, null, void, never
-
 bigint, symbol
 
+
 1.4. Tipos compuestos
-
 Arreglos: number[], Array<number>
-
 Tuplas: [string, number]
-
 Objetos literales
-
 Alias de tipos (type)
-
 Interfaces (interface)
 
+
 1.5. Funciones básicas tipadas
-
 Tipos de parámetros
-
 Tipos de retorno
-
 Parámetros opcionales
-
 Parámetros con valor por default
-
 Funciones anónimas y flechas (() => {})
 
+
+
 1.6. Union Types y Narrowing básico
-
 string | number
-
 Type narrowing con typeof, in, instanceof
-
 Chequeos condicionales
 
-🟧 MÓDULO 2 – TIPADO INTERMEDIO Y ESTRUCTURAS AVANZADAS
 
+
+/////////////////////////////
+🟧 MÓDULO 2 – TIPADO INTERMEDIO Y ESTRUCTURAS AVANZADAS
 Objetivo: dominar la estructura del lenguaje y escribir código profesional.
 
 2.1. Interfaces vs Types (diferencias reales)
-
 Ampliación (extends)
-
 Unión e intersección
-
 Cuándo usar interface o type
 
 2.2. Tipado de funciones avanzado
-
 Overloads
-
 Formas de declarar funciones
-
 this en funciones
 
 2.3. Enumeraciones
-
 enum numérico
-
 enum string
-
 const enums (optimización)
 
 2.4. Tipos literales
-
 "success" | "error"
-
 Narrowing automático
 
 2.5. Clases y OOP en TypeScript
-
 class, constructor
-
 Propiedades readonly
-
 Accesibilidad: public, private, protected
-
 Métodos estáticos
-
 Herencia y abstracción
-
 2.6. Módulos e importaciones
-
 Import/export
-
 Namespaces (por qué evitarlo)
-
 Resolución de módulos
-
 2.7. Manejo de errores tipado
-
 Error, unknown, never
-
 Cómo tipar un try/catch
+
+
+
 
 🟦 MÓDULO 3 – GENERICS (GENÉRICOS) – NIVEL INTERMEDIO/AVANZADO
 
