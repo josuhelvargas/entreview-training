@@ -230,6 +230,15 @@ java -jar app-sample-1.0.0-prod.jar
 Sin esta línea, el jar sería no ejecutable.
 
 
+🧩 9. ¿Cómo se comporta MANIFEST en un JAR normal vs un fat-jar?
+Característica	JAR normal	                            JAR con Shade (fat-jar)
+Main-Class	  ❌ casi nunca	                             ✔️ siempre declarado
+Dependencias	Externas, en el classpath	                 Internas, empacadas
+Class-Path	  ❗ requerido	                                Vacío casi siempre
+Ejecutable	  No por defecto	                             Sí
+Tamaño	      Pequeño	                                  Grande
+
+
 10. <finalName>app-sample-${project.version}-prod</finalName>
 Define el nombre final del archivo generado.
 Con un pom cuyo version es 1.0.0, el archivo final será:

@@ -1,0 +1,541 @@
+🔷 26. ¿Por qué los Integration Tests no deben correr con Surefire?
+
+Porque:
+
+Surefire se ejecuta antes de empaquetar y sin entorno externo preparado.
+
+No soporta lifecycle extendido (pre-integration-test, post-integration-test)
+
+Si un IT falla, Surefire frena el build inmediatamente sin desmontar Docker, BDs, etc.
+
+Failsafe garantiza:
+
+preparación del entorno
+
+ejecución ordenada
+
+limpieza posterior
+
+➡️ Los IT necesitan un lifecycle propio que Surefire no proporciona.
+
+🔷 27. Naming conventions de Failsafe para IT
+
+Por defecto detecta:
+
+*IT.java
+*ITCase.java
+IT*.java
+
+
+Puedes personalizarlo así:
+
+<configuration>
+  <includes>
+    <include>**/*IntegrationTest.java</include>
+  </includes>
+</configuration>
+
+🔷 28. Explica el flujo completo de phases cuando usas Failsafe
+
+Order:
+
+pre-integration-test
+
+levantar Docker, crear DB, migraciones
+
+integration-test
+
+Failsafe → failsafe:integration-test
+
+se corren los IT
+
+post-integration-test
+
+se limpian recursos (docker down, borrar tabla, etc.)
+
+verify
+
+Failsafe → failsafe:verify
+
+marca el build como success/failure
+
+genera reports
+
+🔷 29. ¿Dónde colocar un test que requiere BD real y en qué phase se ejecuta?
+
+Ruta:
+src/integration-test/java/...
+
+Naming convention:
+OrderIT.java
+
+Ejecución:
+Phase → integration-test
+via plugin → failsafe:integration-test
+
+🔷 30. ¿Cómo levantar y bajar Docker antes/después de los IT?
+
+En el POM:
+
+<execution>
+  <id>docker-up</id>
+  <phase>pre-integration-test</phase>
+  <goals><goal>exec</goal></goals>
+  <configuration>
+    <executable>docker</executable>
+    <arguments>
+      <argument>compose</argument>
+      <argument>-f</argument>
+      <argument>docker-compose.yml</argument>
+      <argument>up</argument>
+      <argument>-d</argument>
+    </arguments>
+  </configuration>
+</execution>
+
+<execution>
+  <id>docker-down</id>
+  <phase>post-integration-test</phase>
+  <goals><goal>exec</goal></goals>
+  <configuration>
+    <executable>docker</executable>
+    <arguments>
+      <argument>compose</argument>
+      <argument>-f</argument>
+      <argument>docker-compose.yml</argument>
+      <argument>down</argument>
+    </arguments>
+  </configuration>
+</execution>
+
+🔷 31. ¿Qué hacer si un Integration Test tarda demasiado?
+
+Opciones:
+
+✔️ Timeout en Failsafe
+<configuration>
+  <forkedProcessTimeoutInSeconds>120</forkedProcessTimeoutInSeconds>
+</configuration>
+
+✔️ Desactivar paralelismo del test que satura recursos
+✔️ Usar Testcontainers reutilizables
+✔️ Profiling del test
+✔️ Separarlos en otro pipeline si son demasiado pesados
+🔷 32. ¿Cómo evitar que los tests usen accidentalmente configuraciones de producción?
+
+Buenas prácticas:
+
+Nunca colocar application-prod.yml en src/test/resources
+
+Forzar profile test:
+
+-Dspring.profiles.active=test
+
+
+En Maven:
+
+<profile>
+  <id>test</id>
+  <properties>
+    <spring.profiles.active>test</spring.profiles.active>
+  </properties>
+</profile>
+
+
+Bloquear uso de prod en tests via:
+
+Enforcer rules
+
+Validaciones custom
+
+🔷 33. ¿Qué hace spring-boot-starter-parent?
+
+Define versiones compatibles de librerías
+
+Proporciona default plugin configurations
+
+Gestiona el dependencyManagement
+
+Evita conflictos de versiones
+
+Simplifica el POM drásticamente
+
+➡️ Es un POM padre inteligente.
+
+🔷 34. Diferencias prácticas JAR vs WAR en Spring Boot
+Aspecto	JAR	WAR
+Tomcat	Embebido	Externo
+Despliegue	java -jar	Servidor de apps (Tomcat, WebLogic, WildFly)
+Cloud / microservicios	✔️ Ideal	✖️ No recomendado
+Arquitectura	Self-contained	Dependiente de contenedor
+
+Hoy en día:
+➡️ JAR es el estándar en microservicios.
+
+🔷 35. ¿Cómo relacionar profile Maven con profile Spring Boot?
+
+En el POM:
+
+<profile>
+  <id>qa</id>
+  <properties>
+    <spring.profiles.active>qa</spring.profiles.active>
+  </properties>
+</profile>
+
+
+Ejecución:
+
+mvn spring-boot:run -Pqa
+
+
+Spring usa:
+
+application-qa.yml
+
+🔷 36. ¿Qué hace el goal spring-boot:repackage?
+
+Transforma un JAR normal en un JAR ejecutable:
+
+incluye dependencias
+
+crea un classloader especial
+
+agrega main manifest
+
+permite:
+
+java -jar app.jar
+
+🔷 37. ¿Cómo genera Spring Boot imágenes Docker sin Dockerfile?
+
+Usa Cloud Native Buildpacks:
+
+mvn spring-boot:build-image
+
+
+Produce:
+
+paketobuildpacks/builder:base
+
+
+Ventajas:
+
+reproducible
+
+sin Dockerfile
+
+multistage automático
+
+🔷 38. Pipeline Jenkins completo (Unit + IT + Package)
+
+Ejemplo:
+
+pipeline {
+  agent any
+  stages {
+    
+    stage('Build') {
+      steps { sh 'mvn clean verify -Pqa' }
+    }
+
+    stage('Package') {
+      steps { sh 'mvn package -Prelease' }
+    }
+
+    stage('Archive') {
+      steps {
+        archiveArtifacts artifacts: 'target/*.jar', fingerprint: true
+      }
+    }
+
+    stage('Deploy Dev') {
+      steps { sh 'scp target/app.jar user@dev:/apps/app.jar' }
+    }
+
+  }
+}
+
+🔷 39. Workflow en GitHub Actions según rama
+on:
+  push:
+    branches: [ "dev", "qa", "main" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Build
+        run: |
+          if [[ $GITHUB_REF == refs/heads/dev ]]; then
+            mvn clean verify -Pdev
+          elif [[ $GITHUB_REF == refs/heads/qa ]]; then
+            mvn clean verify -Pqa
+          else
+            mvn clean verify -Prelease
+          fi
+
+🔷 40. ¿Cómo integrar SonarQube al build?
+
+Phase recomendada:
+➡️ verify
+
+POM:
+
+<plugin>
+  <groupId>org.sonarsource.scanner.maven</groupId>
+  <artifactId>sonar-maven-plugin</artifactId>
+  <version>3.9.1.2184</version>
+</plugin>
+
+
+Pipeline:
+
+mvn verify sonar:sonar
+
+🔷 41. Estrategia para multi-environment deploys
+
+Perfiles Maven: dev, qa, staging, prod
+
+Artefacto único → configuración por external config (Spring Config Server)
+
+Pipelines separados:
+
+build (dev)
+
+QA gate
+
+staging regression
+
+production approval
+
+Versionado:
+
+SNAPSHOT → dev
+
+RC → staging
+
+RELEASE → production
+
+🔷 42. ¿Cómo firmar artefactos Maven para releases?
+
+Usar el plugin:
+
+<plugin>
+  <groupId>org.apache.maven.plugins</groupId>
+  <artifactId>maven-gpg-plugin</artifactId>
+  <version>3.1.0</version>
+  <executions>
+    <execution>
+      <id>sign-artifacts</id>
+      <phase>verify</phase>
+      <goals><goal>sign</goal></goals>
+    </execution>
+  </executions>
+</plugin>
+
+
+Requiere:
+
+claves GPG
+
+passphrase
+
+settings.xml cifrado
+
+🔷 43. Explica el algoritmo nearest-wins
+
+Regla:
+
+Si dos dependencias traen diferentes versiones del mismo artefacto, Maven elige la más cercana al proyecto en el árbol de dependencias.
+
+Ejemplo:
+
+app
+ ├── A:1.0
+ │    └── C:1.0
+ └── B:1.0
+      └── C:2.0
+
+
+Gana: C:1.0, porque A es más “cerca”.
+
+🔷 44. ¿Cómo crear tu propio plugin Maven?
+
+Pasos:
+
+Crear módulo:
+
+<packaging>maven-plugin</packaging>
+
+
+Crear clase:
+
+@Mojo(name="generate-config", defaultPhase=LifecyclePhase.GENERATE_RESOURCES)
+public class GenerateConfigMojo extends AbstractMojo {
+    public void execute() { ... }
+}
+
+
+Instalar plugin:
+
+mvn install
+
+
+Usarlo en otro POM:
+
+<plugin>
+  <groupId>com.acme</groupId>
+  <artifactId>config-plugin</artifactId>
+  <version>1.0.0</version>
+  <executions>
+    <execution>
+      <phase>generate-resources</phase>
+      <goals><goal>generate-config</goal></goals>
+    </execution>
+  </executions>
+</plugin>
+
+🔷 45. ¿Qué es una "reactor build order inversion"?
+
+Ocurre cuando:
+
+un módulo parece depender de otro
+
+pero el Reactor calcula un orden incorrecto
+
+porque una dependencia está marcada como runtime o optional cuando debería ser compile
+
+Solución:
+➡️ ajustar scope a compile
+➡️ evitar dependencias circulares
+➡️ usar mvn -X para diagnosticar
+
+🔷 46. ¿Cómo construir un BOM corporativo?
+
+Crear un proyecto:
+
+<packaging>pom</packaging>
+
+
+Con sección:
+
+<dependencyManagement>
+   <dependencies>
+     <dependency>
+        <groupId>mysql</groupId>
+        <artifactId>mysql-connector-j</artifactId>
+        <version>8.3.0</version>
+     </dependency>
+     <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>slf4j-api</artifactId>
+        <version>2.0.12</version>
+     </dependency>
+   </dependencies>
+</dependencyManagement>
+
+
+Luego:
+
+<dependencyManagement>
+  <dependencies>
+    <dependency>
+      <groupId>com.acme.bom</groupId>
+      <artifactId>enterprise-bom</artifactId>
+      <version>1.0.0</version>
+      <type>pom</type>
+      <scope>import</scope>
+    </dependency>
+  </dependencies>
+</dependencyManagement>
+
+🔷 47. ¿Cómo habilitar caching de dependencias en CI/CD?
+
+En GitHub Actions:
+
+- name: Cache Maven repository
+  uses: actions/cache@v3
+  with:
+    path: ~/.m2/repository
+    key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+
+
+En Jenkins:
+
+usar agentes persistentes
+
+usar shared library ~/.m2
+
+🔷 48. Estrategia para SNAPSHOT vs RELEASE
+
+SNAPSHOT
+
+para builds de desarrollo
+
+se publican múltiples versiones en un día
+
+nunca usar en producción
+
+RELEASE
+
+versión fija, inmutable
+
+aprobada vía pipeline
+
+sirve para reproducibilidad total
+
+Regla:
+➡️ SNAPSHOT para dev
+➡️ RELEASE para QA, staging y prod
+
+🔷 49. Problemas típicos con Maven en empresas grandes
+
+Builds lentos por dependencias enormes
+
+Conflictos transitivos
+
+Versiones duplicadas
+
+Falta de BOM corporativo
+
+Módulos mal ordenados por Reactor
+
+Failsafe mal configurado
+
+Profiles mal usados → builds inconsistentes
+
+Soluciones:
+
+BOM corporativo
+
+Flatten plugin
+
+Análisis de dependencias
+
+Pipelines reproducibles
+
+🔷 50. ¿Cómo minimizar tiempos de build en proyectos grandes?
+
+Estrategias reales:
+
+✔️ Reactor paralelo
+mvn -T 1C clean install
+
+✔️ Evitar recompilar módulos no cambiados
+
+→ usar incremental build (Takari, Maven 4 experimental)
+
+✔️ Cache de dependencias en CI/CD
+✔️ Saltar IT cuando no aplican
+-DskipITs
+
+✔️ Usar módulos más pequeños (micro-libraries)
+✔️ Evitar exceso de annotation processors

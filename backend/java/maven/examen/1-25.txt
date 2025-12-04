@@ -1,0 +1,368 @@
+✅ RESPUESTAS DEL MÓDULO 1 — Arquitectura Interna de Maven
+1. ¿Cómo construye Maven el Effective POM?
+
+Maven combina:
+
+Tu POM local (pom.xml)
+
+El POM padre (por ejemplo, spring-boot-starter-parent)
+
+Los BOMs definidos en <dependencyManagement>
+
+Perfiles activos
+
+Valores por defecto del modelo Maven
+
+Proceso interno:
+
+Lo procesa el maven-model-builder
+
+Resuelve herencia
+
+Interpola propiedades (${...})
+
+Aplica perfiles (condicionantes)
+
+Normaliza el modelo final
+
+Resultado:
+➡️ Un POM efectivo, que es la versión final que Maven realmente usa para el build.
+
+2. ¿Qué papel cumple el Reactor en multi–módulo?
+
+El Reactor:
+
+Descubre los módulos definidos en <modules>
+
+Construye un grafo dirigido de dependencias internas
+
+Ordena los módulos en orden topológico
+
+Decide qué módulos deben recompilarse
+
+Ejecuta builds paralelos (-T 1C, -T4)
+
+Caso real:
+
+Si app-service depende de core-models, Reactor compila primero core-models y luego app-service.
+
+3. Diferencia entre maven-core y maven-model-builder
+Componente	Función
+maven-core	Orquesta todo el ciclo de vida, plugins, sesiones, ejecución.
+maven-model-builder	Construye el POM efectivo (herencia, perfiles, BOMs, propiedades).
+
+En resumen:
+➡️ model-builder prepara el modelo
+➡️ core lo ejecuta.
+
+4. ¿Cómo resuelve Maven dependencias transitivas?
+
+Usa el algoritmo:
+
+Nearest-Wins
+
+Si dos versiones del mismo artefacto aparecen en ramas distintas del árbol:
+
+Se escoge la dependencia más cercana en distancia al proyecto
+
+Maven recorre el árbol de dependencias
+
+Si encuentra conflicto → gana la primera aparición más cercana
+
+También soporta:
+
+exclusiones (<exclusions>)
+
+versiones forzadas via <dependencyManagement>
+
+5. ¿Qué pasa cuando ejecutas mvn clean install?
+
+Secuencia:
+
+clean lifecycle
+
+elimina /target
+
+default lifecycle
+
+validate
+
+compile
+
+test
+
+package
+
+verify
+
+install → copia el artefacto a ~/.m2/repository
+
+Plugins internos ejecutan goals por defecto:
+
+compiler → compila
+
+surefire → tests
+
+jar/war → genera artefacto
+
+Si es multi–módulo:
+
+Reactor ordena y ejecuta cada módulo.
+
+6. ¿Cómo regenerar el árbol de dependencias si ~/.m2 está corrupto?
+
+Comandos:
+
+mvn dependency:purge-local-repository
+mvn dependency:resolve
+
+
+O full reset:
+
+rm -rf ~/.m2/repository
+mvn clean install
+
+7. ¿Qué pasa si tu microservicio depende de dos versiones de un artefacto?
+
+Problemas típicos:
+
+ClassNotFoundException
+
+MethodNotFoundException
+
+Comportamientos inconsistentes
+
+Fallas en runtime
+
+Soluciones:
+
+Forzar versión vía dependencyManagement
+
+Usar BOMs
+
+Revisar transitivas vía:
+
+mvn dependency:tree
+
+8. ¿Cómo evitar explosión de dependencias?
+
+Estrategias:
+
+Crear un BOM corporativo
+
+Centralizar versiones en dependencyManagement
+
+Usar <exclusions>
+
+Usar mvn dependency:analyze para detectar dependencias no usadas
+
+Minimizar starters que agregan muchas dependencias transitivas
+
+✅ RESPUESTAS DEL MÓDULO 2 — Phases, Goals y Lifecycle
+9. Diferencia entre phase, goal y plugin
+
+Phase → Paso del lifecycle (ej: compile, test, package)
+
+Goal → Acción específica de un plugin (ej: compiler:compile)
+
+Plugin → El componente que contiene goals (ej: maven-compiler-plugin)
+
+Maven ejecuta phases, pero usa goals para hacer el trabajo.
+
+10. ¿Qué fases se ejecutan en mvn package?
+
+Fases:
+
+validate → compile → test → package
+
+
+Porque Maven ejecuta todas las phases previas dentro del mismo lifecycle (default).
+
+11. ¿Se pueden ejecutar varios goals en la misma phase?
+
+✔️ Sí
+Ejemplo real:
+
+<execution>
+  <phase>verify</phase>
+  <goals>
+    <goal>jar</goal>
+    <goal>test-jar</goal>
+  </goals>
+</execution>
+
+
+También múltiples plugins pueden actuar en la misma phase.
+
+12. ¿Cómo decidir en qué phase ligar un goal custom?
+
+Reglas prácticas:
+
+Generar código → generate-sources
+
+Modificar recursos → process-resources
+
+Generar configuraciones para runtime → prepare-package
+
+Validaciones de calidad → verify
+
+Acciones antes de integración → pre-integration-test
+
+Se elige según el momento donde la tarea es necesaria.
+
+13. ¿Cuál es el propósito de pre-integration-test / integration-test / post-integration-test?
+Phase	Propósito
+pre-integration-test	Preparar entorno (levantar Docker, servicios externos, migraciones).
+integration-test	Ejecutar pruebas de integración basadas en entorno real.
+post-integration-test	Limpiar/teardown: apagar contenedores, borrar datos.
+14. ¿Qué phase usar para generar código antes de compilar?
+
+➡️ generate-sources
+
+Porque el compilador (compile) necesita que el código ya exista.
+
+15. ¿Qué implica si el build falla en verify pero se generó el JAR?
+
+Significa:
+
+La fase package terminó exitosamente
+
+El artefacto es válido
+
+Pero una verificación final falló
+(ej: Failsafe verify, chequeos de calidad, reglas corporativas).
+
+16. ¿Cuándo usar -DskipTests vs -DskipITs?
+Flag	Significa
+-DskipTests	No ejecuta tests unitarios (Surefire), pero compila test classes.
+-DskipITs	No ejecuta tests de integración (Failsafe).
+
+En pipelines:
+
+build rápido → -DskipTests
+
+no ejecutar IT → -DskipITs
+
+ambos → -DskipTests -DskipITs
+
+✅ RESPUESTAS DEL MÓDULO 3 — Perfiles y control de entorno
+17. Diferencia entre profile Maven y profile Spring
+Tipo	Se usa para…	Nivel
+Maven profile	Cambiar el build: plugins, propiedades, empaquetado.	Build Time
+Spring profile	Cambiar el comportamiento de la app: configs, datasources.	Runtime
+18. ¿Cómo activar un profile Maven?
+
+4 formas:
+
+Por línea de comando:
+
+mvn clean package -Pdev
+
+
+Por variable de entorno:
+
+<activation>
+  <property>
+    <name>env</name>
+    <value>qa</value>
+  </property>
+</activation>
+
+
+Por OS:
+
+<activation>
+  <os>
+    <name>Linux</name>
+  </os>
+</activation>
+
+
+Por existencia de archivo:
+
+<activation>
+  <file>
+    <exists>config/qa.flag</exists>
+  </file>
+</activation>
+
+19. ¿Qué pasa si dos profiles definen la misma propiedad?
+
+La propiedad del último profile activado sobrescribe a la anterior.
+
+Si ambos están activos simultáneamente → la última declaración en el orden del POM gana.
+
+20. Ventajas de usar profiles para ambientes
+
+No hay hardcoding en el POM
+
+Control centralizado
+
+Reproducible entre dev/qa/prod
+
+Facilita CI/CD
+
+Permite activar solo la configuración necesaria
+
+21. ¿Cómo hacer que el build falle si falta una variable de entorno?
+
+Usando el maven-enforcer-plugin:
+
+<requireEnvironmentVariable>
+  <variableName>APP_SECRET</variableName>
+</requireEnvironmentVariable>
+
+22. ¿Cómo activar profile prod automáticamente en Jenkins?
+<profile>
+  <id>prod</id>
+  <activation>
+    <property>
+      <name>env.BUILD_ID</name>
+    </property>
+  </activation>
+</profile>
+
+
+O por variable:
+
+mvn -Pprod
+
+23. ¿Cómo aislar un build CI/CD del entorno local?
+
+No usar nada de ~/.m2/settings.xml del usuario
+
+Usar contenedores o agentes limpios
+
+Evitar dependencias systemPath
+
+No usar rutas absolutas
+
+Forzar versiones exactas
+
+Evitar usar SNAPSHOT en releases
+
+24. ¿Cómo manejar múltiples .yml o .properties por ambiente?
+
+Combinando:
+
+Maven profiles → activan spring.profiles.active
+
+Spring Boot → usa:
+
+application.yml
+application-dev.yml
+application-qa.yml
+application-prod.yml
+
+
+Se activan según:
+
+java -jar app.jar --spring.profiles.active=qa
+
+✅ RESPUESTA DEL MÓDULO 4 — Tests
+25. Diferencia entre Surefire y Failsafe
+Plugin	Tests	Phase	Archivo
+Surefire	Unit tests	test	*Test.java
+Failsafe	Integration Tests	integration-test / verify	*IT.java
+
+Failsafe existe para que los IT no rompan el build prematuramente y ejecuten post-integration-test.

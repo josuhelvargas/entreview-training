@@ -403,3 +403,34 @@ El POM da info respecto a la calidad  del proyecto :
 
 Que es mejor: 
 Hacer que los casos de prueba configuren su propio entorno en lugar de personalizar la compilación para la preparación de pruebas?    
+
+
+
+
+Un Mojo es la unidad ejecutable de Maven; cada goal es un Mojo. Los Mojos se implementan extendiendo AbstractMojo, que define el método execute() y ofrece integración total con Maven (inyección de parámetros, phases, logging, lifecycle). Los plugins de Maven son simplemente colecciones de Mojos mapeados a goals. Se usan para crear lógica custom dentro del ciclo de vida de Maven, como generar recursos, validar reglas o preparar entornos corporativos. Gracias a Mojos, se puede extender Maven de forma nativa y consistente.
+
+
+@Mojo(
+  name = "create-build-info",
+  defaultPhase = LifecyclePhase.PREPARE_PACKAGE
+)
+public class BuildInfoMojo extends AbstractMojo {
+
+    @Parameter(defaultValue = "${project.version}")
+    private String version;
+
+    @Parameter(defaultValue = "${project.build.directory}")
+    private String target;
+
+    @Override
+    public void execute() throws MojoExecutionException {
+        try {
+            File out = new File(target, "build-info.json");
+            String json = "{ \"version\": \"" + version + "\" }";
+            Files.writeString(out.toPath(), json);
+            getLog().info("build-info.json created.");
+        } catch (Exception e) {
+            throw new MojoExecutionException("Failed to write file", e);
+        }
+    }
+}

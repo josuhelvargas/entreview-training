@@ -1,0 +1,93 @@
+¿Qué es el spring-boot-starter-parent?
+
+Es un POM padre que:
+
+Controla versiones estables de todas las dependencias Spring
+
+Incluye configuraciones de plugins recomendados
+
+Simplifica POMs
+
+Evita incompatibilidades
+
+✔️ Ejemplo de POM usando el parent
+<parent>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-parent</artifactId>
+    <version>3.2.5</version>
+    <relativePath/>
+</parent>
+
+
+Con esto, ya NO necesitas especificar versiones de:
+
+spring-boot-starter-web
+spring-boot-starter-data-jpa
+spring-boot-starter-test
+jackson
+logback
+
+
+-----------------------------------
+
+🔧 Spring Boot Maven Plugin
+
+El plugin que permite:
+
+1. Ejecutar la app con mvn spring-boot:run
+2. Empaquetar JAR ejecutable
+3. Crear imágenes Docker (Spring Boot 3.1+ tiene buildpacks)
+
+empaquetado puede ser JAR o WAR
+-----------------------------------
+✔️ JAR (Spring Boot standalone)
+- Incluye Tomcat embebido
+- Despliegue fácil en Docker
+- Ideal para Kubernetes, ECS, Cloud Run, etc.
+
+En el POM:
+<packaging>jar</packaging>
+
+Ejecutar:
+java -jar target/myapp.jar
+
+-----------------------------------
+
+✔️ WAR (para servidores externos tipo Tomcat / WebLogic)
+Solo si trabajas con servidores de aplicaciones corporativos heredados.
+En el POM:
+
+<packaging>war</packaging>
+
+Y en Spring Boot:
+@SpringBootApplication
+public class App extends SpringBootServletInitializer {
+    @Override
+    protected SpringApplicationBuilder configure(SpringApplicationBuilder builder) {
+        return builder.sources(App.class);
+    }
+}
+
+
+PERFILES DESDE MAVEN.
+
+<profiles>
+  <profile>
+    <id>dev</id>
+    <properties>
+      <spring.profiles.active>dev</spring.profiles.active>
+    </properties>
+  </profile>
+
+  <profile>
+    <id>qa</id>
+    <properties>
+      <spring.profiles.active>qa</spring.profiles.active>
+    </properties>
+  </profile>
+</profiles>
+
+
+Ejecutar:
+mvn spring-boot:run -Pdev
+mvn spring-boot:run -Pqa
