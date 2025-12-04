@@ -1,0 +1,21 @@
+MÓDULO 1 – Fundamentos de TanStack Router
+
+Objetivo: Comprender qué problema resuelve, por qué reemplaza a React Router y qué ventajas aporta a proyectos grandes.
+
+Contenido
+
+Qué es TanStack Router
+
+Por qué es typesafe y por qué esto evita errores en runtime
+
+Rutas declarativas vs configuraciones dinámicas
+
+El concepto central: File Routes + createFileRoute
+
+Configuración mínima del router
+
+<RouterProvider /> vs <Link /> vs navegación programática
+
+Ejercicios
+
+Crear una app base con 2 rutas: /home y /about.

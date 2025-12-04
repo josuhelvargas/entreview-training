@@ -1,0 +1,404 @@
+🧩 Visión general del curso
+
+Objetivo general:
+Que puedas estructurar tus apps así:
+
+El componente solo renderiza UI.
+
+La lógica de datos vive en hooks de React Query + hooks propios.
+
+Puedes reutilizar esos hooks en otros proyectos (misma base de código).
+
+Estado de servidor → React Query; estado local/UI → useState/useReducer/Zustand/etc.
+
+Propuesta: 6 módulos + proyecto final.
+
+🔹 MÓDULO 1 – Conceptos base: server state vs client state
+
+Objetivo: Entender por qué React Query existe y qué problema resuelve.
+
+Tipos de estado en una app React
+
+UI state: inputs, modal abierto/cerrado, tabs seleccionadas.
+
+Server state: datos que vienen de una API (user, orders, products).
+
+Diferencias clave:
+
+El server state no lo controlas tú (lo controla la API).
+
+Puede cambiar en el servidor sin que el cliente lo sepa.
+
+Necesita sincronización, caché, reintentos, invalidación.
+
+Problema de usar solo useState/useEffect
+
+Mucho código repetido: loading, error, fetch, try/catch.
+
+Duplicación de llamadas a la API en diferentes componentes.
+
+Dificultad para compartir/centralizar caché.
+
+useEffect gigantes y difíciles de testear.
+
+Qué aporta React Query
+
+Caché por query key.
+
+Estados automáticos: isLoading, isError, isSuccess, status.
+
+Reintentos automáticos.
+
+Refetch on window focus (re-sincronización).
+
+Invalidación selectiva de caché.
+
+👉 Ejercicio:
+
+Toma un componente que use useEffect + fetch.
+
+Haz una lista de todo el “ruido” de estado que hay (loading, error, etc.).
+
+Piensa cómo se vería si solo tuvieras isLoading, data, error.
+
+🔹 MÓDULO 2 – Fundamentos de React Query (useQuery / QueryClient)
+
+Objetivo: Usar React Query correctamente en un proyecto real.
+
+Instalación y setup básico
+
+npm install @tanstack/react-query (v4+).
+
+QueryClient y QueryClientProvider.
+
+Dónde inicializarlo (por ejemplo en main.tsx / index.tsx).
+
+Hook principal: useQuery
+
+Firma básica:
+
+const { data, isLoading, isError, error } = useQuery({
+  queryKey: ['user', userId],
+  queryFn: () => getUser(userId),
+});
+
+
+queryKey como identificador único de la data.
+
+queryFn como función que trae los datos (normalmente abstraída en un servicio).
+
+Estados que te da React Query
+
+isLoading, isFetching, isError, isSuccess, status.
+
+Patrones para UI:
+
+if (isLoading) return <Spinner />
+
+if (isError) return <ErrorMessage />
+
+return <UserCard user={data} />
+
+Opciones importantes
+
+staleTime, cacheTime.
+
+enabled para queries condicionales.
+
+refetchOnWindowFocus, refetchInterval.
+
+👉 Ejercicio:
+
+Implementa useQuery en un componente que muestre un usuario.
+
+Cambia el staleTime para ver cómo cambia el comportamiento al volver a la pestaña del navegador.
+
+🔹 MÓDULO 3 – Custom Hooks de datos: el “cerebro limpio”
+
+Objetivo: Construir hooks tipo useUserInfo, useUserAddress, useOrders, etc., para mantener los componentes casi sin lógica de datos.
+
+Patrón: “UI vs Data Hooks”
+
+UI hooks: useModal, useStepper, useForm.
+
+Data hooks: useUser, useOrders, useProducts.
+
+Encapsular React Query en hooks propios
+Ejemplo:
+
+// services/userService.ts
+export async function getUserInfo(userId: string) {
+  const res = await fetch(`/api/users/${userId}`);
+  if (!res.ok) throw new Error('Error fetching user');
+  return res.json();
+}
+
+// hooks/useUserInfo.ts
+import { useQuery } from '@tanstack/react-query';
+import { getUserInfo } from '../services/userService';
+
+export function useUserInfo(userId: string) {
+  return useQuery({
+    queryKey: ['user', userId],
+    queryFn: () => getUserInfo(userId),
+    staleTime: 1000 * 60, // 1 min
+  });
+}
+
+
+Y en el componente:
+
+function UserProfile({ userId }: { userId: string }) {
+  const { data: user, isLoading, isError } = useUserInfo(userId);
+
+  if (isLoading) return <p>Loading...</p>;
+  if (isError || !user) return <p>Error</p>;
+
+  const { userName, address } = user;
+
+  return (
+    <div>
+      <h1>{userName}</h1>
+      <p>{address}</p>
+    </div>
+  );
+}
+
+
+Ventaja para reutilizar en otros proyectos
+
+Extraes /hooks y /services a una librería interna (otro repo o paquete npm privado).
+
+Cualquier app que instale esa librería tiene ya:
+
+useUserInfo
+
+useUserOrders
+
+useUserPermissions
+
+Solo necesitan wirear el QueryClientProvider y la configuración de base URL.
+
+Organización por dominio
+
+src/domain/user/hooks/useUserInfo.ts
+
+src/domain/user/hooks/useUserAddress.ts
+
+src/domain/orders/hooks/useOrders.ts
+
+src/domain/orders/hooks/useOrderDetails.ts
+
+👉 Ejercicio:
+
+Crea una carpeta /domain/user con:
+
+userService.ts (funciones que llaman a la API).
+
+useUserInfo.ts (hook de React Query).
+
+Refactoriza 2 componentes para que usen useUserInfo.
+
+🔹 MÓDULO 4 – Mutaciones, invalidación e “inmutabilidad limpia”
+
+Objetivo: Manejar POST/PUT/DELETE sin ensuciar el estado global.
+
+useMutation para operaciones de escritura
+
+Crear usuario, actualizar dirección, eliminar orden.
+
+Firma básica:
+
+const mutation = useMutation({
+  mutationFn: updateUserAddress,
+  onSuccess: () => {
+    queryClient.invalidateQueries({ queryKey: ['user', userId] });
+  },
+});
+
+
+Invalidación de queries
+
+Por key (invalidateQueries(['user', userId])).
+
+Por prefijo (invalidar todas las de ['orders']).
+
+Por filtros.
+
+Actualización optimista (optimistic updates)
+
+onMutate, onError, onSettled.
+
+Patrones para probar cambios en UI sin esperar la API.
+
+Ideal para UX rápida sin llenar componentes de lógica de rollback.
+
+Encapsular mutaciones en hooks
+
+useUpdateUserAddress().
+
+useCreateOrder().
+
+useCancelOrder().
+
+Ejemplo:
+
+export function useUpdateUserAddress(userId: string) {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (newAddress: string) => updateUserAddress(userId, newAddress),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['user', userId] });
+    },
+  });
+}
+
+
+👉 Ejercicio:
+
+Crea useUpdateUserAddress.
+
+Úsalo en un formulario simple.
+
+Al guardar, invalidar ['user', userId] para refrescar la info.
+
+🔹 MÓDULO 5 – Diseño limpio de arquitectura con React Query
+
+Objetivo: Integrar React Query en una arquitectura “limpia” y reutilizable.
+
+Capas recomendadas
+
+Capas típicas:
+
+/api o /services: llamadas HTTP, mapeo de DTOs.
+
+/domain/*/hooks: hooks de React Query por contexto de negocio.
+
+/components: puros componentes de UI (sin fetch).
+
+SI quieres reutilizar entre apps:
+
+Mover /services + /domain/*/hooks a una librería compartida.
+
+Convenciones de nombres
+
+Queries: useXxxQuery o useXxx.
+
+Mutaciones: useXxxMutation o useXxxAction.
+
+Query keys: constantes tipo USER_QUERY_KEYS = { detail: (id) => ['user', id] }.
+
+Separar server state de client/UI state
+
+React Query: datos que vienen de API.
+
+Otro store (Zustand, Redux, contextos) para cosas como:
+
+Tema oscuro/claro.
+
+Estado del wizard/pasos.
+
+Filtros UI que no dependen de API.
+
+SSR / SSG (opcional si usas Next.js)
+
+dehydratedState, Hydrate.
+
+Prefetch de queries en el servidor.
+
+Mantener el patrón de hooks alineado con SSR.
+
+👉 Ejercicio:
+
+Reorganiza tu proyecto actual:
+
+Crea /services y /domain.
+
+Mueve hooks de React Query a /domain.
+
+Actualiza imports para que los componentes solo consuman los hooks.
+
+🔹 MÓDULO 6 – Buenas prácticas, testing y patrones avanzados
+
+Objetivo: Hacerlo “production ready”.
+
+Configuración global del QueryClient
+
+Valores por defecto para retry, staleTime, refetchOnWindowFocus.
+
+Definir una política clara por tipo de datos:
+
+Datos casi estáticos → staleTime alto.
+
+Datos críticos → revalidación frecuente.
+
+Manejo de errores global
+
+onError a nivel de QueryClient.
+
+Mostrar toasts, modales, logs.
+
+Integración con Sentry u otra herramienta.
+
+Paginated e infinite queries
+
+useInfiniteQuery para listas grandes.
+
+Patrones de “cargar más” e infinite scroll.
+
+Testing
+
+Testear hooks con React Testing Library + QueryClientProvider de prueba.
+
+Mockear fetch / Axios.
+
+Testear componentes que consumen hooks sin tocar la API real.
+
+👉 Ejercicio:
+
+Configura un QueryClient de pruebas.
+
+Escribe un test para useUserInfo que verifique:
+
+Que llama a la API.
+
+Que devuelve la data esperada.
+
+Que maneja error.
+
+🏁 Proyecto final del curso
+
+Objetivo: Armar una mini “librería de hooks de datos” reutilizable.
+
+Requerimientos
+
+Crea un proyecto (o monorepo) con:
+
+apps/web → una app React sencilla.
+
+packages/data-hooks → paquete con:
+
+/services
+
+/domain/user/hooks
+
+/domain/orders/hooks
+
+En packages/data-hooks expone hooks como:
+
+useUserInfo(userId)
+
+useUserOrders(userId)
+
+useOrderDetails(orderId)
+
+En apps/web:
+
+Usa el QueryClientProvider.
+
+Crea páginas que consumen esos hooks sin saber cómo se hace el fetch.
+
+Bonus:
+
+Publica el paquete en un registry privado (GitHub Packages o similar).
