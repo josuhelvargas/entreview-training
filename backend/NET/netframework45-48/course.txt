@@ -1,0 +1,262 @@
+🔵 ARQUITECTURA INTERNA DE .NET FRAMEWORK — EXPLICACIÓN DETALLADA
+
+El diagrama representa la arquitectura clásica de .NET Framework. Esta arquitectura se mantuvo estable desde .NET 1.0 (2002) hasta .NET Framework 4.8.1 (2022), aunque internamente recibió mejoras importantes (como RyuJIT, GC mejorado, LOH compacting, etc.).
+
+Vamos de arriba hacia abajo:
+
+
+
+
+
+
+1️⃣ .NET Application (Capa Superior)
+
+Esta es la capa donde se encuentra tu código, el de los desarrolladores:
+
+Aplicaciones Web (ASP.NET WebForms / MVC)
+
+Aplicaciones de escritorio (Windows Forms, WPF)
+
+Servicios de Windows
+
+Bibliotecas de clases (DLLs)
+
+PowerShell modules
+
+Aplicaciones de consola
+
+Responsabilidad
+
+Contiene lógica de negocio, UI, validaciones, controladores, servicios, etc.
+
+Define tipos, clases, métodos, interfaces.
+
+Llama a APIs del BCL o de otros frameworks.
+
+Relación con el resto del sistema
+
+Tu app no habla directamente con el sistema operativo.
+Lo hace a través del runtime y la Base Class Library.
+
+
+
+
+
+
+
+2️⃣ ASP.NET / Windows Forms (Framework Libraries)
+
+Estas son bibliotecas de alto nivel que implementan los modelos de aplicación.
+
+🟧 ASP.NET
+
+Incluye:
+
+WebForms
+
+MVC 5
+
+Web API 2
+
+Routing
+
+Sesiones, Caché, HttpContext
+
+Pipeline HTTP clásico (System.Web)
+
+Características
+
+Basado 100% en .NET Framework (no modular).
+
+Depende del IIS y su pipeline nativo.
+
+Usa el CLR para ejecutar requests.
+
+🟧 Windows Forms
+
+Una API thin-wrapper sobre Win32:
+
+Controles GUI
+
+Renderizado basado en GDI+
+
+Eventos de usuario (Click, KeyPress, etc.)
+
+Características importantes
+
+No usa hardware acceleration.
+
+Muy dependiente del DPI y del sistema operativo.
+
+
+
+
+
+
+
+3️⃣ Base Class Library (BCL)
+
+La BaseClassLibrary contiene todas las APIs esenciales para programar en .NET:
+System
+System.Collections
+System.IO
+System.Threading
+System.Net
+System.Text
+System.Linq
+System.Xml
+
+Función
+Es la capa intermedia entre:
+Tu código → BCL → CLR → Sistema operativo
+
+Beneficio
+Evita que los desarrolladores tengan que usar directamente:
+Win32
+COM
+APIs nativas complejas
+La BCL es la base de toda la experiencia .NET.
+
+
+
+
+
+
+
+
+4️⃣ Common Language Runtime (CLR)
+El CLR es el corazón de .NET Framework. 
+Es su máquina virtual.
+Es el componente clave que hace que .NET:
+Compile código administrado (managed)
+Ejecute IL en tiempo de ejecución (intemediate Language)
+Garanticen seguridad, aislamientos, integridad de tipos
+Administre memoria
+Optimice código nativo
+Maneje excepciones
+
+
+El CLR proporciona:
+🟦 Class Loader
+Responsable de:
+Cargar assemblies (DLLs y EXEs)
+Verificar firmas digitales y strong names
+Verificar seguridad del código (CAS en versiones antiguas)
+Validar metadata y tipos
+Resolver dependencias
+Generar contextos de carga
+Crear los AppDomains (hasta .NET Framework 4.8)
+
+
+¿Qué hace internamente?
+Usa PE (Portable Executable) + metadata .NET
+Inspecciona tablas IL y referencias
+Prepara tipos antes de ejecución (JIT warmup de tipos)
+Se encarga de que nunca se ejecuten:
+
+❌ métodos inconsistentes
+❌ clases mal declaradas
+❌ tipos incompatibles
+
+🟦 Garbage Collector (GC)
+El administrador de memoria automático de .NET.
+¿Qué hace?
+Reserva memoria en el Managed Heap.
+Detecta qué objetos ya no se usan.
+Libera memoria automáticamente.
+Compacta el heap para evitar fragmentación.
+Trabaja en modo generacional (Gen0, Gen1, Gen2, LOH).
+Mejoras clave en .NET 4.5 → 4.8
+Background GC más eficiente
+Reducción de pausas
+Nuevo algoritmo para Server GC
+LOH compacting (en .NET 4.8)
+Mejor integración con arrays grandes
+
+
+5️⃣ Operating System (Windows)
+La última capa del diagrama.
+El CLR traduce IL a código nativo, y ese código:
+Llama a Win32
+Utiliza threads del sistema operativo
+Escribe y lee memoria nativa
+Abre archivos
+Conecta redes
+Accede a GPU, drivers, hardware
+Consume CPU directamente
+La BCL abstrae la complejidad del sistema operativo.
+
+
+🔵 RELACIÓN ENTRE TODAS LAS CAPAS (RESUMEN)
+Your Code (.NET App)
+        ↓
+ASP.NET / Windows Forms
+        ↓
+Base Class Library (BCL)
+        ↓
+CLR (JIT + GC + Loader)
+        ↓
+Windows OS (native APIs)
+
+
+Cada capa está diseñada para:
+
+Simplificar la capa superior
+
+Proteger la seguridad
+
+Optimizar rendimiento
+
+Aislar las diferencias del sistema operativo
+
+🔵 EVOLUCIÓN DE .NET FRAMEWORK (4.5 → 4.8)
+
+Aquí una explicación visual resumida:
+
+.NET 4.5 (2012)
+
+async/await
+
+HttpClient moderno
+
+Mejora ThreadPool
+
+Background GC optimizado
+
+.NET 4.6 (2015)
+
+RyuJIT 64-bit
+
+C# 6 (Roslyn)
+
+TLS 1.2
+
+Mejoras criptográficas
+
+.NET 4.7 (2017)
+
+High DPI Awareness v2
+
+Compatibilidad con .NET Standard 2.0
+
+GC mejorado
+
+.NET 4.8 / 4.8.1 (2019–2022)
+
+LOH compacting
+
+Nuevas optimizaciones en RyuJIT
+
+Accesibilidad mejorada
+
+Soporte ARM64
+
+Estas mejoras se centran en:
+
+Mejorar el runtime (JIT, GC)
+
+Mejorar compatibilidad con estándares modernos
+
+Hacer que .NET Framework tenga mejor rendimiento y accesibilidad
+
+Prepararlo para convivir con el nuevo .NET (Core/5/6/7/8)

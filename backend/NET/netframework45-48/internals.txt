@@ -1,0 +1,399 @@
+🔵 DIAGRAMA AMPLIADO DE .NET FRAMEWORK (ESTILO BIOQUÍMICA / ZOOM-IN)
+Arquitectura Interna, Flujo de Ejecución, Componentes, Submódulos, Conexiones y Funcionalidades (versión detallada antes de .NET Core)
+
+A continuación, tienes una descripción como si fuera el diagrama completo, pero textual, para que puedas validar los niveles de detalle antes de generar la imagen final.
+
+🧩 NIVEL 1 — Aplicación .NET (Capa del desarrollador)
+Objetos, Clases, Ensamblados:
+
+Clases del usuario (Program.cs, Controllers, Services, Repositories)
+
+Métodos (sincronía/asincronía: async/await desde .NET 4.5)
+
+Interfaces (IService, IRepository)
+
+Events / Delegates
+
+Views (Razor, ASPX, XAML, WinForms Designer)
+
+Assembly Metadata (.dll, .exe)
+
+IL Code (CIL) → compilado por csc.exe (Roslyn)
+
+Conectores / Flujos:
+
+La aplicación hace uso directo de:
+
+Framework Libraries (System., Microsoft., etc.)
+
+NuGet Packages
+
+Platform Invocation (P/Invoke) si llama a APIs nativas
+
+COM Interop (herencia histórica)
+
+🟧 NIVEL 2 — Framework Libraries (ASP.NET / Windows Forms / WPF / Web API)
+ASP.NET (System.Web) incluye:
+
+HttpRuntime
+
+HttpModule Pipeline
+
+HttpHandler Dispatch
+
+Page Lifecycle (WebForms)
+
+Routing (MVC/Web API)
+
+Model Binding
+
+View Engines
+
+Session State Providers
+
+Membership / Identity (clásico)
+
+Windows Forms:
+
+Event Loop interno
+
+Win32 Message Pump
+
+GDI+ rendering
+
+Control Tree
+
+Handle Management (HWND)
+
+WPF:
+
+XAML Loader
+
+Dependency Properties
+
+Visual Tree & Logical Tree
+
+DirectX hardware acceleration
+
+Binding Engine
+
+Dispatcher (UI Thread)
+
+Conectores:
+
+Estas bibliotecas se apoyan en:
+
+BCL
+
+Interop con Win32
+
+Servicios del CLR
+
+🔵 NIVEL 3 — Base Class Library (BCL)
+Principales Namespaces y Subsistemas:
+📁 System.*
+
+Tipos primitivos (int, string, bool, decimal)
+
+Exceptions
+
+Reflection (System.Reflection)
+
+Attributes
+
+Security (Code Access Security)
+
+📁 System.IO
+
+FileStream
+
+BufferedStream
+
+MemoryStream
+
+Path / Directory utilities
+
+📁 System.Collections / Generics
+
+List<T>, Dictionary<T>, HashSet<T>
+
+Enumerator pattern
+
+📁 System.Threading
+
+ThreadPool
+
+Task Parallel Library
+
+Mutex/Semaphore/Monitor
+
+SynchronizationContext
+
+📁 System.Net
+
+HttpClient
+
+Sockets
+
+WebRequest (legacy)
+
+📁 System.Linq
+
+IEnumerable<T> extensions
+
+Expression Trees
+
+Conectores:
+
+La BCL llama a:
+
+Interop con Win32
+
+Kernel Objects
+
+Network stack de Windows
+
+File System API
+
+Expone APIs al desarrollador
+
+🟦 NIVEL 4 — Common Language Runtime (CLR)
+
+Este es el “motor bioquímico” del ecosistema .NET clásico.
+
+🧠 Subsistemas internos detallados:
+🔹 (1) Class Loader & Metadata Engine
+
+Responsable de:
+
+Componentes internos:
+
+Metadata Reader
+
+IL Decoder
+
+Assembly Resolver
+
+Strong Name Validator
+
+AppDomain Manager
+
+Type Loader
+
+JIT Interface Layer
+
+Security Permissions Evaluator
+
+Funcionalidades:
+
+Carga assemblies desde:
+
+GAC
+
+Carpeta local
+
+Shadow copying
+
+Verificación de integridad
+
+Resolución de dependencias
+
+Linkeo de métodos virtuales
+
+🔹 (2) JIT Compiler (RyuJIT en 4.6+)
+
+Pipeline de ejecución:
+
+IL → Import Phase
+
+Type Checking
+
+Optimization Phase
+
+Code Generation
+
+Native Machine Code (x86/x64/ARM64)
+
+Optimizaciones:
+
+Inlining
+
+Dead Code Elimination
+
+Loop Unrolling
+
+Constant Propagation
+
+SIMD Vectorization
+
+Register Allocation
+
+🔹 (3) Garbage Collector (Generational GC)
+
+Componentes:
+
+Heaps:
+
+Gen0
+
+Gen1
+
+Gen2
+
+LOH (Large Object Heap)
+
+Subsistemas:
+
+Background GC (concurrent)
+
+Server GC & Workstation GC
+
+Finalizer Thread
+
+Memory Compaction Engine
+
+LOH Compacting (desde 4.8)
+
+Ephemeral Segment Manager
+
+Algoritmos:
+
+Mark & Sweep
+
+Compacting (excepto LOH pre-4.8)
+
+Promotion & Survival heuristics
+
+🔹 (4) Threading + Synchronization
+
+Componentes internos:
+
+ThreadPool Manager
+
+IO Completion Ports (IOCP)
+
+Task Scheduler
+
+Async State Machine Compiler
+
+Synchronization Primitives
+
+Timer Queue
+
+Relación con async/await (4.5+):
+
+El compilador genera una máquina de estados.
+
+El CLR maneja las transiciones de contexto.
+
+🔹 (5) Exception Handling Engine
+
+Stack Unwind Mechanism
+
+Managed ↔ Native transitions
+
+Structured Exception Handling (SEH)
+
+First-chance / second-chance exceptions
+
+🔵 NIVEL 5 — Operating System (Windows)
+
+Componentes consumidos:
+
+Win32 API
+
+Kernel32
+
+User32
+
+GDI+
+
+Sockets API
+
+NTFS File System
+
+HTTP.SYS (IIS)
+
+DirectX (WPF)
+
+Memory Manager
+
+Scheduler
+
+El CLR presenta una abstracción sobre estos sistemas.
+
+🌐 FLUJO DE EJECUCIÓN COMPLETO (ESTILO CICLO BIOQUÍMICO)
+
+C# compiler (Roslyn) → genera IL + metadata
+
+Class Loader valida, carga y prepara tipos
+
+JIT Compiler convierte IL → Código Nativo
+
+CLR Runtime administra:
+
+Heap
+
+Threads
+
+Exceptions
+
+Seguridad
+
+Execution Context
+
+BCL expone APIs de alto nivel
+
+Framework Libraries implementan modelos (ASP.NET, WinForms)
+
+Application Code ejecuta lógica
+
+OS se encarga de:
+
+Procesos
+
+Scheduling
+
+Syscalls
+
+Drivers
+
+🤝 EVOLUCIÓN .NET FRAMEWORK 4.5 → 4.8 (dentro del diagrama)
+
+Aquí se agregan mejoras específicas:
+
+✔ .NET 4.5
+
+async/await
+
+HttpClient
+
+ThreadPool mejorado
+
+Background GC refinado
+
+✔ .NET 4.6
+
+RyuJIT 64-bit
+
+TLS 1.2
+
+C# 6 (Roslyn)
+
+✔ .NET 4.7
+
+High DPI Awareness v2
+
+Compatibilidad .NET Standard 2.0
+
+GC server optimizado
+
+✔ .NET 4.8 / 4.8.1
+
+LOH compacting
+
+Optimizations del JIT
+
+Mejoras de Accessibility
+
+ARM64 (4.8.1)

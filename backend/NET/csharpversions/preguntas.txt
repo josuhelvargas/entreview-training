@@ -1,0 +1,37 @@
+cual es la difernecia entre float y decimal en c# ? 
+la diferencia entre float y decimal es que  float es de 4 bytes y decimal es de 16 bytes y decimal es mas preciso float se usa frecuentemente para operaciones matematicas y decimal para operaciones monetarias
+
+
+
+c# 6
+1.que significa en c# 0m / 0.15m? 
+2.Tiene algun inconveniente de performance utilizar using static System.Math; (y al llamar solo la funcion para hacerlo mas facil de leer en el codigo) ? 
+3.Cuando de inicializa una clase con propiedades inicializadas  puede sobreescribirs el valor inicial para incializarla de forma mas limpia? 
+4.Puede tener una clase valores inciales default ( inicalizacion sin cosntructor ) , pero tambien tener implementado un constructor por si se queire incializar con valores especificos? Como se deberia hacer esto? 
+5.Por que se realiza nameof()  haciendo refenrecia al propio metodo que lo llama? 
+
+
+c#7
+1.cuando deberia usar deconstructor en c#?
+2.Para mantener el codigo mantenible y facilmente legible es posible poner la firma del metodo con un tipo /objeto con los 2 campos que retorna?  y luego al momento deinvocarlo solo marcar el objeto de retorno con la tupla? 
+
+3.como es mejor is que typeof para obtener el tipo de una variable en c#?
+
+4.cómo puedo utilizar de la mejor forma is y switch  o is y if para poder mantener lo mas legible y facil de entender el codigo?   
+5.Se puede usar enums con is? 
+
+6.cómo funciona when en el nuevo switch?  
+
+
+7.hay algun problema con el scope d euna funcion dentro de otra si se quer ellamar en otro lado del codigo? como s epeude aprovechar rsto de forma mas concreta y eficiente con mutiples uciones mebebidas en otras en c# . veo que implica un enfoque mas funcional pero quiero imaginar si esto tiene al final sentido en lugar de dejar mas mantenbile y legibl  sin embeber una funcion dentro de otra.
+
+8.cuando se utiliza out var en c# no hay muchas ocaciones (diccionarios y parseos no? ) ? 
+
+9.que significa esto en c# : 
+ public double[,] Datos; 
+
+10.En que momento es oportuno utilizar ref returns?  ( alof que cosndieremos lo sugicientemente grande para que sea eficiente y tenga sentido usar refs dado que el prefromancegenerado dpor el garbage collector no es suficiente.)
+
+
+11.provee un ejemplo concreto de cuando utilizar |  y || su diferencia en c#
+

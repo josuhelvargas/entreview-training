@@ -38,9 +38,9 @@ A continuación se listan solo las características que realmente importan en en
 Interpolated strings
 Null-conditional operator (?.)
 Expression-bodied members
-Using static
+Using static  ( desde arriba se anuncia para no tener que agrgar la clase en cada llamada) 
 Auto-properties inicializadas
-nameof
+nameof ( para no tener que escribir strings en logs. ) ejem: nameof(variable)
 ✔ Hito: calidad de vida, reducción de boilerplate.
 
 ⭐ C# 7.0 – 7.3 (2017–2018)
