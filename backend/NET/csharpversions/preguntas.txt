@@ -35,3 +35,44 @@ c#7
 
 11.provee un ejemplo concreto de cuando utilizar |  y || su diferencia en c#
 
+
+c#8
+12.Cual es la utilidad real de utilizar readonly en variables o structs en c#? Cusando deberia utilizarlo? 
+
+13.Cuando deberia utilizar stackalloc ( bajo que escenarios) ? da ejemplos
+
+14.COmo se pued eutilizar en una lista real la propeidad de Null-coalescing assignment ??=
+
+15.Como se deberia utilizar el yield de cofmra correcta, cuando tiene sentido utilizarlo, pofrece sescenarios concretos. 
+
+16Entocnes por que utilizar IAsyncEnumerable<T> en lugar de IEnumerable<T>? Cual es la relacion con yield? quer psasa realmente si en lugar de utilizar uasyncenumerable en una operacion asincorna , utilizamos Ienumerable. prove ejemploe s e ilsutr para saver cuadno utilizarlo.
+
+17Como funcionan estos indices en c# 
+int ultimo = numeros[^1];  
+
+
+c#9
+18.Cual es la diferencia entre record, readonly records , init-only setters y with expressions?
+19.Por que utilizarlos en lugar de una clase normal? por que es importnate al inmutabilidad de manera mas practica , explcia en detalle con ejemplos, ayudame a comapra la fucnionalidad con un elemento (with) y comapralo con un efoque fucnional , cotnr a uno tradicional para ver la mejor asi es pern perfromance o en algun otra forma? 
+20.En que situacion podria utilizar en utiliozando pattern matching  y cuendo usar con || o con "or" en las switch expressions?  
+
+
+21.cuando podria utilizarse (await foreach c#), detalla unejemplo y si tien sentido utilizar en conjunto con rxjs. 
+
+22.No entiendo por que se necesariria un nint y nuint ( par ainteroperabildiad de 32 y 64 biys . quiere decir esto que se puede utilizar en arquitectura de 32 bits y 64 bits  en base a un msimo artefacto compilado? no eso y ahacia cualquier artefacto compilado que sea compatible con x64 * y autioaticamente compatible con 32bits  ?   ) por que solo se agrego esto en los tipos numierocos de int? 
+
+
+c#10
+23.existe alguna diferencia entre record struct y record class , readonly record struct y readonly record class ? 
+24.Existe alguna necesidad real de utilizar record struct en lugar de record class? (que signigica que no generan overhede tipo de referencia  y por que son utiles par atemertria y graficos)
+25.Existe alguna necesidad real de utilizar un global using en c# ,se deberia considerar el perfromance para utilziarlo o no? cuando deberiamos considerarlo puntualmente para  no abusar?  
+
+26.Compo se pude xplotar el uso de lambdas con event haldnesrs avanxados ( func . lambsas con tipo de reterono explicito, y labmbds con aributos, da mas ejemplos )
+ 
+27.interpolacion es posible si todos los strings involucrados son cosntantes.
+
+28.como funciona is ( que evalua?? ) y cuando usarlo vs typeof? 
+
+29.para que serviria generar el metodo toString() como sealed? 
+
+30. por que es importante y cunado utilizar la palabra #region en c# , incluso detro de namespace file-scoped ? da un ejemplo 
