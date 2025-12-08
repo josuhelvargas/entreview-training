@@ -76,3 +76,36 @@ c#10
 29.para que serviria generar el metodo toString() como sealed? 
 
 30. por que es importante y cunado utilizar la palabra #region en c# , incluso detro de namespace file-scoped ? da un ejemplo 
+
+31.Que es un init only setters y como funcioan cuando aplicarlo? 
+
+c#11
+
+
+cual es la diferencia entre 
+public record Pedido
+{
+    public required string Id { get; init; }
+    public required DateTime Fecha { get; init; }
+    public decimal Total { get; init; }
+}
+
+y 
+public record Pedido
+{
+    public required string Id { get; set; }
+    public required DateTime Fecha { get; set; }
+    public decimal Total { get; set; }
+}
+
+
+Da varios ejemplospotentes de cuando es util y ptractico utilizar pattern matching cin sus nuevas caracteristicas hasta c# 14
+
+Por que deberia utilia ref structs  y ref fields/ usar stack allocations da ejemlo c concretos. 
+por que son utiles en parsers, serializadores, span-based APIs ? que ses cada uno de estos elementos? 
+
+
+Por que se necesta un parametro para indicar que un parameto no puedfe escapar de su context? (inspirado en rust) por que mejora la seguridad? 
+provee un ejemplo 
+
+
