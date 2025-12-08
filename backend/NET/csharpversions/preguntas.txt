@@ -109,3 +109,5 @@ Por que se necesta un parametro para indicar que un parameto no puedfe escapar d
 provee un ejemplo 
 
 
+c#13 
+Conmo se pueden utilizar interceptors para autditar metodos y logging, netricas automaticas? 
