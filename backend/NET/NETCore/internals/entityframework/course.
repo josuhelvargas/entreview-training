@@ -1,0 +1,57 @@
+
+ENtity framework 
+🟥 EF 6 / 4.8 (clásico, Windows only)
+┌──────────────────────────────┐
+│ ObjectContext / DbContext    │
+├──────────────────────────────┤
+│ LINQ-to-Entities (antiguo)   │
+│ EDMX, Designer               │
+│ Change Tracker stateful      │
+│ Proxy-based lazy loading     │
+│ Strong reflection/mapping    │
+├──────────────────────────────┤
+│ .NET Framework CLR (Windows) │
+└──────────────────────────────┘
+
+
+🟩 EF Core (3.0 → 8)
+┌─────────────────────────────────────┐
+│          EF CORE PIPELINE          │
+├─────────────────────────────────────┤
+│ LINQ Translator (nueva arquitectura)│
+│ Query Pipeline (compilable)         │
+│ Compiled Models                     │
+│ Change Tracker lightweight           │
+│ Interceptors / Diagnostics           │
+│ Batch Updates (7,8)                  │
+│ Temporal Tables, JSON, Cosmos DB     │
+├─────────────────────────────────────┤
+│ .NET Core / .NET 6–8 Runtime         │
+└─────────────────────────────────────┘
+
+
+
+
+Qué cambia arquitectónicamente
+Aspecto	EF 6 / 4.8	EF Core
+Plataforma	Solo Windows	Windows / Linux / macOS
+Pipeline SQL	rígido	modular, optimizado
+LINQ	limitado	reescrito → más traducciones correctas
+Rendimiento	bajo	muy alto (compiled queries/models)
+Extensibilidad	baja	interceptors, conventions, plugins
+Bases modernas	no	SQL modern, PostgreSQL, SQLite, Cosmos
+🧠 ¿Por qué EF Core es clave en .NET moderno?
+
+No depende de System.Data.Entity
+
+No usa EDMX (modelo antiguo)
+
+Pipeline de query totalmente reconstruido → más rápido, más ligero
+
+Opciones modernas:
+
+JSON Column Mappings (EF8)
+
+Bulk Ops nativas (EF7+)
+
+Compiled Models (30x más rápido en arranque)

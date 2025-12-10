@@ -1,0 +1,129 @@
+┌─────────────────────────────────────────────┐
+│               .NET APPLICATION               │
+│  (C#, F#, VB) + Libraries + DI + Hosting     │
+└─────────────────────────────────────────────┘
+                     │
+                     ▼
+┌─────────────────────────────────────────────┐
+│            .NET HOT COMPILATION LAYER       │
+│  Roslyn Compiler → IL Code + Metadata        │
+└─────────────────────────────────────────────┘
+                     │
+                     ▼
+┌─────────────────────────────────────────────┐
+│                 .NET RUNTIME                 │
+│  • CoreCLR / CLR                             │
+│  • JIT (RyuJIT)                              │
+│  • GC (server / workstation)                 │
+│  • ThreadPool, Task Scheduler                │
+│  • Type Loader                               │
+│  • Exception Engine                          │
+└─────────────────────────────────────────────┘
+                     │
+                     ▼
+┌─────────────────────────────────────────────┐
+│                 HOSTING LAYER                │
+│ dotnet.exe, ASP.NET Core Host, Native Host   │
+│  • carga runtime                              │
+│  • selecciona versión                         │
+│  • inicia aplicación                          │
+└─────────────────────────────────────────────┘
+
+
+
+
+
+Componente	        Rolcl
+Roslyn	            Compila C# al IL.
+IL + Metadata	      Núcleo portable del programa.
+CoreCLR	            Runtime administrado multiplataforma.
+JIT RyuJIT	        Compila IL → código nativo optimizado.
+GC	                Maneja memoria administrada.
+ThreadPool	        Ejecución de tareas y paralelismo.
+Hosting Layer	    Arranca la app en Linux, Windows, macOS.
+
+
+
+
+
+
+
+
+┌──────────────────────────────────────────────────────────────┐
+│                  CLR INTERNAL SUBSYSTEMS                      │
+├──────────────────────────────────────────────────────────────┤
+│  1. JIT (RyuJIT)                                              │
+│     • Tiered Compilation                                      │
+│     • Dynamic PGO (Profile-Guided Optimization)               │
+│     • ReadyToRun + AOT optimizable                            │
+│                                                               │
+│  2. Garbage Collector                                         │
+│     • Generational GC (Gen0, Gen1, Gen2)                      │
+│     • Server GC / Workstation GC                              │
+│     • LOH (Large Object Heap)                                 │
+│     • Heap Compaction / Background GC                         │
+│                                                               │
+│  3. Type System + Loader                                      │
+│     • Carga de assemblies                                     │
+│     • Resolución de tipos                                     │
+│     • Metadata Reader                                         │
+│                                                               │
+│  4. Execution Engine                                          │
+│     • Exception Handling                                      │
+│     • Stack Unwinding                                         │
+│     • Interop (P/Invoke, marshalling)                         │
+│                                                               │
+│  5. Threading + Task Scheduler                                │
+│     • ThreadPool                                              │
+│     • Async/await builder                                     │
+│                                                               │
+│  6. IL Interpreter (introducido como fallback)                │
+└──────────────────────────────────────────────────────────────┘
+
+
+
+
+
+
+
+
+.NET Core 2.0 (2017)
+   • CoreCLR maduro
+   • RyuJIT estable
+   • Server GC multi-hilo
+   • ASP.NET Core Kestrel modernizado
+   • EF Core 2.0 (inmaduro comparado a EF6)
+
+.NET Core 3.0 / 3.1 (2019)
+   • Single-file apps inicial
+   • Tiered JIT Compilation
+   • Windows Desktop (WPF/WinForms)
+   • EF Core 3.0: LINQ reescrito, mejor traducción SQL
+
+.NET 5 (2020)
+   • Unificación del ecosistema
+   • Mejoras JIT: PGO estático, intrinsics SIMD
+   • Mejor hosting layer
+   • EF Core 5: rendimiento + 1-to-1 mapping mejorado
+
+.NET 6 (2021)
+   • Profile-Guided Optimization (PGO) dinámico
+   • Minimal APIs
+   • Hot Reload
+   • EF Core 6: Compiled Models
+
+.NET 7 (2022)
+   • Native AOT serio
+   • Reduced GC Latency
+   • Mejoras masivas en Web APIs
+   • EF Core 7: Bulk updates, interceptors avanzados
+
+.NET 8 (2023)
+   • Dynamic PGO completo
+   • GC: Memory pooling + LOH optimizaciones
+   • AOT para ASP.NET real
+   • EF Core 8: JSON mapping, raw SQL mejorado
+
+
+
+
