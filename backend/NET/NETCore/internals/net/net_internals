@@ -6,7 +6,7 @@
                      ▼
 ┌─────────────────────────────────────────────┐
 │            .NET HOT COMPILATION LAYER       │
-│  Roslyn Compiler → IL Code + Metadata        │
+│  Roslyn Compiler → IL Code + Metadata +AST( Abstract Syntax Tree)      │
 └─────────────────────────────────────────────┘
                      │
                      ▼
@@ -127,3 +127,8 @@ Hosting Layer	    Arranca la app en Linux, Windows, macOS.
 
 
 
+| Capa                      | Qué hace                        | Cómo evolucionó                                         |
+| ------------------------- | ------------------------------- | ------------------------------------------------------- |
+| **Hot Compilation Layer** | Convierte C# → I L              | Roslyn + Source Generators + análisis estático avanzado |
+| **Runtime (CoreCLR)**     | Ejecuta IL, maneja memoria, JIT | RyuJIT + GC evolucionado + optimizaciones para AOT      |
+| **Hosting Layer**         | Arranca la app, carga runtime   | Minimal Hosts + alto rendimiento + bootstrap más rápido |
