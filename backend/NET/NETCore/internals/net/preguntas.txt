@@ -1,0 +1,237 @@
+que es eso del Intermediate language ( msil o cil) 
+
+https://github.com/microsoft/dotnet
+
+
+
+
+elabora. 
+Como funciona Roslyn?
+
+Como se disena un sorucegenerator y explica como por ejemplo se usan los interceptors
+eXPLICA QUE ES AOT (Ahead Of Time) y como funciona? 
+
+
+
+2.NET RUNTIME
+Como funciona de forma general el .net runtime? 
+Como funciona JIT (Just In Time)
+Como funciona el garbage collector en .NET  y explcia las difenrecias mas relenvates respecto a .NET framework 
+Explica la arquitectura de los siguientes elementos y como funciona en .NET: 
+ThreadPool
+
+Type Loader
+
+Exception Engine
+
+Security Model
+
+Execution Engine
+
+
+
+Explica como funciona CoreCLR comparandolo con CLR ( .net framework) y las difenrecnias mas relevantes.entiendo que el CLR
+Entiendo qu desd e.NET5 ya solo existe coreclr.
+
+Explica como funciona RyuJIT y sus itnernals: 
+
+
+
+
+
+
+
+Explica en que cosisitenron estas mejoras: 
+✔ 2.2 RyuJIT (JIT moderno)
+
+El JIT convierte el IL → código nativo optimizado en tiempo de ejecución.
+
+Evolución:
+🔹 .NET Core 3.0
+
+Primera versión fuerte en optimización
+
+Mejora en SIMDs, stackalloc, span<T>
+
+🔹 .NET 5
+
+Tiered Compilation completo
+
+🔹 .NET 6
+
+Dynamic PGO (Profile Guided Optimization)
+
+Mejora en optimización de loops
+
+🔹 .NET 7
+
+Mejoras en vectorización y inlining avanzado
+
+🔹 .NET 8
+
+Integración profunda con NativeAOT
+
+Optimizaciones en branch prediction
+
+🔹 .NET 9
+
+Nuevos algoritmos para reducir cold-path cost
+
+
+
+ahora explica el threadpool: 
+✔ 2.4 ThreadPool y Task Scheduler
+
+Maneja:
+
+tareas asíncronas
+
+paralelismo
+
+schedulers
+
+Cambios importantes:
+🔹 .NET Core 3
+
+Mejoras en colas lock-free
+
+🔹 .NET 5
+
+Tasks más rápidas
+
+Reducción de sobrecarga en async/await
+
+🔹 .NET 6
+
+TaskScheduler optimizado para alta concurrencia
+
+🔹 .NET 7–8–9
+
+Mejor heurística adaptativa
+
+Menos presión en el GC por objetos Task
+
+
+
+
+
+
+Ahor aepxlica el type loader 
+
+✔ 2.5 Type Loader
+
+Carga:
+
+tipos
+
+ensamblados
+
+metadatos
+
+Importante para AOT vs JIT.
+
+Evolución clave:
+
+Desde .NET 6 es trimming-friendly
+
+.NET 8 introduce mejoras para NativeAOT
+
+.NET 9 reduce time-to-first-load
+
+
+Ahora epxlica el 
+✔ 2.6 Exception Engine
+
+El runtime maneja:
+
+throw
+
+stack unwinding
+
+filtros (catch when)
+
+fallback handlers
+
+Mejoras:
+
+.NET 5-9 reducen costo de throw en loops
+
+.NET 8 mejora stack-walking del debug engine
+
+
+
+
+
+
+
+Ahora epxlica el hsoting layer: 
+🧩 3. HOSTING LAYER
+
+Esta capa ejecuta tu aplicación. Es el “bootstrapper”.
+
+Incluye:
+
+dotnet.exe
+
+ASP.NET Core Host
+
+Native Host (cuando hay AOT)
+
+✔ ¿Qué hace el Hosting Layer?
+
+Selecciona el runtime correcto
+
+Carga el CLR
+
+Crea el AppDomain
+
+Carga el assembly de entrada
+
+Invoca Main() o handler equivalente
+
+Configura el entorno (paths, deps.json, runtimeconfig.json)
+
+✔ Evolución del Hosting Layer (3.0 → 9)
+🔹 .NET Core 3.0
+
+Nuevo "Generic Host"
+
+Worker Services
+
+Mejor integración con containers
+
+🔹 .NET 5
+
+Hosting más rápido
+
+Simplificación de CreateHostBuilder()
+
+🔹 .NET 6
+
+Minimal Hosting Model
+
+sin Startup.cs
+
+sin Program complejo
+
+Ejemplo nuevo:
+
+var app = WebApplication.CreateBuilder(args).Build();
+app.MapGet("/", () => "Hello");
+app.Run();
+
+🔹 .NET 7
+
+Primeras optimizaciones para AOT
+
+🔹 .NET 8
+
+Hosting para NativeAOT completo en web apps pequeñas
+
+Mejor integración con containers
+
+🔹 .NET 9
+
+Reduced hosting overhead
+
+Startup time más rápido
