@@ -1,0 +1,325 @@
+Perfecto. Aquí tienes un curso completo, moderno y estructurado que cubre React Router v5, v6 y v7, incluyendo:
+
+Su evolución
+
+Cambios conceptuales
+Nuevas APIs
+Internals
+Ejercicios prácticos
+Migraciones de v5 → v6 → v7
+Casos reales de arquitectura
+🚀 CURSO COMPLETO: REACT ROUTER v5 → v6 → v7
+Nivel: Intermedio → Avanzado
+Formato: 10 módulos + laboratorios + comparativas + migraciones
+
+
+
+
+
+🟦 MÓDULO 1 — Introducción y Filosofía del Router
+Objetivo
+
+Comprender por qué React Router evoluciona tanto y qué problema resuelve.
+
+Contenido
+
+Historia del router en React
+
+¿Por qué existían tantos “workarounds” en v4/v5?
+
+Filosofía declarativa
+
+El origen del diseño de v6 basado en “route ranking”
+
+Por qué v7 cambia el core nuevamente (Data APIs)
+
+Ejercicio
+
+Crear una app mínima en v5, v6 y v7 para ver diferencias.
+
+
+
+
+
+🟦 MÓDULO 2 — React Router v5 en profundidad
+Contenido
+
+<BrowserRouter>, <Switch>, <Route>, <Link>
+
+Render props: component, render, children
+
+Rutas anidadas con <match.params>
+
+Redirecciones: <Redirect>
+
+Hooks (limitados): useParams, useLocation, useHistory
+
+Internals
+
+Route matching basado en orden
+
+Por qué <Switch> era necesario
+
+Cómo funciona history (push, replace, goBack)
+
+Problemas de v5
+
+Árbol de rutas no declarativo
+
+Rutas dinámicas difíciles de migrar
+
+Redender loops comunes
+
+Falta de type safety
+
+Ejercicio
+
+Construir un sistema de dashboard con nested routes y guards en v5.
+
+
+
+
+
+🟦 MÓDULO 3 — React Router v6: El gran rediseño
+Cambios principales
+
+<Switch> → <Routes>
+
+Ranking automático de rutas
+
+API más simple
+
+Sin render props
+
+Hooks más completos
+
+Params type-safe con TypeScript
+
+Mejor performance
+
+Nueva API
+<Routes>
+  <Route path="/" element={<Home />} />
+  <Route path="/users/:id" element={<User />} />
+</Routes>
+
+Hooks nuevos
+
+useNavigate
+
+useSearchParams
+
+useMatch
+
+useResolvedPath
+
+Internals
+
+Route ranking algorithm
+
+No re-render del árbol completo
+
+Navigation blocking (unstable)
+
+Ejercicio
+
+Migrar tu dashboard v5 → v6.
+
+
+
+
+
+🟦 MÓDULO 4 — Rutas anidadas y layouts modernos
+Contenido
+
+Nested routing con <Outlet>
+
+Layouts principales
+
+Layouts por sección (Auth, Admin, Public)
+
+Rutas protegidas en v6
+
+Ejemplo de layout:
+<Route element={<DashboardLayout />}>
+  <Route path="profile" element={<Profile />} />
+  <Route path="settings" element={<Settings />} />
+</Route>
+
+Ejercicio
+
+Crear un layout con barra lateral y subrutas.
+
+
+
+
+
+🟦 MÓDULO 5 — Data APIs (nueva arquitectura v6.4 → v7)
+
+Esta es la actualización más grande después de v6.
+
+Data APIs incluyen:
+
+Loaders
+
+Actions
+
+Form handling
+
+Navigation + data fetching integrados
+
+Error boundaries
+
+Ejemplo:
+export const loader = async ({ params }) => {
+  return fetch(`/api/users/${params.id}`).then(r => r.json());
+};
+
+<Route path="users/:id" element={<User />} loader={loader} />
+
+Ventajas
+
+Prefetch automático
+
+Race conditions resueltas
+
+Eliminación del "loading state spaghetti"
+
+Internals
+
+Data router engine
+
+Request/response model inspirado en Remix
+
+Error bubbling automático
+
+Ejercicio
+
+Crear CRUD completo usando loaders + actions sin useState.
+
+
+
+
+
+🟦 MÓDULO 6 — Formularios modernos con <Form>
+Contenido
+
+<Form method="post">
+
+Actions disparadas automáticamente
+
+Replaces useState for forms
+
+Redirects desde actions
+
+Ejercicio
+
+Crear login con <Form> y redirección condicional.
+
+
+
+
+
+🟦 MÓDULO 7 — React Router v7
+
+React Router v7 es una optimización completa sobre v6.4+.
+
+Novedades del v7
+
+Nuevo motor de navegación
+
+Mejor performance
+
+Mejor prefetch de loaders
+
+Mejor soporte para Suspense
+
+Preparado para React 18 concurrent mode
+
+Mejor SSR + streaming
+
+Ejercicio
+
+Convertir loaders a "defer" y usar <Await>.
+
+
+
+
+
+🟦 MÓDULO 8 — SSR, Lazy Loading y Code Splitting
+Contenido
+
+lazy() con rutas
+
+Split por secciones grandes
+
+SSR con Express / Vite
+
+hydrateRoot y sincronización del estado del router
+
+Ejercicio
+
+Separar dashboard en bundles independientes.
+
+
+
+
+
+
+🟦 MÓDULO 9 — Guards, Roles, Auth y Protected Routes
+Contenido
+
+Implementar roles con loader
+
+Redirecciones basadas en session
+
+Middleware-like logic
+
+Logout seguro
+
+Ejercicio
+
+Proteger rutas por permisos dinámicos.
+
+
+
+
+
+
+🟦 MÓDULO 10 — Proyecto Final Completo
+Construir app real:
+
+Login con actions
+
+Dashboard con loaders
+
+Perfil editable
+
+SSR opcional
+
+Error boundaries por ruta
+
+Suspense con await
+
+
+
+
+
+
+📘 BONUS: Comparativa directa v5 vs v6 vs v7
+Feature	v5	v6	v7
+Declarative routes	❌	✔️	✔️
+Ranking automático	❌	✔️	✔️
+Data APIs	❌	✔️ (6.4+)	✔️ Mejoradas
+Suspense ready	❌	🟡 parcial	✔️
+SSR moderno	❌	🟡	✔️
+Forms sin useState	❌	✔️	✔️
+Performance	Bajo	Medio	Alto
+📗 BONUS: Archivos de Migración
+
+Si quieres, puedo prepararte:
+
+✔ Migración v5 → v6
+✔ Migración v6 → v7
+✔ Árbol de rutas optimizado
+✔ Plantilla base para empezar un proyecto moderno
