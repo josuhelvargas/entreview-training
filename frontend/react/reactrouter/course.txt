@@ -20,22 +20,32 @@ Formato: 10 módulos + laboratorios + comparativas + migraciones
 Objetivo
 
 Comprender por qué React Router evoluciona tanto y qué problema resuelve.
-
 Contenido
-
 Historia del router en React
-
 ¿Por qué existían tantos “workarounds” en v4/v5?
-
 Filosofía declarativa
-
 El origen del diseño de v6 basado en “route ranking”
-
 Por qué v7 cambia el core nuevamente (Data APIs)
-
 Ejercicio
-
 Crear una app mínima en v5, v6 y v7 para ver diferencias.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

@@ -36,6 +36,12 @@ Cómo se resuelven las rutas en tiempo real
 
 Crear un router simple con dos rutas y navegación básica.
 
+
+
+
+
+
+
 🟦 MÓDULO 2 — Route Tree y cómo funciona internamente
 
 Objetivo: Dominar cómo TanStack Router construye el árbol de rutas y machea coincidencias.
@@ -66,6 +72,12 @@ El ciclo de vida “beforeLoad → loader → element → context”
 
 Crear un árbol con rutas anidadas, parámetros y páginas por defecto.
 
+
+
+
+
+
+
 🟦 MÓDULO 3 — Loaders y Actions (el corazón del Router)
 
 Objetivo: Comprender cómo TanStack maneja datos en rutas.
@@ -93,6 +105,11 @@ Cómo el router detecta qué loaders deben ejecutarse según la navegación
 Crear rutas con loaders concurrentes
 
 Implementar una action tipo POST con validación
+
+
+
+
+
 
 🟦 MÓDULO 4 — Navegación y Estados Internos
 
@@ -123,6 +140,11 @@ Ciclo: Intent → Resolve Params → Resolve Loader → Commit Navigation
 🧪 Ejercicio
 
 Crear navegación condicional con guards personalizados.
+
+
+
+
+
 
 🟦 MÓDULO 5 — Type Safety Profunda
 
@@ -178,6 +200,10 @@ Cache de loader + cache de query (integración)
 
 Crear una página con prefetch automático antes de navegar.
 
+
+
+
+
 🟦 MÓDULO 7 — Lazy Loading, Suspense & SSR
 
 Objetivo: Crear apps productivas y optimizadas.
@@ -205,6 +231,10 @@ Cómo se envía preloaded data embebida en el HTML
 🧪 Ejercicio
 
 Crear una ruta lazy con fallback y SSR simulado.
+
+
+
+
 
 🟦 MÓDULO 8 — Middlewares, Context y Extensibilidad
 
@@ -234,6 +264,11 @@ Secuencia: globalGuard → routeGuard → loader
 
 Crear un guard que rechaza navegación si el usuario no está logueado.
 
+
+
+
+
+
 🟦 MÓDULO 9 — Debugging, Performance y Memory Internals
 
 Objetivo: Saber cómo diagnosticar problemas del router.
@@ -259,6 +294,12 @@ Por qué TanStack Router evita renders innecesarios (arquitectura fine-grained)
 🧪 Ejercicio
 
 Optimizar una ruta que carga lento con caching y memoization.
+
+
+
+
+
+
 
 🟦 MÓDULO 10 — Proyecto Final Completo
 

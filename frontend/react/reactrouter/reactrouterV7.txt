@@ -1,0 +1,46 @@
+5️⃣ ¿Por qué v7 cambia el core nuevamente? (Data APIs)
+🧠 El problema que quedaba
+
+Aunque v6 resolvió el matching:
+El data fetching seguía siendo manual
+Loading y errors seguían dispersos
+SSR seguía siendo complejo
+
+
+
+
+🚀 React Router v6.4+ → v7
+Introduce Data Routers (el verdadero cambio de core).
+Ahora una ruta puede tener:
+loader → carga datos antes del render
+action → maneja forms/mutations
+errorElement → errores por ruta
+shouldRevalidate
+
+Ejemplo v7
+const router = createBrowserRouter([
+  {
+    path: "/users/:id",
+    loader: ({ params }) => fetchUser(params.id),
+    element: <User />,
+    errorElement: <ErrorPage />
+  }
+])
+
+
+➡️ El router:
+Carga datos
+Maneja errores
+Decide cuándo renderizar
+Filosofía final de v7
+React Router deja de ser solo:
+
+“URL → Componente”
+Y se convierte en:
+“URL → Estado completo de la aplicación”
+
+
+
+Muy similar a:
+Remix
+Next.js App Router

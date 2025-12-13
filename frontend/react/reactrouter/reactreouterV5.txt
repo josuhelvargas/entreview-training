@@ -1,0 +1,93 @@
+🔹 React Router v5 (2019)
+
+Fue la versión más usada durante años.
+Qué mejoró
+<Switch> para renderizar solo una ruta
+API más estable
+Ecosistema maduro
+Ejemplo clásico:
+
+<Switch>
+  <Route exact path="/" component={Home} />
+  <Route path="/users/:id" component={User} />
+</Switch>
+
+
+Problemas fundamentales
+1. Orden importa (no determinista)
+<Route path="/users/:id" />
+<Route path="/users/new" />
+
+
+2. Matching imperativo
+El router evaluaba rutas en tiempo de render, no antes.
+Consecuencia:
+Lógica de permisos dentro del componente
+Redirects en useEffect
+Carga de datos después del render
+
+
+3. Data fetching desordenado
+Patrón común:
+
+useEffect(() => {
+  fetchData()
+}, [params.id])
+
+
+❌ Problemas:
+Pantallas vacías
+Loading states manuales
+Race conditions
+Difícil SSR
+
+4. Abuso de HOCs y hooks
+withRouter
+useHistory
+useLocation
+➡️ Mucha lógica de navegación acoplada a componentes.
+
+
+
+
+
+
+
+
+
+
+
+3️⃣ Filosofía declarativa del routing moderno
+🧠 Cambio de mentalidad clave
+
+Antes:
+
+“Renderiza este componente y luego vemos qué hacer”
+
+Ahora:
+
+“Describe todo el árbol de navegación y deja que el router decida”
+
+
+
+Declarativo significa:
+
+Las rutas se definen como configuración
+El router puede analizar todo antes del render
+Menos lógica en componentes
+Más predecible, más testeable
+
+Ejemplo mental:
+Route = {
+  path,
+  loader,
+  element,
+  children
+}
+
+
+➡️ La ruta no solo renderiza UI, también:
+Carga datos
+Maneja errores
+Decide redirects
+Define permisos
