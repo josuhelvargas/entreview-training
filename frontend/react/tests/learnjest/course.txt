@@ -1,0 +1,251 @@
+curso para parender a hacer tests con jest 
+Mini-curso de Vitest
+Testing moderno para Vite / ESM / React
+🧠 ¿Qué es Vitest?
+
+Vitest es un test runner moderno creado por el equipo de Vite.
+Está diseñado para:
+
+ESM nativo
+
+Velocidad extrema
+
+Integrarse directamente con Vite
+
+Reemplazar Jest en proyectos modernos
+
+👉 Vitest = Jest API + Vite engine
+
+🧩 Arquitectura interna de Vitest
+┌───────────────────────────┐
+│        Test Files         │
+│  *.test.ts / *.spec.ts    │
+└─────────────┬─────────────┘
+              ▼
+┌───────────────────────────┐
+│        Vitest Core        │
+│  - Test collector        │
+│  - Test scheduler        │
+│  - Snapshot engine       │
+└─────────────┬─────────────┘
+              ▼
+┌───────────────────────────┐
+│        Vite Engine        │
+│  - ESM loader             │
+│  - HMR-based isolation    │
+│  - Fast dependency graph  │
+└─────────────┬─────────────┘
+              ▼
+┌───────────────────────────┐
+│      Worker Threads       │
+│  - Parallel execution     │
+│  - Isolated contexts      │
+└───────────────────────────┘
+
+⚙️ ¿Cómo ejecuta Vitest un test?
+
+Vite analiza el grafo de dependencias
+
+Vitest detecta archivos de test
+
+Cada test se ejecuta en un worker aislado
+
+Usa ESM real, no transpila como Jest
+
+Cachea módulos (ultra rápido)
+
+Reporta resultados
+
+👉 Por eso Vitest es 5-10x más rápido que Jest
+
+🧪 API básica (muy similar a Jest)
+import { describe, it, expect, vi } from 'vitest'
+
+describe('sum', () => {
+  it('adds numbers', () => {
+    expect(1 + 2).toBe(3)
+  })
+})
+
+🎭 Mocking interno (vi)
+
+Vitest usa ESM mocking, no require-hacks.
+
+vi.mock('./api', () => ({
+  fetchUser: vi.fn(),
+}))
+
+
+Internamente:
+
+Intercepta el import
+
+Sustituye el módulo en el graph de Vite
+
+Mantiene el mock por worker
+
+🧠 Snapshots en Vitest
+expect(component).toMatchSnapshot()
+
+
+Internals:
+
+Serializa el output
+
+Guarda snapshots por archivo
+
+Soporta inline snapshots
+
+🧪 Testing UI (React)
+
+Vitest NO renderiza UI
+→ Se combina con Testing Library
+
+import { render, screen } from '@testing-library/react'
+
+🚀 Ventajas clave
+
+✔ Ultra rápido
+✔ Perfecto para Vite / React / TS
+✔ Jest-compatible
+✔ ESM nativo
+✔ Ideal para monorepos modernos
+
+❌ Limitaciones
+
+Menos plugins legacy
+
+No ideal para proyectos CJS antiguos
+
+No recomendado para Node 10 / 12
+
+🧪 Mini-curso de Jest
+El clásico, robusto y probado en producción
+🧠 ¿Qué es Jest?
+
+Jest es un test runner completo creado por Facebook.
+
+Diseñado para:
+
+Proyectos grandes
+
+Compatibilidad máxima
+
+Node.js tradicional
+
+Legacy + modern code
+
+🧩 Arquitectura interna de Jest
+┌───────────────────────────┐
+│        Test Files         │
+│  *.test.js / *.spec.ts    │
+└─────────────┬─────────────┘
+              ▼
+┌───────────────────────────┐
+│        Jest Runtime       │
+│  - Module loader          │
+│  - Fake timers            │
+│  - Mock system            │
+└─────────────┬─────────────┘
+              ▼
+┌───────────────────────────┐
+│        Babel / TS         │
+│  - Transpilation layer    │
+│  - CommonJS wrapping      │
+└─────────────┬─────────────┘
+              ▼
+┌───────────────────────────┐
+│      Worker Processes     │
+│  - Child processes        │
+│  - VM contexts            │
+└───────────────────────────┘
+
+⚙️ ¿Cómo ejecuta Jest un test?
+
+Busca archivos de test
+
+Transpila código (Babel / ts-jest)
+
+Envuelve módulos en CommonJS
+
+Ejecuta en procesos hijos
+
+Limpia mocks automáticamente
+
+👉 Más seguro, pero más lento
+
+🧪 API básica
+describe('sum', () => {
+  test('adds numbers', () => {
+    expect(1 + 2).toBe(3)
+  })
+})
+
+🎭 Mocking en Jest (jest.mock)
+jest.mock('./api', () => ({
+  fetchUser: jest.fn(),
+}))
+
+
+Internals:
+
+Intercepta require
+
+Reemplaza el módulo
+
+Mantiene un registro global de mocks
+
+⏱ Fake Timers (internals)
+jest.useFakeTimers()
+
+
+Internamente:
+
+Reemplaza setTimeout, setInterval
+
+Controla el event loop virtual
+
+Muy potente para async complejo
+
+🧠 Snapshots
+expect(tree).toMatchSnapshot()
+
+
+Jest fue el pionero en snapshots
+
+🚀 Ventajas clave
+
+✔ Extremadamente estable
+✔ Gran ecosistema
+✔ Ideal para Node, backend, legacy
+✔ Excelente control del runtime
+
+❌ Desventajas
+
+Lento en proyectos grandes
+
+Configuración compleja
+
+ESM aún problemático
+
+No aprovecha Vite
+
+⚔️ Vitest vs Jest (Resumen rápido)
+Característica	Vitest	Jest
+Velocidad	⚡⚡⚡⚡⚡	⚡⚡
+ESM nativo	✅	⚠️
+Vite integration	✅	❌
+Legacy support	❌	✅
+Configuración	Simple	Compleja
+Mocking	vi	jest
+🎯 Recomendación para TI
+
+Con tu stack actual:
+
+Frontend React / Vite → Vitest
+
+Backend Node / Legacy / CI crítico → Jest
+
+Monorepo moderno → Vitest
+
+SDKs / librerías públicas → Jest

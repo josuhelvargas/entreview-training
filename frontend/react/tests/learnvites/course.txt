@@ -1,0 +1,205 @@
+🟦 MÓDULO 1 — ¿Qué es Vitest y por qué existe?
+¿Qué es Vitest?
+
+Vitest es un test runner moderno diseñado para:
+
+Proyectos Vite
+
+Ecosistema ESM
+
+TypeScript nativo
+
+Tests rápidos con Hot Reload
+
+👉 Es el equivalente moderno de Jest, pero optimizado para Vite.
+
+¿Por qué no Jest?
+Problema en Jest	Solución en Vitest
+Config lenta	Usa Vite internamente
+ESM complicado	ESM-first
+Mocks verbosos	vi simple
+TS lento	TS nativo
+No HMR	HMR en tests
+🟦 MÓDULO 2 — Arquitectura interna de Vitest (importante)
+🧠 Internals simplificados
+┌──────────────┐
+│ vitest run   │
+└──────┬───────┘
+       ▼
+┌──────────────────────────┐
+│ Vite Dev Server (Node)   │
+│  - Transpila TS/JSX     │
+│  - Resuelve imports     │
+└──────┬──────────────────┘
+       ▼
+┌──────────────────────────┐
+│ Test Runtime             │
+│  - vi (mocks, spies)     │
+│  - expect (assertions)   │
+│  - describe / it         │
+└──────┬──────────────────┘
+       ▼
+┌──────────────────────────┐
+│ Worker Threads           │
+│  - tests en paralelo     │
+│  - aislamiento           │
+└──────────────────────────┘
+
+🔑 Idea clave
+
+Vitest NO transpila solo
+👉 Usa Vite como motor
+Por eso:
+
+Resuelve alias igual que tu app
+
+Usa el mismo tsconfig
+
+Respeta vite.config.ts
+
+🟦 MÓDULO 3 — API básica (lo que usas todos los días)
+Estructura básica
+import { describe, it, expect } from 'vitest';
+
+describe('My feature', () => {
+  it('works', () => {
+    expect(1 + 1).toBe(2);
+  });
+});
+
+Assertions (expect)
+expect(value).toBe(1);
+expect(value).toEqual({ a: 1 });
+expect(value).toBeTruthy();
+expect(value).toBeDefined();
+expect(fn).toHaveBeenCalled();
+
+🟦 MÓDULO 4 — Mocks (la parte más crítica)
+vi.fn() → funciones falsas
+const fn = vi.fn();
+fn('a');
+
+expect(fn).toHaveBeenCalledWith('a');
+
+vi.spyOn() → espiar funciones reales
+vi.spyOn(console, 'error').mockImplementation(() => {});
+
+vi.mock() → mock de módulos (MUY IMPORTANTE)
+vi.mock('@frx/frx-react-context', () => ({
+  useLogin: vi.fn(),
+}));
+
+
+👉 Se ejecuta ANTES del import real
+👉 Hoisted automáticamente
+
+🟦 MÓDULO 5 — Internals de vi.mock (esto explica muchos bugs)
+Cómo funciona realmente
+
+Vitest intercepta imports
+
+Registra el mock
+
+Cuando el módulo se importa → devuelve el mock
+
+❗ Por eso:
+
+vi.mock debe estar top-level
+
+No dentro de describe
+
+No dentro de it
+
+🟦 MÓDULO 6 — Testing React (con RTL)
+
+Vitest NO renderiza React
+👉 Usa @testing-library/react
+
+Render básico
+render(<MyComponent />);
+
+Buscar elementos (prioridad correcta)
+
+getByRole ✅
+
+getByLabelText
+
+getByText
+
+getByTestId (último recurso)
+
+Ejemplo real (como tus tests):
+
+screen.getByRole('textbox', { name: /email/i });
+
+🟦 MÓDULO 7 — Accesibilidad y por qué fallaban tus tests
+Por qué esto falló:
+getByRole('textbox', { name: /^state/i })
+
+
+Pero el DOM tenía:
+
+Name "* State:"
+
+Solución correcta:
+getByRole('textbox', { name: /state/i })
+
+
+👉 RTL usa el accessible name, no el texto visible plano
+Incluye:
+
+*
+
+:
+
+aria-required
+
+🟦 MÓDULO 8 — Hooks, Context y Router (caso real tuyo)
+Mockear hooks
+vi.mock('hooks/useEventConfiguration', () => ({
+  useEventConfiguration: () => ({
+    nextStep: vi.fn(),
+  }),
+}));
+
+Router (TanStack)
+
+Vitest NO maneja routing
+
+Tú creas router de test
+
+Injectas contexto
+
+✔️ Lo estás haciendo perfecto con:
+
+createRootRouteWithContext
+createRouter
+RouterProvider
+
+🟦 MÓDULO 9 — Ejecución de tests
+Un solo archivo
+npx vitest run src/components/Personal/PersonalFormField.test.tsx
+
+Watch mode
+npx vitest
+
+Con reporter verbose
+npx vitest run --reporter=verbose
+
+🟦 MÓDULO 10 — Debugging profesional de tests
+Ver DOM real
+screen.debug();
+
+Ver roles disponibles
+import { logRoles } from '@testing-library/dom';
+logRoles(screen.getByTestId('root'));
+
+Tip clave
+
+Si un test falla:
+
+Lee el DOM que imprime RTL
+
+Ajusta el selector, NO el componente
+
+Evita asserts frágiles

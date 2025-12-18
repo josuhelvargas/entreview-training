@@ -1,0 +1,3 @@
+Explica los fundamentos de jest, expecialmente los itnernals para saber como funciona internamente 
+
+

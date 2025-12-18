@@ -1,0 +1,1 @@
+Explica los fundamentos de react testing library, expecialmente los itnernals para saber como funciona internamente 

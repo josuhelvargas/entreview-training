@@ -1,0 +1,290 @@
+curso para parender a hacer tests con react testing library
+
+Contrasta las difenrecias tecnicas /internals de react tesitng library y jest
+
+
+Aunque no se vea en las dependecias al ir a node_modules se pude ver jest al isntalar t
+testing library/jest-dom 
+testing library/react.
+
+
+
+Los test puedne ser ejecutados automaticmanete si estan dentro d eun folder llamado test o __tests__ o si bien tienen extension .test.js o  .test.ts / .test.tsx / .test.jsx 
+
+
+
+Para poder probar interacciones con el uuario es neceairo isntalar:  
+npm install --save-dev @testing-library/user-event
+
+
+
+
+
+
+🧪 Curso breve — React Testing Library (RTL)
+🎯 Objetivo del curso
+
+Comprender:
+
+Qué problema resuelve RTL
+
+Su filosofía
+
+Cómo funciona internamente
+
+Cómo interactúa con React, el DOM y el test runner (Vitest/Jest)
+
+Por qué no testea implementación, sino comportamiento
+
+🧠 1. ¿Qué es React Testing Library?
+
+React Testing Library es una capa de utilidades construida sobre:
+
+DOM Testing Library
+        ↓
+React Testing Library
+        ↓
+Vitest / Jest
+
+
+👉 RTL NO es un test runner
+👉 RTL NO es un assertion library
+
+Su propósito es:
+
+Probar tu aplicación como lo haría un usuario real
+
+🧭 2. Filosofía central (la clave de todo)
+
+RTL se basa en un principio muy fuerte:
+
+❝ The more your tests resemble the way your software is used, the more confidence they can give you ❞
+
+❌ Lo que NO promueve
+
+Acceder a props internas
+
+Llamar métodos privados
+
+Buscar componentes por nombre
+
+Mockear React internals
+
+✅ Lo que SÍ promueve
+
+Buscar elementos por:
+
+Texto visible
+
+Roles accesibles
+
+Labels
+
+Simular eventos reales
+
+Validar resultados visibles
+
+🧩 3. Arquitectura interna de RTL
+┌──────────────────────────────┐
+│ Test Runner (Vitest / Jest) │
+└──────────────┬──────────────┘
+               │
+┌──────────────▼──────────────┐
+│ React Testing Library       │
+│  - render()                 │
+│  - screen                   │
+│  - fireEvent / userEvent    │
+└──────────────┬──────────────┘
+               │
+┌──────────────▼──────────────┐
+│ DOM Testing Library         │
+│  - getByRole                │
+│  - getByLabelText           │
+│  - queryByText              │
+│  - findBy*                  │
+└──────────────┬──────────────┘
+               │
+┌──────────────▼──────────────┐
+│ jsdom (DOM virtual)         │
+└──────────────────────────────┘
+
+⚙️ 4. Internals clave explicados
+4.1 render()
+render(<MyComponent />)
+
+
+Internamente:
+
+Crea un container DOM (div)
+
+Monta el componente con ReactDOM.createRoot
+
+Inserta el árbol React en jsdom
+
+Devuelve helpers (rerender, unmount, etc.)
+
+🔑 No monta en un navegador real
+🔑 Usa jsdom (DOM simulado)
+
+4.2 screen
+screen.getByRole('button', { name: /login/i })
+
+
+Internamente:
+
+Es un wrapper global sobre el document.body
+
+Evita que dependas del container
+
+Fuerza mejores prácticas (tests más realistas)
+
+4.3 Queries (el corazón de RTL)
+Tipos de queries (orden recomendado):
+Tipo	Comportamiento
+getBy*	Falla si no existe
+queryBy*	Retorna null
+findBy*	Async (Promise)
+
+Ejemplo interno:
+
+findByRole → waitFor → getByRole
+
+4.4 Accesibilidad como base
+
+RTL usa el Accessibility Tree, no solo el DOM:
+
+role="button"
+
+aria-label
+
+<label for="">
+
+Ejemplo:
+
+getByRole('textbox', { name: /email/i })
+
+
+Internamente:
+
+Resuelve el nombre accesible
+
+Combina:
+
+label
+
+aria-label
+
+texto visible
+
+required indicators (*)
+
+👉 Por eso los tests fallan cuando cambia el wrapper/label (como te pasó)
+
+⏱️ 5. Async internals (waitFor, findBy)
+await waitFor(() => {
+  expect(screen.getByText('Success')).toBeInTheDocument()
+})
+
+
+Internamente:
+
+Reintenta el callback
+
+Usa un loop con timeout (default ~1000ms)
+
+Captura errores hasta que:
+
+Pase
+
+Timeout expire
+
+Esto permite testear:
+
+Effects
+
+Requests mockeados
+
+Cambios de estado
+
+🖱️ 6. Eventos: fireEvent vs userEvent
+fireEvent
+
+Bajo nivel
+
+Dispara eventos individuales
+
+userEvent
+
+Alto nivel (recomendado)
+
+Simula comportamiento humano
+
+await user.type(input, 'hello')
+
+
+Internamente:
+
+keyDown → input → keyUp
+
+respeta delays
+
+activa validaciones reales
+
+🧪 7. Relación con Vitest / Jest
+
+RTL:
+
+Renderiza
+
+Interactúa
+
+Consulta DOM
+
+Vitest/Jest:
+
+Ejecuta tests
+
+Hace assertions
+
+Maneja mocks y spies
+
+expect(screen.getByText('Login')).toBeInTheDocument()
+
+
+👉 RTL no sabe qué es expect
+
+🚨 8. Errores comunes (y por qué pasan)
+❌ Test frágil
+getByTestId('input')
+
+✅ Test robusto
+getByRole('textbox', { name: /email/i })
+
+
+Razón:
+
+RTL está diseñado para romper tests cuando el UX cambia
+
+🧠 9. Regla de oro mental
+
+Si un usuario no puede verlo o usarlo, no deberías testearlo
+
+📚 10. Checklist profesional RTL
+
+✔ Usa getByRole primero
+✔ Prefiere userEvent
+✔ Evita testId salvo último recurso
+✔ Testea flujos, no funciones
+✔ Deja que los tests fallen cuando cambia el UI
+
+🚀 Siguiente nivel (opcional)
+
+Si quieres, puedo:
+
+Explicar cómo RTL se integra con React Fiber
+
+Mostrar cómo se resuelven labels accesibles paso a paso
+
+Comparar RTL vs Enzyme internamente
+
+Crear un cheat sheet RTL + Vitest
