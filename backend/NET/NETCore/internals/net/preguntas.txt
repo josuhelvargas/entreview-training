@@ -8,15 +8,1218 @@ https://github.com/microsoft/dotnet
 elabora. 
 Como funciona Roslyn?
 
+🧠 ¿Qué es Roslyn realmente?
+
+Roslyn NO es solo “el compilador de C#”
+Es una plataforma de compilación como servicio (Compiler as a Service).
+
+Antes de Roslyn, el compilador era una “caja negra”.
+Con Roslyn, el compilador es una API.
+
+Roslyn está escrito en C# y expone todo el pipeline de compilación como objetos navegables.
+
+🏗️ Arquitectura interna de Roslyn
+Código Fuente (.cs)
+        ↓
+Lexer (Tokenizer)
+        ↓
+Syntax Tree (AST concreto)
+        ↓
+Binder (Semántica)
+        ↓
+Symbol Table
+        ↓
+Semantic Model
+        ↓
+Lowering
+        ↓
+IL + Metadata
+
+
+Vamos capa por capa.
+
+1️⃣ Lexer — Tokenización
+Qué hace
+
+Convierte texto plano en tokens:
+
+keywords
+
+identificadores
+
+literales
+
+operadores
+
+trivia (espacios, comentarios)
+
+Ejemplo
+int x = 5;
+
+
+Se convierte en:
+
+[int][identifier:x][=][literal:5][;]
+
+
+👉 Trivia es importante:
+Roslyn NO pierde comentarios ni espacios (clave para refactorings y formatters).
+
+2️⃣ Syntax Tree — Árbol sintáctico (AST concreto)
+
+Roslyn crea un árbol inmutable que representa EXACTAMENTE el código escrito.
+
+var tree = CSharpSyntaxTree.ParseText("int x = 5;");
+
+Características clave
+
+Inmutable
+
+Persistente
+
+Thread-safe
+
+Editable por reemplazo (copy-on-write)
+
+Ejemplo de nodos:
+
+LocalDeclarationStatement
+ └── VariableDeclaration
+      ├── Type: int
+      └── VariableDeclarator
+           ├── Identifier: x
+           └── Initializer: 5
+
+
+📌 Importante
+Aquí NO hay tipos reales, solo estructura.
+
+3️⃣ Compilation — Contexto completo
+
+Para que el código tenga sentido, Roslyn crea un objeto Compilation:
+
+var compilation = CSharpCompilation.Create(
+    "MyAssembly",
+    syntaxTrees,
+    references
+);
+
+
+Aquí Roslyn sabe:
+
+Qué archivos existen
+
+Qué referencias (.NET, NuGet, etc.)
+
+Qué versión de C#
+
+Qué warnings/errors aplicar
+
+4️⃣ Binder — Análisis semántico (el cerebro)
+
+Aquí ocurre la magia real.
+
+Roslyn responde preguntas como:
+
+¿Qué tipo es esta variable?
+
+¿Este método existe?
+
+¿Qué overload se usa?
+
+¿Este símbolo es válido aquí?
+
+Ejemplo
+var x = GetValue();
+
+
+Roslyn:
+
+Busca GetValue
+
+Resuelve overloads
+
+Determina tipo de retorno
+
+Asigna tipo a x
+
+5️⃣ Symbol Table — Identidad real del código
+
+Los símbolos representan:
+
+Clases
+
+Métodos
+
+Propiedades
+
+Variables
+
+Namespaces
+
+IMethodSymbol
+INamedTypeSymbol
+IPropertySymbol
+
+
+Ejemplo:
+
+semanticModel.GetDeclaredSymbol(classNode);
+
+
+Esto permite:
+
+Renames seguros
+
+Go to Definition
+
+Find All References
+
+Refactorings complejos
+
+6️⃣ Semantic Model — API de consultas inteligentes
+
+Este objeto conecta:
+👉 Syntax Tree + Symbols
+
+var model = compilation.GetSemanticModel(tree);
+var typeInfo = model.GetTypeInfo(expression);
+
+IDE usa esto para:
+
+IntelliSense
+
+Errores en tiempo real
+
+Quick fixes
+
+Code actions
+
+📌 Cada tecla que escribes → Roslyn analiza el código incrementalmente.
+
+7️⃣ Diagnostics — Errores y warnings
+
+Roslyn genera diagnósticos como objetos:
+
+CS0168: Variable declared but never used
+
+
+Estos:
+
+Se calculan incrementalmente
+
+Se actualizan en tiempo real
+
+Son consumidos por IDE, CI, analyzers
+
+8️⃣ Lowering — Traducción a una forma “simple”
+
+Antes de generar IL, Roslyn reescribe el código a una forma más básica.
+
+Ejemplo:
+
+foreach (var x in list)
+
+
+Se convierte internamente en:
+
+using (var enumerator = list.GetEnumerator())
+{
+    while (enumerator.MoveNext())
+    {
+        var x = enumerator.Current;
+    }
+}
+
+
+👉 Esto NO lo ves, pero el runtime sí.
+
+9️⃣ Emisión — IL + Metadata
+
+Finalmente Roslyn genera:
+
+IL
+
+Metadata
+
+PDB (debug)
+
+compilation.Emit("app.dll");
+
+
+⚠️ Roslyn NO ejecuta el código
+Eso es trabajo del CLR + JIT.
+
+🔌 Integración con el IDE (Visual Studio / Rider / VS Code)
+
+Roslyn vive dentro del IDE:
+
+Funcionalidad	Roslyn
+IntelliSense	✅
+Refactorings	✅
+Code fixes	✅
+Analyzers	✅
+Live errors	✅
+
+Cada vez que escribes:
+
+Roslyn recompila solo el mínimo necesario.
+
+🧩 Analyzers y Code Fixes (caso real enterprise)
+Analyzer
+public class NoAsyncVoidAnalyzer : DiagnosticAnalyzer
+
+
+Detecta:
+
+async void DoWork() ❌
+
+Code Fix
+async Task DoWork() ✅
+
+
+Esto es automatización de estándares de arquitectura.
+
+👉 Muy usado en:
+
+Clean Architecture
+
+Reglas de seguridad
+
+Convenciones de equipo
+
+🔬 Casos prácticos donde Roslyn es CLAVE
+✔ Refactorings seguros
+
+Renombrar una clase en 200 proyectos sin romper nada.
+
+✔ Linters empresariales
+
+Evitar:
+
+HttpClient mal usado
+
+async void
+
+DateTime.Now
+
+new Guid()
+
+✔ Generadores de código
+
+Source Generators (desde C# 9)
+
+DTOs
+
+Mappers
+
+Endpoints
+
+Validaciones
+
+🧠 Relación Roslyn vs JIT (muy importante)
+Roslyn	JIT
+Compile-time	Runtime
+C# → IL	IL → Machine Code
+Análisis semántico	Optimización CPU
+IDE tooling	Ejecución
+
+Roslyn no optimiza para CPU, optimiza para correctitud y tooling.
+
+📌 Resumen mental (forma correcta de recordarlo)
+
+Roslyn es el “sistema nervioso” del lenguaje C#
+
+Entiende el código
+
+Lo analiza
+
+Lo reescribe
+
+Lo valida
+
+Lo expone como API
+
+Permite herramientas avanzadas
+
+Sin Roslyn:
+
+No habría IntelliSense moderno
+
+No habría refactorings seguros
+
+No habría analyzers ni generators
+
+
+
+
+
+
+
+
+
+
+
+
+
+-----------------------------
+
+
+🧠 ¿Qué es un archivo PDB?
+
+PDB = Program Database
+
+Un PDB NO es código ejecutable.
+Es un mapa de depuración que conecta:
+
+Código fuente (líneas, variables, scopes)
+⟷ IL + metadata
+
+Sirve para que herramientas de diagnóstico entiendan qué línea de código corresponde a qué instrucción ejecutada.
+
+📌 Qué contiene un PDB
+
+Un PDB moderno (.NET Core / Portable PDB) contiene:
+
+📍 Mapeo IL ↔ líneas de código
+
+🧭 Scopes (bloques { })
+
+🧠 Nombres de variables locales
+
+🧩 Parámetros de métodos
+
+🧪 Información para breakpoints
+
+🧵 Info para async/await (state machines)
+
+🔗 Referencias a archivos .cs
+
+🆔 Identidad del build (GUID + timestamp)
+
+❌ No contiene lógica de ejecución
+❌ No contiene optimizaciones de CPU
+
+🏗️ Tipos de PDB (muy importante)
+1️⃣ Windows PDB (legacy)
+
+Solo Windows
+
+Binario propietario
+
+.NET Framework clásico
+
+2️⃣ Portable PDB (actual)
+
+Multiplataforma
+
+Estándar ECMA-335
+
+Usado en .NET Core / .NET 5+
+
+👉 Hoy siempre Portable PDB.
+
+🔁 ¿Cómo se origina un PDB?
+Flujo real de compilación
+Código C#
+   ↓
+Roslyn
+   ↓
+IL + Metadata + PDB
+   ↓
+Assembly (.dll)
+
+
+Roslyn genera EL PDB, no el JIT.
+
+Comando implícito
+dotnet build
+
+
+Internamente:
+
+csc.exe /debug:portable
+
+🧪 Ejemplo conceptual
+
+Código:
+
+int x = 10;
+Console.WriteLine(x);
+
+
+Roslyn genera:
+
+IL:
+
+IL_0000: ldc.i4.s 10
+IL_0002: stloc.0
+IL_0003: ldloc.0
+IL_0004: call void [System.Console]WriteLine(int32)
+
+
+PDB:
+
+IL_0000 → Line 1
+IL_0003 → Line 2
+Local variable: x (int)
+
+🔗 Relación exacta: Roslyn → PDB → CLR → JIT
+
+Aquí va la verdad técnica (sin confusión):
+
+❌ Error común
+
+“El JIT usa el PDB para ejecutar código”
+
+✅ Realidad
+Componente	Usa PDB
+Roslyn	✅ lo genera
+CLR Loader	❌
+JIT	❌
+Debugger	✅
+Profiler	✅
+Exception stack trace	✅ (si está disponible)
+
+👉 El JIT NO necesita el PDB para ejecutar.
+
+¿Entonces para qué se usa en runtime?
+1️⃣ Debugging
+
+Breakpoints
+
+Step-in / step-over
+
+Watch variables
+
+2️⃣ Stack traces legibles
+at OrderService.Process() in OrderService.cs:line 42
+
+
+(Sin PDB solo verías métodos + offsets IL)
+
+3️⃣ Async / Await
+
+Sin PDB:
+
+MoveNext()
+
+
+Con PDB:
+
+await SaveAsync() at Repository.cs:line 87
+
+4️⃣ Post-mortem debugging (prod)
+
+Crash dumps
+
+minidumps
+
+symbol servers (Azure DevOps, Sentry, WinDbg)
+
+🧬 ¿Cómo se vincula un PDB con su DLL?
+
+Por identidad fuerte:
+
+MVID (Module Version ID)
+
+GUID
+
+Timestamp
+
+Si no coincide:
+
+❌ El PDB es ignorado
+
+Esto evita usar símbolos incorrectos.
+
+⚙️ ¿Qué pasa en tiempo de ejecución?
+App.exe
+   ↓
+CLR carga IL
+   ↓
+JIT compila IL → Native code
+   ↓
+Debugger pregunta:
+   “¿qué línea es esta?”
+   ↓
+PDB responde
+
+
+🔑 El flujo de ejecución no depende del PDB.
+
+🔬 ¿Qué pasa con optimizaciones?
+Build	PDB	Optimización
+Debug	Sí	Off
+Release	Opcional	On
+
+Incluso en Release:
+
+Puedes tener PDB
+
+Pero variables pueden desaparecer
+
+Inlining rompe el mapeo 1:1
+
+🧠 PDB y Async internals (clave)
+
+El PDB contiene:
+
+Estados de la máquina async
+
+Puntos de suspensión (await)
+
+Variables capturadas
+
+Sin PDB:
+
+Async debugging es casi imposible.
+
+📦 ¿Se debe subir PDB a producción?
+Recomendación real:
+Escenario	PDB
+Dev	✅
+QA	✅
+Prod	❌ junto al binario
+Prod + observabilidad	✅ en Symbol Server
+
+Ejemplos:
+
+Azure DevOps Symbol Server
+
+Sentry
+
+Application Insights
+
+🧠 Resumen mental correcto
+
+El PDB es el “GPS del código”
+
+Roslyn lo genera
+
+El CLR lo ignora
+
+El JIT no lo toca
+
+El debugger lo ama
+
+Producción lo usa indirectamente
+
+🔁 Flujo completo (versión correcta)
+C# Source
+   ↓
+Roslyn
+   ↓
+IL + Metadata + PDB
+   ↓
+CLR Loader
+   ↓
+JIT → Native Code
+   ↓
+(Debugger usa PDB si existe)
+
+
+Si quieres, el siguiente paso puede ser:
+
+🔬 Abrir un PDB y ver su contenido real
+
+⚙️ Ver cómo async/await se refleja en el PDB
+
+🧠 Comparar PDB vs DWARF (Linux)
+
+🧪 Cómo funcionan Symbol Servers
+
+
+
+
+
+
+
+
+
+
+------------------------
+
 Como se disena un sorucegenerator y explica como por ejemplo se usan los interceptors
 eXPLICA QUE ES AOT (Ahead Of Time) y como funciona? 
+
+1) ¿Cómo se diseña un Source Generator?
+
+Un Source Generator es un compilador-plugin que corre en build time dentro de Roslyn y puede agregar código C# al compilation (como si existiera otro .cs).
+
+Dos estilos
+
+ISourceGenerator (clásico): más simple, pero fácil de hacer lento (se re-ejecuta “de más”).
+
+IIncrementalGenerator (recomendado): pipeline incremental, cacheable, minimiza trabajo cuando cambian pocos archivos. 
+GitHub
++1
+
+Diseño recomendado (IIncrementalGenerator) — mental model
+
+Piensa en un generador como un ETL:
+
+Inputs: Syntax (clases, atributos, métodos), AdditionalFiles, opciones del AnalyzerConfig
+
+Transform: filtras y conviertes Syntax → “modelo” (POCO)
+
+Generate: produces strings de C# y haces AddSource(...)
+
+Roslyn guarda cachés entre builds: si el input no cambió, el transform/generate se salta.
+
+Ejemplo mínimo real (incremental)
+
+Genera un método Hello() en clases marcadas con [AutoHello].
+
+Proyecto Generator (nuget/analyzer):
+
+using System.Text;
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
+
+[Generator]
+public sealed class AutoHelloGenerator : IIncrementalGenerator
+{
+    public void Initialize(IncrementalGeneratorInitializationContext context)
+    {
+        // 1) Encontrar clases con atributo [AutoHello]
+        var candidates = context.SyntaxProvider
+            .CreateSyntaxProvider(
+                predicate: static (node, _) => node is ClassDeclarationSyntax cds && cds.AttributeLists.Count > 0,
+                transform: static (ctx, _) =>
+                {
+                    var cds = (ClassDeclarationSyntax)ctx.Node;
+                    var symbol = ctx.SemanticModel.GetDeclaredSymbol(cds) as INamedTypeSymbol;
+                    if (symbol is null) return null;
+
+                    foreach (var attr in symbol.GetAttributes())
+                    {
+                        if (attr.AttributeClass?.Name is "AutoHelloAttribute")
+                            return symbol;
+                    }
+                    return null;
+                })
+            .Where(static s => s is not null)!;
+
+        // 2) Generar código
+        context.RegisterSourceOutput(candidates, static (spc, symbol) =>
+        {
+            var ns = symbol.ContainingNamespace.IsGlobalNamespace ? null : symbol.ContainingNamespace.ToDisplayString();
+            var src = Generate(symbol.Name, ns);
+            spc.AddSource($"{symbol.Name}.AutoHello.g.cs", src);
+        });
+    }
+
+    private static string Generate(string className, string? ns)
+    {
+        var sb = new StringBuilder();
+        sb.AppendLine("// <auto-generated/>");
+        if (ns is not null)
+        {
+            sb.Append("namespace ").Append(ns).AppendLine(" {");
+        }
+
+        sb.AppendLine($"partial class {className}");
+        sb.AppendLine("{");
+        sb.AppendLine("  public static string Hello() => \"Hello from generated code!\";");
+        sb.AppendLine("}");
+
+        if (ns is not null) sb.AppendLine("}");
+        return sb.ToString();
+    }
+}
+
+
+Proyecto consumidor
+
+[AttributeUsage(AttributeTargets.Class)]
+public sealed class AutoHelloAttribute : Attribute {}
+
+[AutoHello]
+public partial class MyService {}
+
+
+Luego:
+
+Console.WriteLine(MyService.Hello());
+
+
+✅ Caso práctico típico:
+
+Generar DTOs, mappers, endpoints, “glue code”
+
+Evitar reflection en runtime (mejor para AOT)
+
+2) ¿Qué son Interceptors (C# 12 preview) y cómo se usan?
+
+Un interceptor permite que el compilador reemplace una invocación específica a un método por otra, en compile time.
+
+No es AOP runtime.
+No es proxy dinámico.
+Es literalmente: “en esta ubicación del source, cambia la llamada”.
+
+Roslyn lo describe como una feature del compilador, inicialmente experimental en .NET 8. 
+GitHub
++1
+
+¿Cómo se “apunta” a una llamada?
+
+Mediante metadata tipo InterceptsLocationAttribute (ruta/posición) para identificar el callsite. Los ejemplos prácticos suelen generarlo con un source generator, porque tú no quieres escribir offsets/locations a mano.
+
+Andrew Lock tiene un ejemplo completo de “interceptor + generator” y menciona que la API fue evolucionando entre .NET 8 y SDKs posteriores. 
+Andrew Lock | .NET Escapades
++1
+
+¿Para qué sirve en la práctica?
+
+Logging/tracing automático de llamadas
+
+Telemetría sin ensuciar el código de negocio
+
+Reescritura de APIs para performance (ej. reemplazar un método “lento” por uno optimizado)
+
+Escenarios de “source-generated DI / Http / Regex / logging” pero reemplazando llamadas existentes
+
+Mini-ejemplo conceptual
+
+Tú escribes:
+
+User u = repo.GetUser(id);
+
+
+El compilador (por interceptor) puede emitir IL como si hubieras escrito:
+
+User u = RepoInterceptor.GetUser_Intercepted(repo, id);
+
+
+📌 Importante: como es/era preview, depende del SDK y configuración; IDEs como Rider/Resharper documentaron soporte para la feature en modo experimental. 
+The JetBrains Blog
++1
+
+3) ¿Qué es AOT (Ahead-Of-Time) y cómo funciona en .NET?
+
+AOT = compilar antes de ejecutar.
+
+En .NET moderno, cuando hablamos de AOT en serio normalmente es Native AOT:
+
+En vez de “IL → JIT en runtime”, haces “IL → nativo” durante publish
+
+Terminas con un ejecutable nativo (dependiendo del modelo) y sin necesidad de JIT para generar código en runtime.
+
+Microsoft lo resume como “Native AOT deployment / PublishAot”. 
+Microsoft Learn
++1
+
+Flujo mental
+
+JIT tradicional
+
+C# -> IL + metadata
+     -> CLR carga
+     -> JIT compila IL a nativo (método por método)
+
+
+Native AOT
+
+C# -> IL + metadata
+     -> (publish) AOT compiler genera binario nativo
+     -> runtime más pequeño, arranque más rápido
+
+¿Cómo lo habilitas?
+
+En el csproj:
+
+<PropertyGroup>
+  <PublishAot>true</PublishAot>
+</PropertyGroup>
+
+
+Microsoft Learn
+
+Beneficios típicos
+
+Startup más rápido
+
+Menor memoria (en muchos escenarios)
+
+Distribución más simple (a veces single-file)
+
+Seguridad: menos generación de código en runtime (menos superficie) 
+GitHub
++1
+
+Trade-offs reales (los que duelen)
+
+Reflection dinámica y Assembly.Load se vuelven problemáticos
+
+Emit, expression compilation, proxies dinámicos: limitados
+
+Necesitas “decirle” al linker qué conservar (trimming / RD.xml-mental-model)
+
+Algunas librerías no están listas para AOT
+
+Por eso source generators son tan importantes: reemplazan reflection/runtime-magic por código generado en build time → AOT-friendly.
+
+Cómo conectan los 3 conceptos
+
+Source Generators: generan código → menos reflection → mejor para AOT
+
+Interceptors: permiten reescritura compile-time → también reduce hooks runtime
+
+AOT: premia lo “estático”, castiga lo “dinámico”
+
+
+
+
+
+----------------
+
 
 
 
 2.NET RUNTIME
 Como funciona de forma general el .net runtime? 
+🧠 ¿Qué es el .NET Runtime?
+
+El .NET Runtime es el motor de ejecución que:
+
+Carga assemblies
+
+Administra memoria
+
+Ejecuta código
+
+Maneja hilos
+
+Aplica seguridad y excepciones
+
+👉 NO compila C# (eso es Roslyn)
+👉 NO es solo el JIT (es mucho más)
+
+En .NET moderno se llama CoreCLR.
+
+🧱 Capas generales del ecosistema .NET
+┌───────────────────────────────┐
+│       C# / F# / VB            │
+│   (Código fuente)             │
+└───────────────┬───────────────┘
+                ↓
+┌───────────────────────────────┐
+│           Roslyn              │
+│   C# → IL + Metadata + PDB    │
+└───────────────┬───────────────┘
+                ↓
+┌───────────────────────────────┐
+│          .NET Runtime         │
+│ (CoreCLR / Mono / NativeAOT)  │
+│                               │
+│  - Loader                      │
+│  - Type System                 │
+│  - JIT / AOT                   │
+│  - GC                          │
+│  - Threading                   │
+│  - Exception Engine            │
+└───────────────────────────────┘
+
+1️⃣ Inicio de una app .NET (bootstrap)
+Cuando ejecutas:
+dotnet myapp.dll
+
+O:
+myapp.exe
+
+
+Ocurre esto:
+
+Host (dotnet.exe)
+
+Lee .runtimeconfig.json
+
+Resuelve versión del runtime
+
+Carga CoreCLR
+
+Ejecuta Main
+
+📌 Aquí todavía NO hay JIT.
+
+2️⃣ Assembly Loader (Loader & Binder)
+
+El runtime:
+
+Carga .dll (IL + metadata)
+
+Resuelve dependencias
+
+Verifica firmas/versiones
+
+Crea Module y Assembly en memoria
+
+📌 Importante:
+
+No todo el assembly se carga “ejecutado”
+
+Solo se mapea en memoria
+
+3️⃣ Type System & Metadata
+
+Cada tipo se describe con metadata:
+
+Clases
+
+Métodos
+
+Campos
+
+Interfaces
+
+Herencia
+
+Cuando un tipo se usa por primera vez:
+
+Se valida
+
+Se construye el Method Table
+
+Se asigna layout en memoria
+
+class User { int Id; string Name; }
+
+
+Se convierte en:
+
+[Object Header]
+[Method Table Pointer]
+[int Id]
+[ref Name]
+
+4️⃣ JIT (Just-In-Time compilation)
+El JIT NO compila todo al inicio.
+
+Compila método por método cuando se ejecuta por primera vez.
+
+IL Method
+   ↓ (first call)
+JIT
+   ↓
+Native Machine Code
+
+
+Luego:
+
+El código nativo se cachea
+
+Futuras llamadas saltan directo al código nativo
+
+📌 Esto se llama Tiered Compilation.
+
+Tiered Compilation (muy importante)
+
+1️⃣ Tier 0
+
+Compilación rápida
+
+Pocas optimizaciones
+
+Arranque rápido
+
+2️⃣ Tier 1
+
+Métodos “calientes”
+
+Optimizaciones agresivas
+
+Mejor performance
+
+El runtime decide cuándo recompilar.
+
+5️⃣ Garbage Collector (GC)
+
+El GC administra memoria administrada.
+
+Heap dividido en generaciones:
+Generación	Uso
+Gen 0	Objetos temporales
+Gen 1	Intermedios
+Gen 2	Larga vida
+LOH	Objetos grandes
+Flujo:
+
+Se llena Gen 0
+
+GC pausa hilos (STW)
+
+Marca objetos vivos
+
+Compacta memoria
+
+Promueve sobrevivientes
+
+📌 Optimizado para:
+
+Muchos objetos pequeños
+
+Vida corta
+
+6️⃣ Threading & ThreadPool
+
+El runtime administra:
+
+Threads nativos
+
+ThreadPool
+
+Tasks
+
+async/await
+
+async/await
+
+NO crea hilos nuevos.
+
+await CallAsync();
+
+
+Se convierte en:
+
+State machine
+
+Continuación registrada
+
+Reanudación en ThreadPool
+
+7️⃣ Exception Engine
+
+Las excepciones:
+
+Se propagan por stack frames
+
+Ejecutan finally
+
+Generan stack trace
+
+Consultan PDB (si existe)
+
+throw new InvalidOperationException();
+
+
+📌 Lanzar excepciones es caro
+📌 Capturarlas para flujo normal es mala práctica
+
+8️⃣ Interop (Native & OS)
+
+El runtime permite:
+
+P/Invoke
+
+COM interop
+
+syscalls
+
+[DllImport("kernel32.dll")]
+static extern IntPtr GetCurrentThread();
+
+
+Esto cruza:
+
+Managed → Native → OS
+
+9️⃣ Seguridad & Verificación
+
+El runtime:
+
+Verifica IL (type safety)
+
+Evita corrupción de memoria
+
+Aplica boundaries managed/unmanaged
+
+Aunque hoy:
+
+CAS está obsoleto
+
+Seguridad es más OS/container-based
+
+🔁 Flujo completo de ejecución (correcto)
+App start
+ ↓
+Host carga CoreCLR
+ ↓
+Assemblies mapeados
+ ↓
+Type loader crea tipos
+ ↓
+Primer call → JIT
+ ↓
+Código nativo ejecuta
+ ↓
+GC administra memoria
+ ↓
+ThreadPool ejecuta tareas
+
+🧠 Diferencias según modelo de ejecución
+Modelo	JIT	Runtime
+.NET Framework	Sí	CLR
+.NET Core / .NET	Sí	CoreCLR
+NativeAOT	No	Runtime reducido
+Blazor WASM	AOT/JIT	Mono
+🧩 Relación con lo que ya vimos
+Componente	Rol
+Roslyn	C# → IL
+PDB	Debug
+Runtime	Ejecuta
+JIT	IL → CPU
+GC	Memoria
+ThreadPool	Concurrencia
+Source Generators	Código estático
+Interceptors	Reescritura compile-time
+AOT	Sin JIT
+🧠 Resumen mental definitivo
+
+El .NET Runtime es una VM moderna, híbrida y adaptativa
+
+JIT cuando conviene
+
+AOT cuando se necesita
+
+GC generacional
+
+Tipado fuerte
+
+Optimización progresiva
+
+Tooling profundo
+
+
+
+------------------------------------------
 Como funciona JIT (Just In Time)
+
+
+
+---------------------------------------------
 Como funciona el garbage collector en .NET  y explcia las difenrecias mas relenvates respecto a .NET framework 
+
+🧠 ¿Qué es el Garbage Collector en .NET?
+
+El GC es el subsistema del runtime que:
+
+Asigna memoria en el heap administrado
+
+Detecta objetos no alcanzables
+
+Libera y compacta memoria
+
+Reduce fragmentación
+
+Minimiza pausas (latencia)
+
+👉 El GC NO libera memoria cuando un objeto “sale de scope”
+👉 Libera cuando ya no es alcanzable desde roots
+
+
+
+---------------------------------------------
 Explica la arquitectura de los siguientes elementos y como funciona en .NET: 
 ThreadPool
 
@@ -27,6 +1230,326 @@ Exception Engine
 Security Model
 
 Execution Engine
+
+-----------------------------------------------------------
+
+
+
+
+
+🧠 ¿Qué es el Garbage Collector en .NET?
+
+El GC es el subsistema del runtime que:
+
+Asigna memoria en el heap administrado
+
+Detecta objetos no alcanzables
+
+Libera y compacta memoria
+
+Reduce fragmentación
+
+Minimiza pausas (latencia)
+
+👉 El GC NO libera memoria cuando un objeto “sale de scope”
+👉 Libera cuando ya no es alcanzable desde roots
+
+🧱 Heap administrado: estructura base
+Managed Heap
+├── Generation 0 (Gen0)
+├── Generation 1 (Gen1)
+├── Generation 2 (Gen2)
+└── LOH (Large Object Heap)
+
+Regla clave
+
+La mayoría de los objetos mueren jóvenes
+
+El GC está optimizado para este patrón.
+
+1️⃣ Asignación de memoria (muy rápida)
+
+Cuando haces:
+
+var user = new User();
+
+
+El runtime:
+
+Reserva memoria por bump pointer
+
+Incrementa un puntero
+
+No hay locks (por thread-local allocation)
+
+📌 Asignar en .NET es más barato que malloc/free.
+
+2️⃣ Roots: cómo el GC decide qué vive
+
+El GC parte de GC Roots:
+
+Variables locales activas
+
+Campos estáticos
+
+Registros CPU
+
+Stack de threads
+
+Handles (interop)
+
+Todo objeto alcanzable desde un root vive.
+
+3️⃣ Fases de una recolección
+🔹 1. Mark (marcado)
+
+Pausa threads (STW)
+
+Marca objetos alcanzables
+
+🔹 2. Sweep / Compact
+
+Elimina objetos muertos
+
+Compacta memoria (en Gen0/1/2)
+
+Actualiza referencias
+
+🔹 3. Promote
+
+Objetos sobrevivientes → generación superior
+
+4️⃣ Generaciones (clave de performance)
+Generación	Característica	GC cost
+Gen0	Objetos temporales	Muy bajo
+Gen1	Filtro intermedio	Bajo
+Gen2	Objetos largos	Alto
+LOH	Objetos grandes	Alto
+
+📌 Gen0 GCs son muy frecuentes y baratos
+📌 Gen2 GCs son raros y caros
+
+5️⃣ LOH (Large Object Heap)
+
+Objetos > 85 KB
+
+NO se compactaba en .NET Framework (históricamente)
+
+Fragmentación frecuente
+
+Ejemplo:
+
+byte[] buffer = new byte[100_000];
+
+6️⃣ Modos del GC
+Workstation GC
+
+Apps cliente
+
+UI responsiveness
+
+Pausas cortas
+
+Server GC
+
+Backends
+
+Paralelo
+
+Más throughput
+
+Más memoria
+
+"runtimeOptions": {
+  "gcServer": true
+}
+
+7️⃣ GC y async/await
+
+async/await:
+
+Crea state machines
+
+Captura variables
+
+Puede promover objetos a Gen1/Gen2
+
+📌 Mal diseño async = presión innecesaria al GC
+
+8️⃣ Finalizers (lo caro)
+~FileWrapper() { /* cleanup */ }
+
+
+Retrasan la liberación
+
+Pasan por finalization queue
+
+Generan más GCs
+
+👉 Usar IDisposable + using
+
+🧠 Resumen del GC en una frase
+
+El GC de .NET prioriza throughput y simplicidad del modelo de memoria, sacrificando control manual.
+
+🔴 Ahora lo importante:
+Diferencias RELEVANTES vs .NET Framework
+
+Aquí está el valor real 👇
+
+1️⃣ Reescritura profunda del GC en .NET Core+
+.NET Framework
+
+GC acoplado a Windows
+
+Evolución lenta
+
+LOH sin compactación real
+
+.NET Core / .NET moderno
+
+GC reescrito
+
+Multiplataforma
+
+Más configurable
+
+Más observabilidad
+
+📌 Mismo concepto, implementación muy distinta
+
+2️⃣ Compactación del LOH (gran cambio)
+.NET Framework
+
+LOH no compacta
+
+Fragmentación permanente
+
+Workarounds manuales
+
+.NET Core 3.0+
+
+LOH compactable
+
+GCSettings.LargeObjectHeapCompactionMode =
+    GCLargeObjectHeapCompactionMode.CompactOnce;
+
+
+👉 Impacto directo en apps con buffers grandes, imágenes, streams.
+
+3️⃣ Background GC mejorado
+.NET Framework
+
+Background GC limitado
+
+Pausas visibles en Gen2
+
+.NET Core+
+
+Background GC concurrente
+
+Menos STW
+
+Mejor latencia en servidores
+
+4️⃣ Configuración y observabilidad
+.NET Framework
+
+Config vía app.config
+
+Poca telemetría
+
+.NET Core+
+
+Env vars
+
+EventCounters
+
+dotnet-counters
+
+dotnet-trace
+
+PerfView cross-platform
+
+📌 Hoy puedes medir el GC en producción.
+
+5️⃣ Threading + GC coordinados
+
+.NET Core mejoró:
+
+ThreadPool
+
+GC coordination
+
+Reducción de contención
+
+Impacto:
+
+Mejor escalabilidad
+
+Mejor rendimiento async
+
+6️⃣ Native AOT y trimming (nuevo mundo)
+.NET Framework
+
+No existe AOT real
+
+.NET moderno
+
+Native AOT
+
+GC reducido
+
+Heap más pequeño
+
+Menos reflexión
+
+📌 El GC se vuelve más determinista, pero menos flexible.
+
+7️⃣ Span<T> / pooling / low-allocation APIs
+.NET Framework
+
+APIs allocation-heavy
+
+.NET moderno
+
+Span<T>
+
+ArrayPool<T>
+
+Memory<T>
+
+Ejemplo:
+
+var buffer = ArrayPool<byte>.Shared.Rent(1024);
+// usar
+ArrayPool<byte>.Shared.Return(buffer);
+
+
+👉 Menos presión al GC = más throughput.
+
+🧠 Tabla resumen clara
+Aspecto	.NET Framework	.NET moderno
+LOH	No compacta	Compactable
+Background GC	Limitado	Avanzado
+Observabilidad	Baja	Alta
+Multiplataforma	No	Sí
+AOT	No	Sí
+APIs low-alloc	Pocas	Muchas
+Tuning	Limitado	Extenso
+🎯 Reglas prácticas para ingenieros
+
+✔ Evita objetos grandes frecuentes
+✔ Reduce allocs en hot paths
+✔ Usa pooling cuando aplique
+✔ Observa Gen2 / LOH en prod
+✔ No abuses de finalizers
+✔ Diseña async con cuidado
+
+🧠 Modelo mental final
+
+El GC de .NET moderno es uno de los más avanzados del mercado, pero requiere que el desarrollador no luche contra él.
+--------------------------------------------------------------------------------
 
 
 

@@ -1,0 +1,191 @@
+.NET Core 2.x (2.0 / 2.1) — “por fin Core se volvió viable para enterprise”
+1) .NET Standard 2.0: reusar librerías del mundo .NET Framework
+
+Impacto DX: migraciones mucho menos dolorosas; más APIs disponibles.
+
+Ejemplo: librería multi-target
+
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFrameworks>net462;netstandard2.0</TargetFrameworks>
+  </PropertyGroup>
+</Project>
+
+2) ASP.NET Core 2.0: CreateDefaultBuilder simplifica el arranque
+
+Impacto DX: menos boilerplate y defaults razonables (config + logging + Kestrel).
+
+public class Program
+{
+    public static void Main(string[] args) =>
+        WebHost.CreateDefaultBuilder(args)
+               .UseStartup<Startup>()
+               .Build()
+               .Run();
+}
+
+3) Razor Pages (2.0): CRUDs y páginas simples sin controllers por todo
+
+Impacto DX: backoffices más rápidos de construir/leer.
+
+public class CreateModel : PageModel
+{
+    [BindProperty] public Product Product { get; set; } = new();
+
+    public IActionResult OnPost()
+    {
+        if (!ModelState.IsValid) return Page();
+        // save...
+        return RedirectToPage("Index");
+    }
+}
+
+4) IHttpClientFactory (2.1): adiós a sockets agotados + clientes tipados
+
+Impacto DX: integraciones “bien hechas” y testeables por DI.
+
+services.AddHttpClient<PaymentsClient>(c =>
+{
+    c.BaseAddress = new Uri("https://payments.local/");
+});
+
+public sealed class PaymentsClient
+{
+    private readonly HttpClient _http;
+    public PaymentsClient(HttpClient http) => _http = http;
+
+    public Task<string> GetAsync(string id) =>
+        _http.GetStringAsync($"api/payments/{id}");
+}
+
+5) “Generic Host” (2.1): base unificada para workers/servicios
+
+Impacto DX: consola/worker con DI+config+logging como “app real”.
+
+Host.CreateDefaultBuilder(args)
+    .ConfigureServices(s => s.AddHostedService<Worker>())
+    .Build()
+    .Run();
+
+.NET Core 3.x (3.0 / 3.1 LTS) — “modernización fuerte del runtime + web”
+1) Worker Service template (3.0): background jobs first-class
+public class Worker : BackgroundService
+{
+    protected override async Task ExecuteAsync(CancellationToken ct)
+    {
+        while (!ct.IsCancellationRequested)
+        {
+            // job...
+            await Task.Delay(1000, ct);
+        }
+    }
+}
+
+2) System.Text.Json: JSON rápido sin Newtonsoft por defecto
+
+Impacto DX: menos dependencias, más performance (aunque al inicio menos features que Newtonsoft).
+
+var json = JsonSerializer.Serialize(new { Name = "Josue", Age = 33 });
+var obj  = JsonSerializer.Deserialize<Dictionary<string, object>>(json);
+
+3) Endpoint Routing (3.0): routing más consistente (y unificado)
+
+Impacto DX: mejor composición del pipeline y endpoints.
+
+app.UseRouting();
+
+app.UseEndpoints(endpoints =>
+{
+    endpoints.MapControllers();
+    endpoints.MapGet("/health", async ctx => await ctx.Response.WriteAsync("OK"));
+});
+
+4) gRPC (3.0): RPC moderno “built-in” en ASP.NET Core
+
+Impacto DX: servicios internos rápidos y contract-first.
+
+endpoints.MapGrpcService<GreeterService>();
+
+5) Soporte desktop (Windows Forms/WPF en Core 3)
+
+Impacto DX: migración de apps desktop desde .NET Framework.
+
+<PropertyGroup>
+  <TargetFramework>netcoreapp3.1</TargetFramework>
+  <UseWPF>true</UseWPF>
+</PropertyGroup>
+
+.NET 5 — “unificación” (un solo .NET) + deploy moderno
+1) Single-file publish (mejorado): distribución más simple
+dotnet publish -c Release -r win-x64 /p:PublishSingleFile=true
+
+2) Performance del runtime y BCL (mejoras amplias)
+
+Impacto DX: “gratis” por upgrade (menos GC pressure, más throughput en web/JSON/linq en muchos casos).
+
+3) C# 9 muy usado con .NET 5: record para modelos inmutables
+public record User(string Id, string Name);
+
+var u1 = new User("1", "Ana");
+var u2 = u1 with { Name = "Ana Maria" };
+
+.NET 6 (LTS) — “minimal hosting + minimal APIs” (DX brutal)
+1) Minimal hosting model: Program.cs ultra simple
+
+Impacto DX: menos ceremony, más directo.
+
+var builder = WebApplication.CreateBuilder(args);
+builder.Services.AddControllers();
+
+var app = builder.Build();
+app.MapControllers();
+app.Run();
+
+2) Minimal APIs: endpoints sin controller cuando conviene
+
+Ideal para: microservicios simples, BFFs, prototipos, internal tools.
+
+var app = WebApplication.CreateBuilder(args).Build();
+
+app.MapGet("/users/{id}", (string id) => Results.Ok(new { id }));
+app.MapPost("/users", (User u) => Results.Created($"/users/{u.Id}", u));
+
+app.Run();
+
+3) C# 10 (típico con .NET 6): global usings + file-scoped namespace
+// GlobalUsings.cs
+global using System.Text.Json;
+
+// File-scoped namespace
+namespace MyApp.Services;
+
+public class Foo {}
+
+4) DateOnly / TimeOnly: modelado correcto de fechas/horas sin hacks
+DateOnly d = DateOnly.FromDateTime(DateTime.UtcNow);
+TimeOnly t = TimeOnly.FromDateTime(DateTime.UtcNow);
+
+.NET 8 (LTS) — performance + cloud/native + AOT más realista
+1) Native AOT (mucho más usable): publish a nativo
+
+Impacto DX: arranque rápido + binario nativo (ideal para CLIs, lambdas/funciones, servicios pequeños).
+
+<PropertyGroup>
+  <PublishAot>true</PublishAot>
+  <InvariantGlobalization>true</InvariantGlobalization>
+</PropertyGroup>
+
+dotnet publish -c Release -r linux-x64
+
+2) ASP.NET Core: mejoras fuertes en rendimiento del request pipeline
+
+Ejemplo de patrón “rápido” en minimal APIs (sin controllers):
+
+var app = WebApplication.CreateBuilder(args).Build();
+
+app.MapGet("/ping", () => "pong");
+app.Run();
+
+3) Mejoras en JSON / HTTP / Kestrel y perf general
+
+Impacto DX: upgrades que reducen latencia y CPU sin tocar mucho código (especialmente en APIs).
