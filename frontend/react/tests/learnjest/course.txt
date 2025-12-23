@@ -119,6 +119,26 @@ No ideal para proyectos CJS antiguos
 
 No recomendado para Node 10 / 12
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 🧪 Mini-curso de Jest
 El clásico, robusto y probado en producción
 🧠 ¿Qué es Jest?

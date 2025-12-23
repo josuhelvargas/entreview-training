@@ -1,3 +1,332 @@
-Explica los fundamentos de jest, expecialmente los itnernals para saber como funciona internamente 
+Explica los fundamentos de jest, expecialmente los itnernals para saber como funciona internamente
 
+
+┌─────────────────────────────────────────────────────────────┐
+│                      PROYECTO DE TESTS                       │
+│                                                              │
+│  src/                          __tests__/                   │
+│  ├── utils.js                  ├── utils.test.js            │
+│  ├── api.js                    ├── api.test.js              │
+│  └── components/               └── integration.test.js      │
+│      └── Button.jsx                                         │
+└──────────────────────┬──────────────────────────────────────┘
+                       │
+                       ▼
+┌─────────────────────────────────────────────────────────────┐
+│                  PASO 1: DESCUBRIMIENTO                      │
+│                                                              │
+│  Jest CLI ejecuta: npm test / jest                          │
+│                                                              │
+│  Test Pattern Matching:                                     │
+│  ✓ **/*.test.js                                            │
+│  ✓ **/*.spec.js                                            │
+│  ✓ **/__tests__/**/*.js                                    │
+│                                                              │
+│  Resultado: Lista de archivos a ejecutar                    │
+└──────────────────────┬──────────────────────────────────────┘
+                       │
+                       ▼
+┌─────────────────────────────────────────────────────────────┐
+│              PASO 2: CONFIGURACIÓN INICIAL                   │
+│                                                              │
+│  Lee: jest.config.js / package.json                         │
+│                                                              │
+│  Configuración cargada:                                     │
+│  • testEnvironment: 'jsdom' | 'node'                       │
+│  • setupFilesAfterEnv: ['./setupTests.js']                 │
+│  • transform: { '^.+\\.tsx?$': 'ts-jest' }                │
+│  • moduleNameMapper: { '^@/(.*)$': '<rootDir>/src/$1' }   │
+│  • collectCoverage: true                                    │
+│                                                              │
+└──────────────────────┬──────────────────────────────────────┘
+                       │
+                       ▼
+┌─────────────────────────────────────────────────────────────┐
+│           PASO 3: CREACIÓN DE WORKER PROCESSES               │
+│                                                              │
+│  Jest Master Process                                         │
+│         │                                                    │
+│         ├──► Worker 1 (CPU Core 1)                          │
+│         ├──► Worker 2 (CPU Core 2)                          │
+│         ├──► Worker 3 (CPU Core 3)                          │
+│         └──► Worker 4 (CPU Core 4)                          │
+│                                                              │
+│  Cada worker:                                               │
+│  • Procesa tests independientemente                         │
+│  • Tiene su propio contexto de VM                           │
+│  • Aislamiento total entre tests                            │
+│                                                              │
+└──────────────────────┬──────────────────────────────────────┘
+                       │
+                       ▼
+┌─────────────────────────────────────────────────────────────┐
+│              PASO 4: TRANSPILACIÓN DEL CÓDIGO                │
+│                                                              │
+│  Archivo Original (TypeScript/JSX):                         │
+│  ┌────────────────────────────────────┐                    │
+│  │ import React from 'react';          │                    │
+│  │ import { render } from '@testing... │                    │
+│  │                                     │                    │
+│  │ test('renders button', () => {     │                    │
+│  │   const { getByText } = render(    │                    │
+│  │     <Button>Click</Button>         │                    │
+│  │   );                                │                    │
+│  │ });                                 │                    │
+│  └────────────────────────────────────┘                    │
+│                    │                                         │
+│                    ▼                                         │
+│         Babel / ts-jest Transform                           │
+│                    │                                         │
+│                    ▼                                         │
+│  Código Transpilado (CommonJS):                            │
+│  ┌────────────────────────────────────┐                    │
+│  │ const React = require('react');     │                    │
+│  │ const testing = require('@testing...│                    │
+│  │                                     │                    │
+│  │ test('renders button', () => {     │                    │
+│  │   const result = testing.render(   │                    │
+│  │     React.createElement(Button,    │                    │
+│  │       null, 'Click')               │                    │
+│  │   );                                │                    │
+│  │ });                                 │                    │
+│  └────────────────────────────────────┘                    │
+│                                                              │
+└──────────────────────┬──────────────────────────────────────┘
+                       │
+                       ▼
+┌─────────────────────────────────────────────────────────────┐
+│            PASO 5: JEST RUNTIME - MODULE SYSTEM              │
+│                                                              │
+│  Jest envuelve cada módulo en una función:                  │
+│                                                              │
+│  ┌────────────────────────────────────────────────┐        │
+│  │ (function(module, exports, require,            │        │
+│  │           __dirname, __filename) {             │        │
+│  │                                                 │        │
+│  │   // Tu código aquí                            │        │
+│  │   const React = require('react');              │        │
+│  │                                                 │        │
+│  │ });                                             │        │
+│  └────────────────────────────────────────────────┘        │
+│                                                              │
+│  Esto permite a Jest:                                       │
+│  ✓ Interceptar todos los require()                         │
+│  ✓ Inyectar mocks automáticamente                          │
+│  ✓ Resetear módulos entre tests                            │
+│  ✓ Tracking de dependencias                                │
+│                                                              │
+└──────────────────────┬──────────────────────────────────────┘
+                       │
+                       ▼
+┌─────────────────────────────────────────────────────────────┐
+│              PASO 6: SISTEMA DE MOCKING                      │
+│                                                              │
+│  Registry de Módulos:                                       │
+│  ┌──────────────────────────────────────┐                  │
+│  │  Module Path    │  Implementation     │                  │
+│  ├──────────────────────────────────────┤                  │
+│  │  'axios'        │  [MOCK]             │                  │
+│  │  'fs'           │  [MOCK]             │                  │
+│  │  './api'        │  [REAL]             │                  │
+│  │  'react'        │  [REAL]             │                  │
+│  └──────────────────────────────────────┘                  │
+│                                                              │
+│  Cuando se llama require('axios'):                          │
+│  1. Jest intercepta la llamada                              │
+│  2. Busca en el registry                                    │
+│  3. Retorna mock si existe, o módulo real                   │
+│                                                              │
+└──────────────────────┬──────────────────────────────────────┘
+                       │
+                       ▼
+┌─────────────────────────────────────────────────────────────┐
+│           PASO 7: EJECUCIÓN DEL TEST (Worker)                │
+│                                                              │
+│  Estado Inicial del Worker:                                 │
+│  ┌────────────────────────────────────┐                    │
+│  │ • Global scope limpio               │                    │
+│  │ • Timers en estado original         │                    │
+│  │ • Mocks reseteados                  │                    │
+│  │ • VM Context aislado                │                    │
+│  └────────────────────────────────────┘                    │
+│                    │                                         │
+│                    ▼                                         │
+│          Ejecuta beforeAll()                                │
+│                    │                                         │
+│                    ▼                                         │
+│  ┌─────────────────────────────────┐                       │
+│  │  describe('Component tests')    │                       │
+│  │    │                             │                       │
+│  │    ├──► beforeEach() ──────┐   │                       │
+│  │    │                        │    │                       │
+│  │    ├──► test 1 ◄───────────┘   │                       │
+│  │    │      ├─ expect()            │                       │
+│  │    │      └─ assertions          │                       │
+│  │    │                             │                       │
+│  │    ├──► afterEach()              │                       │
+│  │    │                             │                       │
+│  │    ├──► beforeEach() ──────┐   │                       │
+│  │    │                        │    │                       │
+│  │    ├──► test 2 ◄───────────┘   │                       │
+│  │    │      ├─ expect()            │                       │
+│  │    │      └─ assertions          │                       │
+│  │    │                             │                       │
+│  │    └──► afterEach()              │                       │
+│  └─────────────────────────────────┘                       │
+│                    │                                         │
+│                    ▼                                         │
+│          Ejecuta afterAll()                                 │
+│                                                              │
+└──────────────────────┬──────────────────────────────────────┘
+                       │
+                       ▼
+┌─────────────────────────────────────────────────────────────┐
+│              PASO 8: FAKE TIMERS (si habilitados)            │
+│                                                              │
+│  Timer Real vs Fake:                                        │
+│                                                              │
+│  Real:                          Fake:                       │
+│  setTimeout(() => {             jest.useFakeTimers();       │
+│    console.log('wait');         setTimeout(() => {          │
+│  }, 5000);                        console.log('wait');      │
+│                                 }, 5000);                    │
+│  // Espera 5 segundos reales   jest.advanceTimersByTime(... │
+│                                 // Avanza instantáneamente  │
+│                                                              │
+│  Cola de Timers Falsos:                                     │
+│  ┌─────────────────────────────────────┐                   │
+│  │ Time │ Callback                      │                   │
+│  ├─────────────────────────────────────┤                   │
+│  │ 100  │ () => updateUI()             │                   │
+│  │ 1000 │ () => fetchData()            │                   │
+│  │ 5000 │ () => console.log('wait')    │                   │
+│  └─────────────────────────────────────┘                   │
+│                                                              │
+└──────────────────────┬──────────────────────────────────────┘
+                       │
+                       ▼
+┌─────────────────────────────────────────────────────────────┐
+│         PASO 9: RECOLECCIÓN DE RESULTADOS                    │
+│                                                              │
+│  Worker 1: ✓ 15 tests passed                               │
+│  Worker 2: ✓ 12 tests passed, ✗ 1 failed                  │
+│  Worker 3: ✓ 20 tests passed                               │
+│  Worker 4: ✓ 18 tests passed                               │
+│                                                              │
+│  Master Process agrega resultados:                          │
+│  ┌────────────────────────────────────┐                    │
+│  │ Total Tests: 66                     │                    │
+│  │ Passed: 65                          │                    │
+│  │ Failed: 1                           │                    │
+│  │ Duration: 3.45s                     │                    │
+│  │ Coverage: 87.3%                     │                    │
+│  └────────────────────────────────────┘                    │
+│                                                              │
+└──────────────────────┬──────────────────────────────────────┘
+                       │
+                       ▼
+┌─────────────────────────────────────────────────────────────┐
+│            PASO 10: COVERAGE COLLECTION                      │
+│                                                              │
+│  Jest instrumenta el código con Istanbul:                   │
+│                                                              │
+│  Código Original:                                           │
+│  ┌────────────────────────────────────┐                    │
+│  │ function add(a, b) {                │                    │
+│  │   if (a > 0) {                      │                    │
+│  │     return a + b;                   │                    │
+│  │   }                                 │                    │
+│  │   return b;                         │                    │
+│  │ }                                   │                    │
+│  └────────────────────────────────────┘                    │
+│                    │                                         │
+│                    ▼                                         │
+│  Código Instrumentado:                                      │
+│  ┌────────────────────────────────────┐                    │
+│  │ cov_1.s[0]++;                       │                    │
+│  │ function add(a, b) {                │                    │
+│  │   cov_1.f[0]++;                     │                    │
+│  │   if (a > 0) {                      │                    │
+│  │     cov_1.b[0][0]++;                │                    │
+│  │     return a + b;                   │                    │
+│  │   }                                 │                    │
+│  │   cov_1.b[0][1]++;                  │                    │
+│  │   return b;                         │                    │
+│  │ }                                   │                    │
+│  └────────────────────────────────────┘                    │
+│                                                              │
+│  Métricas recolectadas:                                     │
+│  • Statements (líneas ejecutadas)                           │
+│  • Branches (if/else cubiertos)                            │
+│  • Functions (funciones llamadas)                           │
+│  • Lines (líneas físicas)                                   │
+│                                                              │
+└──────────────────────┬──────────────────────────────────────┘
+                       │
+                       ▼
+┌─────────────────────────────────────────────────────────────┐
+│              PASO 11: LIMPIEZA Y TEARDOWN                    │
+│                                                              │
+│  Por cada test:                                             │
+│  1. Ejecutar afterEach()                                    │
+│  2. Limpiar mocks: jest.clearAllMocks()                    │
+│  3. Resetear módulos: jest.resetModules()                  │
+│  4. Restaurar timers: jest.useRealTimers()                 │
+│  5. Limpiar DOM (si jsdom)                                  │
+│                                                              │
+│  Por cada suite:                                            │
+│  1. Ejecutar afterAll()                                     │
+│  2. Liberar memoria del worker                              │
+│  3. Cerrar conexiones abiertas                              │
+│                                                              │
+└──────────────────────┬──────────────────────────────────────┘
+                       │
+                       ▼
+┌─────────────────────────────────────────────────────────────┐
+│               PASO 12: REPORTE FINAL                         │
+│                                                              │
+│  PASS  src/__tests__/utils.test.js                         │
+│    ✓ adds two numbers (3 ms)                               │
+│    ✓ handles edge cases (2 ms)                             │
+│                                                              │
+│  FAIL  src/__tests__/api.test.js                           │
+│    ✓ fetches data successfully (45 ms)                     │
+│    ✗ handles errors (12 ms)                                │
+│                                                              │
+│      Expected: 404                                          │
+│      Received: 500                                          │
+│                                                              │
+│  Test Suites: 1 failed, 1 passed, 2 total                  │
+│  Tests:       1 failed, 3 passed, 4 total                  │
+│  Snapshots:   0 total                                       │
+│  Time:        3.451 s                                       │
+│  Coverage:    87.3%                                         │
+│                                                              │
+│  ┌─────────────────────────────────────────┐              │
+│  │ File      │ % Stmts │ % Branch │ % Lines │              │
+│  ├─────────────────────────────────────────┤              │
+│  │ utils.js  │  100.00 │   100.00 │  100.00 │              │
+│  │ api.js    │   75.50 │    66.67 │   80.00 │              │
+│  └─────────────────────────────────────────┘              │
+│                                                              │
+
+
+
+
+
+Como funciona jsdom?
+
+
+Como funciona Babel?
+
+
+Que es con exactituda CommonJS y los moduloes CommonJS?
+
+
+Que es lo que dberia habeer en los metodos beforeeach/ aftereach? 
+
+Como sabe jest el porcentaje de coverage (lineas e) que han sido testeadas? (Explica los detalles tecniccos de esto y si es posible dcrear untitest ams eficientes en ase a ese conocimiento)
+
+
+Por qu es dice que se ejecutan los tests (jest) en un VM context aislado? 
 
