@@ -1,0 +1,212 @@
+Método “AAA + 7 checadas” para escribir un test con Jest
+AAA = Arrange, Act, Assert
+
+Ese es el esqueleto que nunca cambia.
+
+0) Define el objetivo del test(1 línea)
+
+Antes de escribir código, escribe esta frase:
+
+“Debería[resultado] cuando[condición].”
+
+Ejemplos:
+
+“Debería devolver true cuando el usuario tenga rol admin.”
+
+“Debería lanzar error cuando age sea menor a 0.”
+
+Esto evita tests vagos.
+
+1) Identifica el “SUT” (System Under Test)
+
+El SUT es exactamente lo que estás probando:
+
+una función
+
+un método de clase
+
+un módulo
+
+un componente(si estás con RTL)
+
+Regla: un test debe centrarse en 1 SUT.
+
+2) Clasifica dependencias(para decidir mocks)
+
+Haz una lista mental rápida:
+
+A) Dependencia pura(determinista)
+
+helpers sin IO, sin tiempo, sin random
+✅ normalmente NO se mockea
+
+B) Dependencia externa(no determinista / lenta)
+
+HTTP(fetch, axios)
+
+DB
+
+filesystem
+
+tiempo(Date.now())
+
+random(Math.random())
+
+env vars
+✅ normalmente SÍ se mockea
+
+Meta: que el test sea rápido, repetible y sin flakiness.
+
+3) Estructura del archivo y naming
+3.1 describe: “qué se prueba”
+describe('calculateTotal', () => {
+  // tests...
+});
+
+3.2 it / test: “qué debería pasar”
+it('returns 0 when cart is empty', () => {
+});
+
+
+Regla de oro: si lees solo los títulos, deben explicar el comportamiento completo.
+
+4) Arrange(prepara datos y mocks)
+
+Aquí preparas:
+
+input
+
+estado inicial
+
+mocks / stubs / spies
+
+4.1 Arrange: datos(lo mínimo necesario)
+const cart = [];
+
+4.2 Arrange: mocks(si hay dependencias externas)
+
+Hay 3 herramientas típicas:
+
+A) jest.fn()(mock function)
+
+Para funciones simples que quieres controlar.
+
+const sendEmail = jest.fn().mockResolvedValue(true);
+
+B) jest.spyOn(obj, 'method')(espía sin reescribir todo el objeto)
+
+Para interceptar una función real de un objeto / módulo.
+
+const spy = jest.spyOn(console, 'error').mockImplementation(() => { });
+
+C) jest.mock('module')(mock de módulo completo)
+
+Cuando importas algo y quieres reemplazarlo.
+
+  jest.mock('./api', () => ({
+    fetchUser: jest.fn(),
+  }));
+
+5) Act(ejecuta el SUT)
+
+Ejecuta la unidad probada.
+
+Sin async
+const result = calculateTotal(cart);
+
+Con async
+const result = await createOrder(cart);
+
+6) Assert(verifica resultados + interacciones)
+
+Aquí validas 2 cosas:
+
+6.1 Assert de resultado(output / estado final)
+expect(result).toBe(0);
+expect(result).toEqual({ total: 0 });
+
+6.2 Assert de interacción(si llamaste dependencias)
+expect(sendEmail).toHaveBeenCalledTimes(1);
+expect(sendEmail).toHaveBeenCalledWith('user@x.com', expect.any(String));
+
+
+Regla: no asserts irrelevantes.Cada assert debe justificar el objetivo del test.
+
+7) Limpieza(Reset / Restore)
+
+Para que un test no “contamine” al otro:
+
+Si usaste spyOn, usa:
+
+spy.mockRestore();
+
+
+Si hay muchos mocks, en afterEach:
+
+afterEach(() => {
+  jest.clearAllMocks(); // limpia llamadas, pero deja implementaciones
+});
+
+
+Si necesitas restaurar implementaciones originales de spies:
+
+afterEach(() => {
+  jest.restoreAllMocks();
+});
+
+Las “7 checadas” (checklist memorizable)
+
+Antes de dar por bueno el test, revisa:
+
+¿El nombre describe condición + resultado ?
+
+¿Solo prueba 1 comportamiento ?
+
+¿No depende de red / tiempo / random sin mock ?
+
+¿Arrange mínimo(sin datos basura) ?
+
+¿Act hace 1 cosa clara ?
+
+¿Asserts verifican lo importante(no detalles internos) ?
+
+¿Se limpian mocks / spies ?
+
+  Plantilla final(copiable mentalmente)
+describe('SUT', () => {
+  afterEach(() => {
+    jest.clearAllMocks();
+    jest.restoreAllMocks();
+  });
+
+  it('should X when Y', async () => {
+    // Arrange
+    const input = ...;
+  const dep = jest.fn();
+
+  // Act
+  const result = await SUT(input);
+
+  // Assert
+  expect(result).toBe(...);
+  expect(dep).toHaveBeenCalledWith(...);
+});
+});
+
+Reglas rápidas de “qué matcher usar”
+
+toBe → primitivos / referencia exacta
+
+toEqual → objetos / arrays por valor
+
+toThrow / rejects.toThrow → errores
+
+toHaveBeenCalledTimes / toHaveBeenCalledWith → interacción con mocks
+
+Mini rutina de memorización(simple)
+
+Cada vez que vayas a testear algo, di en voz baja:
+
+“Objetivo → SUT → Dependencias → AAA → Limpieza”
+
+Si lo repites 10–15 veces, se vuelve automático.

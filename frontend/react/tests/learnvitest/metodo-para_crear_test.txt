@@ -1,0 +1,480 @@
+Documento: Método sistemático para crear un test con Vitest (paso a paso)
+0) Objetivo del método
+
+Lograr tests:
+
+Deterministas (mismo resultado siempre)
+
+Rápidos
+
+Fáciles de leer
+
+Fáciles de mantener
+
+Con mocks solo cuando conviene
+
+1) Preparación base (una sola vez por proyecto)
+1.1 Instalar dependencias típicas
+Si solo pruebas lógica (Node)
+
+vitest
+
+Si pruebas React (UI)
+
+vitest
+
+@testing-library/react
+
+@testing-library/jest-dom
+
+jsdom (o happy-dom)
+
+Cuándo usar qué DOM
+
+jsdom: más compatible con APIs del DOM, estándar.
+
+happy-dom: a veces más rápido, pero puede fallar en APIs específicas.
+
+1.2 Configurar Vitest (vitest.config.ts / vite.config.ts)
+Caso A: lógica pura
+
+environment: "node"
+
+Caso B: React (UI)
+
+environment: "jsdom"
+
+setupFiles para cargar jest-dom y limpiar mocks
+
+Ejemplo conceptual (no importa el archivo exacto):
+
+test.environment = "jsdom"
+
+test.globals = true (si quieres describe/it/expect globales)
+
+test.setupFiles = ["./src/test/setup.ts"]
+
+1.3 Crear archivo de setup (solo si React)
+
+En setup.ts normalmente pones:
+
+import "@testing-library/jest-dom";
+
+hooks de limpieza global (opcional)
+
+Cuándo usar setup
+
+Cuando necesitas matchers extra (toBeInTheDocument, etc.)
+
+Cuando quieres establecer mocks globales (ej. matchMedia, ResizeObserver)
+
+Cuando quieres resetear mocks consistentemente
+
+2) El método principal para escribir un test: “AAA + 8 decisiones”
+
+AAA = Arrange / Act / Assert (siempre igual)
+
+2.1 Plantilla mental (lo mínimo)
+
+Define qué comportamiento vas a probar
+
+Elige tipo de test (unit vs integration UI)
+
+Detecta dependencias (¿mock o real?)
+
+Arrange (inputs + estado + mocks)
+
+Act (ejecuta SUT)
+
+Assert (resultado + efectos + llamadas)
+
+Cleanup (limpia mocks/spies)
+
+Refactor (hazlo más legible)
+
+3) Paso 1: Definir el “SUT” (System Under Test)
+
+El SUT es la unidad exacta bajo prueba:
+
+función (calculateTotal)
+
+método de clase (UserService.createUser)
+
+componente (<LoginForm />)
+
+hook (useKickstartFormState), aunque hooks suelen probarse indirectamente en UI o con utilidades especiales
+
+Regla: 1 test = 1 comportamiento principal del SUT.
+
+4) Paso 2: Elegir el tipo de test (y por qué)
+A) Unit test (lógica pura)
+
+Pruebas funciones/servicios sin UI.
+
+✅ Úsalo cuando:
+
+lógica determinista
+
+reglas de negocio
+
+transformaciones
+
+validaciones
+
+reducers, helpers
+
+Ambiente recomendado: node
+
+B) Integration test (componente React + hooks + DOM)
+
+Pruebas el comportamiento visible: render, clicks, texto, callbacks.
+
+✅ Úsalo cuando:
+
+quieres probar “lo que ve el usuario”
+
+hay interacción con estado/hooks
+
+hay validaciones en UI
+
+hay navegación / eventos
+
+Ambiente recomendado: jsdom
+
+Regla práctica:
+
+Si te importa el DOM → integration UI (RTL)
+
+Si te importa el retorno de una función → unit
+
+5) Paso 3: Detectar dependencias y decidir mocks
+
+Esto define cuándo usar vi.mock, vi.fn, vi.spyOn.
+
+5.1 Clasificación rápida
+Dependencias puras (no mocks)
+
+funciones puras
+
+helpers internos sin IO
+
+mapeos deterministas
+
+✅ Déjalas reales: así pruebas más “de verdad”.
+
+Dependencias externas (mock casi siempre)
+
+HTTP (fetch, axios)
+
+DB
+
+storage
+
+tiempo (Date, Date.now)
+
+random (Math.random)
+
+librerías que no quieres ejecutar (analytics, tracking)
+
+APIs del browser (matchMedia, ResizeObserver) si complican
+
+✅ Mock para: velocidad, determinismo, control.
+
+6) Paso 4: Estructurar el archivo: describe + it
+6.1 describe(name, fn)
+
+Agrupa por unidad:
+
+describe("calculateTotal", () => {})
+
+describe("<LoginForm />", () => {})
+
+✅ Úsalo para:
+
+agrupar casos
+
+compartir setup con beforeEach
+
+6.2 it/test(name, fn)
+
+Cada caso:
+
+it("returns 0 when cart is empty", () => {})
+
+✅ Nombre ideal:
+
+“should [resultado] when [condición]”
+
+o “renders X when Y” (UI)
+
+7) Paso 5: Arrange (preparación) — qué usar y cuándo
+7.1 Datos (fixtures)
+
+Usa objetos mínimos:
+
+const input = ...;
+
+✅ Cuándo crear fixtures reutilizables:
+
+cuando muchos tests usan la misma forma de datos
+
+cuando el setup estorba lectura
+
+Evita fixtures gigantes sin necesidad.
+
+7.2 Mocks: decide entre vi.fn, vi.spyOn, vi.mock
+A) vi.fn() — “Mock function”
+
+Qué es: una función falsa con tracking de llamadas.
+✅ Úsalo cuando:
+
+el SUT recibe una función como parámetro (callback)
+
+quieres simular una dependencia sin importar módulo
+
+quieres controlar retornos (mockReturnValue, mockResolvedValue)
+
+Ejemplos típicos:
+
+onSubmit
+
+logger
+
+sendEmail
+
+Razón: simple, directo, fácil de asertar.
+
+B) vi.spyOn(obj, "method") — “Espiar método real”
+
+Qué es: interceptas una función existente y puedes:
+
+observar llamadas
+
+o reemplazar implementación temporalmente
+
+✅ Úsalo cuando:
+
+existe un objeto/módulo real y solo quieres interceptar un método
+
+quieres verificar que se llamó console.error, analytics.track, router.navigate
+
+quieres preservar el resto del módulo real
+
+Regla: spy para observar; mock para reemplazar.
+
+C) vi.mock("module") — “Mock de módulo”
+
+Qué es: reemplazas un import completo (o parcial) de un módulo.
+
+✅ Úsalo cuando:
+
+el módulo hace IO (API calls)
+
+el módulo tiene efectos secundarios
+
+el módulo es lento o difícil en tests
+
+quieres aislar la unidad sin cambiar su firma
+
+Cuándo NO usarlo:
+
+si solo quieres observar una llamada puntual → mejor vi.spyOn
+
+si el módulo es puro y barato → no lo mockees
+
+7.3 Hooks de ciclo de vida: beforeEach/afterEach
+beforeEach(fn)
+
+✅ Úsalo cuando:
+
+todos los tests necesitan el mismo arreglo (reset de estado, crear datos base)
+
+quieres evitar duplicación
+
+afterEach(fn)
+
+✅ Úsalo cuando:
+
+necesitas limpiar mocks y evitar contaminación entre tests
+
+Recomendación típica:
+
+vi.clearAllMocks() en afterEach (limpia conteo de llamadas)
+
+vi.restoreAllMocks() si usaste spies (restaura implementaciones originales)
+
+8) Paso 6: Act (ejecución) — sync vs async
+8.1 Sync
+
+Ejecutas directo:
+
+const result = sut(input);
+
+8.2 Async
+
+Vitest soporta async muy bien:
+
+const result = await sut(input);
+
+Reglas para async:
+
+Si el SUT retorna Promise: usa await.
+
+Si esperas que falle: usa await expect(promise).rejects...
+
+9) Paso 7: Assert (verificación) — qué matcher usar y por qué
+9.1 Assert de valor
+
+toBe → primitivos / igualdad estricta
+
+toEqual → objetos/arrays por estructura
+
+toMatchObject → comparar solo parte relevante
+
+toBeTruthy/Falsy → booleanos (mejor evitar si puedes ser más exacto)
+
+✅ Reglas:
+
+verifica lo importante del comportamiento
+
+evita asserts de detalles internos si no aportan valor
+
+9.2 Assert de errores
+
+sync: expect(() => fn()).toThrow("msg")
+
+async: await expect(promise).rejects.toThrow("msg")
+
+✅ Cuándo usar:
+
+validaciones
+
+contratos de dominio
+
+casos borde
+
+9.3 Assert de interacción (mocks/spies)
+
+toHaveBeenCalledTimes(n)
+
+toHaveBeenCalledWith(args)
+
+toHaveBeenLastCalledWith(args)
+
+✅ Cuándo usar:
+
+cuando el resultado depende de “se llamó tal cosa”
+
+side effects: analytics, navegación, logging, callbacks
+
+10) Paso 8: Reglas específicas para React (Vitest + RTL)
+10.1 Herramientas y cuándo usarlas
+render(<Component />)
+
+✅ Para montar UI y probar comportamiento.
+
+screen.getBy... vs queryBy... vs findBy...
+
+getBy → debe existir (si no, falla)
+
+queryBy → puede no existir (devuelve null)
+
+findBy → async (espera a que aparezca)
+
+Cuándo usar
+
+getBy: el elemento debe estar desde el inicio
+
+queryBy: validas que NO esté
+
+findBy: aparece después de async (fetch, setState, timers)
+
+userEvent
+
+✅ Para simular interacción real (clicks, typing).
+
+11) Timers y tiempo (muy común en UI)
+11.1 Fake timers
+
+Vitest permite timers falsos para controlar setTimeout/setInterval.
+
+✅ Úsalo cuando:
+
+debounces
+
+throttles
+
+delays
+
+animaciones temporales
+
+flujos con setTimeout
+
+Regla:
+
+Activas fake timers → avanzas el reloj → assert.
+
+(Importante: al final restaura timers reales si tu suite lo requiere.)
+
+12) Módulos y ESM: recomendaciones prácticas en Vitest
+
+Vitest es ESM-first. Eso afecta mocks:
+
+✅ Buenas prácticas:
+
+Mockear módulos “en el borde” (API client, analytics)
+
+Evitar mockear internals del SUT (te ata a la implementación)
+
+Preferir testear comportamiento observable
+
+13) Plantillas listas para aplicar
+13.1 Plantilla: Unit test (lógica pura)
+
+Estructura repetible:
+
+describe(SUT)
+
+it(behavior)
+
+Arrange: input + mocks
+
+Act: llamar SUT
+
+Assert: resultado + llamadas
+
+13.2 Plantilla: React UI (integration)
+
+Arrange: render con providers necesarios
+
+Act: userEvent
+
+Assert: screen + callbacks
+
+14) Checklist final (memorizable)
+
+Antes de hacer commit:
+
+¿Nombre del test describe resultado + condición?
+
+¿El test es determinista (sin red/tiempo/random reales)?
+
+¿Mockeé solo lo externo?
+
+¿AAA está claro (Arrange/Act/Assert)?
+
+¿Asserts validan comportamiento, no implementación?
+
+¿Limpieza de mocks/spies hecha?
+
+¿Test sigue siendo legible en 20 segundos?
+
+15) Reglas de oro (para evitar tests frágiles)
+
+No pruebes implementación interna si puedes probar comportamiento.
+
+Evita snapshots en componentes muy dinámicos (se vuelven ruido).
+
+Si el test falla y no sabes por qué en 30s, reescribe para claridad.
+
+Pocos asserts, pero potentes.
