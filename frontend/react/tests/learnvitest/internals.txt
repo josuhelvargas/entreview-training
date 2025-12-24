@@ -26,6 +26,15 @@ Pero Jest no usa nada de eso
 
 👉 Vitest nace para reutilizar Vite en lugar de competir con él
 
+
+
+
+
+
+
+
+
+
 2️⃣ Arquitectura mental de Vitest (visión de alto nivel)
 
 Piensa en Vitest como:
@@ -41,6 +50,17 @@ Vitest
 Vitest NO es un bundler
 👉 Vite es el bundler
 👉 Vitest es un orquestador de tests encima de Vite
+
+
+
+
+
+
+
+
+
+
+
 
 3️⃣ Qué ocurre cuando ejecutas vitest
 Paso 1 – Arranque del Vite Dev Server (interno)
@@ -104,6 +124,16 @@ El resultado es JS ejecutable inmediato
 
 👉 No hay paso intermedio extra
 
+
+
+
+
+
+
+
+
+
+
 4️⃣ Cómo Vitest ejecuta los tests internamente
 
 Vitest crea un test runner propio, inspirado en Jest pero más simple:
@@ -128,6 +158,16 @@ TestCollector
  │   └── hooks (beforeEach, afterEach)
  ├── Assertion tracking
  └── Result reporter
+
+
+
+
+
+
+
+
+
+
 
 5️⃣ Sistema de assertions (expect)
 
@@ -154,6 +194,14 @@ etc.
 Migrar de Jest → Vitest es trivial
 
 Menos curva de aprendizaje
+
+
+
+
+
+
+
+
 
 6️⃣ Sistema de mocks: cómo funciona realmente
 6.1 vi.fn() (equivalente a jest.fn())
@@ -205,6 +253,14 @@ No usa hacks de CommonJS
 
 Todo es ESM-first
 
+
+
+
+
+
+
+
+
 7️⃣ Entornos de ejecución (Node vs Browser-like)
 
 Vitest soporta:
@@ -236,6 +292,14 @@ Inyecta window, document, navigator
 
 React cree que está en un browser
 
+
+
+
+
+
+
+
+
 8️⃣ Relación exacta con React
 
 Vitest no conoce React directamente.
@@ -265,6 +329,16 @@ Mockea
 
 👉 Renderizar es responsabilidad de RTL, no de Vitest
 
+
+
+
+
+
+
+
+
+
+
 9️⃣ Comparación profunda: Vitest vs Jest (internals)
 Aspecto	Jest	Vitest
 Sistema de módulos	CommonJS + ESM híbrido	ESM nativo
@@ -278,6 +352,14 @@ Mocks	require hijacking	Module graph
 👉 Jest es autosuficiente
 👉 Vitest es integrado
 
+
+
+
+
+
+
+
+
 🔟 Regla mental para recordar Vitest
 
 Vitest no reemplaza Vite
@@ -286,6 +368,15 @@ Vitest se monta sobre Vite
 O dicho de otra forma:
 
 Vitest = Jest-like API + Vite engine
+
+
+
+
+
+
+
+
+
 
 1️⃣1️⃣ ¿Cuándo usar Vitest vs Jest?
 Usa Vitest si:

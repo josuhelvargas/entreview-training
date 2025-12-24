@@ -20,6 +20,11 @@ ESM complicado	ESM-first
 Mocks verbosos	vi simple
 TS lento	TS nativo
 No HMR	HMR en tests
+
+
+
+
+
 🟦 MÓDULO 2 — Arquitectura interna de Vitest (importante)
 🧠 Internals simplificados
 ┌──────────────┐
@@ -57,6 +62,9 @@ Usa el mismo tsconfig
 
 Respeta vite.config.ts
 
+
+
+
 🟦 MÓDULO 3 — API básica (lo que usas todos los días)
 Estructura básica
 import { describe, it, expect } from 'vitest';
@@ -73,6 +81,9 @@ expect(value).toEqual({ a: 1 });
 expect(value).toBeTruthy();
 expect(value).toBeDefined();
 expect(fn).toHaveBeenCalled();
+
+
+
 
 🟦 MÓDULO 4 — Mocks (la parte más crítica)
 vi.fn() → funciones falsas
@@ -92,6 +103,10 @@ vi.mock('@frx/frx-react-context', () => ({
 
 👉 Se ejecuta ANTES del import real
 👉 Hoisted automáticamente
+
+
+
+
 
 🟦 MÓDULO 5 — Internals de vi.mock (esto explica muchos bugs)
 Cómo funciona realmente

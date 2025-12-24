@@ -70,6 +70,10 @@ Cuando quieres establecer mocks globales (ej. matchMedia, ResizeObserver)
 
 Cuando quieres resetear mocks consistentemente
 
+
+
+
+
 2) El método principal para escribir un test: “AAA + 8 decisiones”
 
 AAA = Arrange / Act / Assert (siempre igual)
@@ -92,6 +96,12 @@ Cleanup (limpia mocks/spies)
 
 Refactor (hazlo más legible)
 
+
+
+
+
+
+
 3) Paso 1: Definir el “SUT” (System Under Test)
 
 El SUT es la unidad exacta bajo prueba:
@@ -106,7 +116,12 @@ hook (useKickstartFormState), aunque hooks suelen probarse indirectamente en UI 
 
 Regla: 1 test = 1 comportamiento principal del SUT.
 
+
+
+
+
 4) Paso 2: Elegir el tipo de test (y por qué)
+
 A) Unit test (lógica pura)
 
 Pruebas funciones/servicios sin UI.
