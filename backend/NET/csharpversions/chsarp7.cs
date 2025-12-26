@@ -498,6 +498,8 @@ if (int.TryParse(txtEdad.Text, out var edad) &&
 
 
 
+
+
 // 5. Ref Returns & Ref Locals (Performance)
 // Concepto (C# 7):
 // csharp// ⭐ ref returns - devuelve REFERENCIA, no copia
@@ -564,6 +566,12 @@ public class ProcesadorMatrices
         matriz.X = 100; // Modifica directamente sin copiar struct
     }
 }
+
+
+
+
+
+
 
 
 
