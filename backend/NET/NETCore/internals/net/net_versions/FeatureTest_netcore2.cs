@@ -451,7 +451,7 @@ ValueTask<T> → struct en stack(o embebido)
 // networking
 
 //📌 Ejemplo aún más real: TryGet pattern async
-public ValueTask<bool> TryGetUserAsync(int id, out User? user)
+ ValueTask<bool> TryGetUserAsync(int id, out User? user)
 {
   if (_cache.TryGetValue(id, out user))
   {
@@ -481,7 +481,7 @@ public ValueTask<bool> TryGetUserAsync(int id, out User? user)
 
 // Ejemplo donde NO vale la pena:
 
-public async ValueTask SaveAsync(Order order)
+ async ValueTask SaveAsync(Order order)
 {
   await _db.SaveAsync(order); // siempre async
 }

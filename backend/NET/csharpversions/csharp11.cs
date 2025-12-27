@@ -208,27 +208,27 @@ Te garantiza que cualquier creación de Pedido incluye Id y Fecha.
 
 
 
-4️⃣ UTF-8 string literals ("hola"u8)
-🧠 ¿Qué son?
+// 4️⃣ UTF-8 string literals ("hola"u8)
+// 🧠 ¿Qué son?
 
-Permiten obtener directamente un ReadOnlySpan<byte> UTF-8 a partir de un string literal.
+// Permiten obtener directamente un ReadOnlySpan<byte> UTF-8 a partir de un string literal.
 
-ReadOnlySpan<byte> data = "hola"u8;
+// ReadOnlySpan<byte> data = "hola"u8;
 
 
-Esto representa los bytes UTF-8 de "hola".
+// Esto representa los bytes UTF-8 de "hola".
 
-📌 ¿Cuándo usarlo?
+// 📌 ¿Cuándo usarlo?
 
-APIs de alto rendimiento que trabajan con bytes en lugar de string.
+// APIs de alto rendimiento que trabajan con bytes en lugar de string.
 
-Protocolos, parsers, serialización.
+// Protocolos, parsers, serialización.
 
-Comparaciones rápidas contra tokens conocidos en un buffer.
+// Comparaciones rápidas contra tokens conocidos en un buffer.
 
-Ejemplo típico: parsers de JSON, HTTP, binarios, etc.
+// Ejemplo típico: parsers de JSON, HTTP, binarios, etc.
 
-💻 Ejemplo práctico (comparar prefijo en UTF-8)
+// 💻 Ejemplo práctico (comparar prefijo en UTF-8)
 static bool ComienzaConHola(ReadOnlySpan<byte> buffer)
 {
     ReadOnlySpan<byte> hola = "hola"u8;

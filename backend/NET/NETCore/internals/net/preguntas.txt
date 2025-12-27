@@ -1758,3 +1758,30 @@ Mejor integración con containers
 Reduced hosting overhead
 
 Startup time más rápido
+
+
+
+
+
+
+
+
+Garbage collector: 
+Tips para optimizar GC:
+csharp// 1. Reusar objetos con ObjectPool
+var pool = new ObjectPool<StringBuilder>(() => new StringBuilder());
+var sb = pool.Get();
+try { /* use */ } finally { pool.Return(sb); }
+
+// 2. Usar ArrayPool para buffers temporales
+var buffer = ArrayPool<byte>.Shared.Rent(1024);
+try { /* use */ } finally { ArrayPool<byte>.Shared.Return(buffer); }
+
+// 3. Span<T> para evitar allocations
+public void ProcessData(ReadOnlySpan<byte> data) { }
+
+// 4. Evitar closures innecesarias
+// ❌ Allocation por closure
+list.Where(x => x > threshold);
+// ✓ Sin allocation
+list.Where(new GreaterThanPredicate(threshold));

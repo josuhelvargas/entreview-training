@@ -649,3 +649,55 @@ public class Color
     public const int AZUL   = 0b0000_0000_0000_0000_1111_1111; // #0000FF
     public const int BLANCO = 0b1111_1111_1111_1111_1111_1111; // #FFFFFF
 }
+
+
+// 6. (8 pts) ¿Qué son los Generic Math interfaces (INumber<T>, IAdditionOperators<T>, etc.) introducidos en .NET 7? Proporciona un ejemplo de uso real.
+// Respuesta modelo:
+// Generic Math:
+
+// Interfaces que describen operaciones matemáticas
+// Permiten escribir código genérico con operadores
+// Antes era imposible hacer T + T en genéricos
+
+// ❌ ANTES - Necesitabas overloads para cada tipo
+ int Sumar(int[] valores) => valores.Sum();
+ double Sumar(double[] valores) => valores.Sum();
+ decimal Sumar(decimal[] valores) => valores.Sum();
+
+// ✓ AHORA - Un solo método genérico
+ static T Sumar<T>(ReadOnlySpan<T> valores)
+    where T : INumber<T>
+{
+    T suma = T.Zero;
+    foreach (T valor in valores)
+    {
+        suma += valor;  // ✓ Funciona! Antes esto era imposible
+    }
+    return suma;
+}
+
+// Uso:
+var enteros = new[] { 1, 2, 3, 4, 5 };
+var suma1 = Sumar<int>(enteros);        // 15
+
+var decimales = new[] { 1.5m, 2.3m, 3.7m };
+var suma2 = Sumar<decimal>(decimales);  // 7.5
+
+// Ejemplo avanzado - Promedio genérico
+ static T Promedio<T>(ReadOnlySpan<T> valores)
+    where T : INumber<T>
+{
+    if (valores.Length == 0)
+        return T.Zero;
+
+    T suma = Sumar(valores);
+    T count = T.CreateChecked(valores.Length);
+    return suma / count;  // División genérica!
+}
+
+// Validación de rangos genérica
+ static bool EstaEnRango<T>(T valor, T min, T max)
+    where T : IComparisonOperators<T, T, bool>
+{
+    return valor >= min && valor <= max;
+}
