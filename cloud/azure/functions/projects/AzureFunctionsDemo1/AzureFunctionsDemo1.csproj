@@ -1,0 +1,27 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <AzureFunctionsVersion>v4</AzureFunctionsVersion>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Sdk.Functions" Version="4.6.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Update="host.json"> <!-- run time necstiia verlo siempre configuracion en cloud (ir a este archivo)!!!!-->
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="local.settings.json"> <!--opciones de desarrollo local  configuracion en mi maquina local (ir a este archivo)-->
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory> <!--Se copia solo la version mas nueva-->
+      <CopyToPublishDirectory>Never</CopyToPublishDirectory> <!--se copia a l folder bin/ ? -->
+    </None>
+  </ItemGroup>
+</Project>
+
+
+<!--
+dotnet build 
+func start
+run desde vscode
+ -->
+
+ 

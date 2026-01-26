@@ -1,0 +1,3 @@
+giuthub repo > actions tab > deploy ( we have tempalte sfor different projects types) 
+
+.github> workflows>deploy.yml (github actions)

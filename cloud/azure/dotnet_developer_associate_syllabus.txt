@@ -1,0 +1,345 @@
+
+
+🔹 MÓDULO 0 – Setup real de un Azure Developer (OBLIGATORIO)
+Objetivo
+
+Preparar el entorno exactamente como en proyectos reales y en el examen.
+
+Práctica
+
+Crear cuenta Azure (o usar existing)
+
+Instalar:
+
+Azure CLI
+
+VS Code + extensiones Azure
+
+.NET SDK / Node
+
+Crear Service Principal
+
+Login con:
+
+az login
+az account set --subscription <id>
+
+Entregable
+
+✔️ Repo Git con primer commit
+✔️ Script setup.sh
+
+🔹 MÓDULO 1 – Azure App Services (CORE DEL EXAMEN)
+Objetivo
+
+Crear, desplegar y escalar aplicaciones web reales.
+
+Prácticas
+
+Crear Web App con Azure CLI
+
+Deploy desde local
+
+Deploy desde GitHub Actions
+
+Variables de entorno (App Settings)
+
+Slots (staging → prod)
+
+Logs y diagnósticos
+
+az webapp up --name myapp --runtime "DOTNET|8.0"
+
+Mini-proyecto
+
+🧩 API REST con:
+
+/health
+
+/config
+
+/version
+
+🔹 MÓDULO 2 – Azure Functions (Serverless real)
+Objetivo
+
+Dominar Functions como las pregunta el examen (no teoría).
+
+Prácticas
+
+HTTP Trigger
+
+Timer Trigger
+
+Queue Trigger
+
+Bindings (Input / Output)
+
+Variables y secretos
+
+Mini-proyecto
+
+🧩 Function de procesamiento
+
+Recibe HTTP
+
+Escribe en Queue
+
+Otra Function procesa el mensaje
+
+🔹 MÓDULO 3 – Storage (MUY preguntado)
+Objetivo
+
+Persistencia y mensajería.
+
+Prácticas
+
+Blob Storage (upload / download)
+
+Table Storage (CRUD)
+
+Queue Storage (producer / consumer)
+
+SAS Tokens
+
+Storage SDK
+
+BlobClient blob = new BlobClient(connection, "docs", "file.txt");
+await blob.UploadAsync(stream);
+
+Mini-proyecto
+
+🧩 File Processor
+
+API sube archivo
+
+Guarda blob
+
+Registra metadata en Table
+
+🔹 MÓDULO 4 – Azure SQL + Cosmos DB
+Objetivo
+
+Trabajar con datos como lo espera el examen.
+
+Prácticas
+
+Azure SQL
+
+Conexión segura
+
+Retry policies
+
+Queries optimizadas
+
+Cosmos DB
+
+Containers
+
+Partition Keys
+
+RU/s
+
+SDK CRUD
+
+Mini-proyecto
+
+🧩 Sistema de órdenes
+
+SQL para transaccional
+
+Cosmos para lectura rápida
+
+🔹 MÓDULO 5 – Seguridad (CLAVE PARA PASAR)
+Objetivo
+
+No memorizar, aplicar seguridad real.
+
+Prácticas
+
+Managed Identity
+
+Key Vault (secrets, keys, certs)
+
+RBAC vs Policies
+
+Secure connections
+
+az keyvault secret set --vault-name kv --name DbPassword --value "****"
+
+Mini-proyecto
+
+🧩 API segura
+
+Sin connection strings
+
+Todo desde Key Vault
+
+Identity-based access
+
+🔹 MÓDULO 6 – Mensajería y eventos
+Objetivo
+
+Diseñar soluciones desacopladas.
+
+Prácticas
+
+Azure Queue vs Service Bus
+
+Topics y Subscriptions
+
+Dead Letter Queue
+
+Retry & poison messages
+
+Mini-proyecto
+
+🧩 Order Processing Pipeline
+
+API → Service Bus
+
+Worker → DB
+
+🔹 MÓDULO 7 – Monitoring & Diagnostics
+Objetivo
+
+Detectar y solucionar problemas (muy preguntado).
+
+Prácticas
+
+Application Insights
+
+Custom metrics
+
+Distributed tracing
+
+Log Analytics
+
+Mini-proyecto
+
+🧩 Observabilidad completa
+
+Request tracking
+
+Dependency failures
+
+Alerts
+
+🔹 MÓDULO 8 – CI/CD para Azure Developers
+Objetivo
+
+Deploy profesional (sale en el examen).
+
+Prácticas
+
+GitHub Actions
+
+Build → Test → Deploy
+
+Secrets en pipelines
+
+Blue/Green deployment
+
+Mini-proyecto
+
+🧩 Pipeline completo
+
+PR validation
+
+Deploy automático
+
+🔹 MÓDULO 9 – Infraestructura para Developers (Bicep)
+Objetivo
+
+Saber crear recursos, no ser arquitecto.
+
+Prácticas
+
+Bicep básico
+
+App Service + Storage
+
+Parameters por entorno
+
+Deploy desde pipeline
+
+az deployment group create -f main.bicep
+
+🔹 MÓDULO 10 – Simulación de examen (CRÍTICO)
+Objetivo
+
+Pensar como el examen.
+
+Prácticas
+
+Casos tipo:
+
+“¿Qué servicio usarías?”
+
+“¿Cómo escalarías?”
+
+“¿Cómo asegurarías?”
+
+Reto final
+
+🧩 Sistema completo
+
+App Service
+
+Functions
+
+Storage
+
+Service Bus
+
+Key Vault
+
+CI/CD
+
+Monitoring
+
+🧪 Cómo estudiar para PASAR el examen
+Regla de oro
+
+❌ Memorizar servicios
+✅ Resolver escenarios
+
+Técnica recomendada
+
+70% práctica
+
+20% preguntas tipo examen
+
+10% teoría puntual
+
+📌 Resultado final
+
+Al terminar:
+
+✔️ Has construido infra real
+
+✔️ Sabes por qué elegir cada servicio
+
+✔️ Respondes escenarios del examen sin dudar
+
+✔️ Estás listo para AZ-204 y entrevistas
+
+Si quieres, en el siguiente mensaje puedo:
+
+📆 Convertir esto en plan semanal
+
+🧪 Crear simulador de examen AZ-204
+
+🧩 Desarrollar un proyecto final paso a paso
+
+🎯 Adaptarlo 100% a .NET / JavaScript / Java
+
+
+
+
+
+
+
+
+
+

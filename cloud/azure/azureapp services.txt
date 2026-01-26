@@ -1,0 +1,45 @@
+
+
+
+
+App Service 
+
+Resource Group > Create Resource > Web App > 
+assign resource group app will belong to. 
+isntance details 
+name 
+publish - code or image? 
+Region
+Runtime stack ( net version)
+sku and size Dev Test prod? tiers. selection ( 1gb memory) 
+
+
+Quickstart -> info fo reach tecnhologiy to be implentned in azure infra with appservices
+Deployment slots -> escalate
+Deployemnt Center  
+
+
+Configruation -applciativon settings, (env variables, sdk) stack settings
+authentication - (configure in ui) No code. 
+TLS SSL settings.
+Networking
+scale up 
+scale out
+properties: firewall config/ip addresses
+
+app service ppman 
+quotas
+change spp service plan 
+
+advanced tools > basically go to the server for logs  deplyment info, settings,process runtime, 
+
+
+
+
+dotnet new mvc 
+dotnet run 
+ 
+ how to deploy this in azure? 
+
+
+usar extension en vs code> loguearse seleccionar suscripcion > right click >deploy to webapp

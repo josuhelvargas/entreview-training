@@ -1,0 +1,75 @@
+// {
+//     "version": "2.0",
+//     "logging": {
+//         "applicationInsights": { //servicio de telemetria automatico de azure : requests, errores, performance, dependencias (sql, http, sercice bus, ) Logs
+//             "samplingSettings": { //azure decide automaticamente el muestreo 
+//                 "isEnabled": true,
+//                 "excludedTypes": "Request"
+//             },
+//             "enableLiveMetricsFilters": true //opbservacion eln rela time 1-2 segs de delay.
+//         }
+//     }
+// }
+
+
+//example: 
+{
+  "version": "2.0",
+
+  "functionTimeout": "00:10:00", //tiempo maximo permitido por ejecucion 
+
+  "logging": { //verbosicdad del log
+    "logLevel": {
+      "default": "Information",
+      "Host.Results": "Information",
+      "Host.Aggregator": "Information",
+      "Function": "Information",
+
+      "Microsoft": "Warning",
+      "Microsoft.Hosting.Lifetime": "Information",
+      "System": "Warning"
+    },
+
+    "applicationInsights": {
+      "samplingSettings": {
+        "isEnabled": true,
+        "maxTelemetryItemsPerSecond": 5,
+        "excludedTypes": "Request;Exception"
+      },
+      "enableLiveMetricsFilters": true
+    }
+  },
+
+  "extensions": {
+    "http": {
+      "routePrefix": "api",
+      "maxOutstandingRequests": 200,
+      "maxConcurrentRequests": 50,
+      "dynamicThrottlesEnabled": true
+    },
+
+    "queues": {
+      "maxPollingInterval": "00:00:10",
+      "visibilityTimeout": "00:05:00",
+      "batchSize": 16, //mensajes por lote. 
+      "newBatchThreshold": 8, //timepo de invisibilidad el msj mientras se procesa
+      "maxDequeueCount": 5, //reintentos antes de ir al pison queue
+      "messageEncoding": "base64" //payloads en formato /encodig especidifoc
+    },
+
+    "serviceBus": {
+      "prefetchCount": 200, //msjs por adelantado 
+      "messageHandlerOptions": { 
+        "maxConcurrentCalls": 16,//pralelismo real
+        "autoComplete": false, //yo decido cuando cpmpletar ( idela para asegurar process then compelte) 
+        "maxAutoRenewDuration": "00:05:00" //renueva lock
+      }
+    },
+
+    "timers": {
+      "scheduleMonitor": {
+        "enabled": true
+      }
+    }
+  }
+}

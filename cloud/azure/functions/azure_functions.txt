@@ -1,0 +1,9 @@
+Azure functions permite: 
+desacoplar funcionalidades.
+pago pro ejecucion 
+escalacion automatica
+diseno baasado en eventos. ( reacciona  eventos)
+
+
+(No monolitos, proceso largos sin control y logica con estados multiples.)
+

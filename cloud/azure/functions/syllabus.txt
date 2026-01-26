@@ -1,0 +1,288 @@
+🧩 MÓDULO 1 – Fundamentos prácticos (sin teoría inútil)
+Qué vas a hacer
+
+Crear y ejecutar tu primera Function real, local y en Azure.
+
+Práctica
+
+Crear Function App local
+
+HTTP Trigger
+
+Ejecutar local (func start)
+
+Deploy a Azure
+
+func init AzureFunctionsDemo --dotnet   --se necesita isntalar las function-core dependenciy ( azure funcions y su desarrolloo en local )
+func new --name HelloHttp --template "HTTP trigger"
+func start
+
+Caso de uso real
+
+👉 Endpoint ligero:
+
+Health checks
+
+Webhooks
+
+APIs pequeñas
+
+🧩 MÓDULO 2 – HTTP Triggers (API real)
+Prácticas
+
+GET con query params
+
+POST con body JSON
+
+Validaciones
+
+Status codes correctos
+
+return new OkObjectResult(new { message = "Hello Azure" });
+
+Caso de uso real
+
+👉 Backend para:
+
+Formularios
+
+Webhooks (Stripe, GitHub)
+
+APIs internas
+
+
+
+
+
+
+🧩 MÓDULO 3 – Bindings (la MAGIA de Functions)
+Prácticas
+
+Output Binding → Blob Storage
+
+Input Binding → Table / Blob
+
+Evitar SDK manual
+
+[BlobOutput("files/{rand-guid}.txt")]
+public string Run(HttpRequest req)
+
+Caso de uso real
+
+👉 Guardar archivos / logs / eventos sin código extra
+
+
+
+
+
+
+🧩 MÓDULO 4 – Azure Storage Queue (asincronía real)
+Prácticas
+
+HTTP Function → Queue
+
+Queue Trigger → Procesador
+
+Manejo de errores
+
+Poison messages
+
+[QueueTrigger("orders")]
+public void ProcessOrder(string message)
+
+Caso de uso real
+
+👉 Procesar:
+
+Órdenes
+
+Emails
+
+PDFs
+
+Notificaciones
+
+
+
+
+
+🧩 MÓDULO 5 – Timer Triggers (cron jobs)
+Prácticas
+
+Timer CRON
+
+Ejecución programada
+
+Logs y métricas
+
+[TimerTrigger("0 */5 * * * *")]
+
+Caso de uso real
+
+👉 Tareas batch:
+
+Limpieza
+
+Sincronización
+
+Reportes
+
+
+
+
+
+
+🧩 MÓDULO 6 – Service Bus (nivel enterprise)
+Prácticas
+
+Queue vs Topic
+
+Subscriptions
+
+Retry / DLQ
+
+Mensajes garantizados
+
+[ServiceBusTrigger("orders", "sub1")]
+
+Caso de uso real
+
+👉 Microservicios desacoplados
+👉 Integraciones enterprise
+
+
+
+
+
+🧩 MÓDULO 7 – Cosmos DB y SQL Bindings
+Prácticas
+
+Output Binding → Cosmos
+
+Input Binding
+
+Partition Keys
+
+RU awareness
+
+Caso de uso real
+
+👉 Event sourcing
+👉 APIs altamente escalables
+
+
+
+
+
+🧩 MÓDULO 8 – Seguridad REAL (clave para AZ-204)
+Prácticas
+
+Authorization levels
+
+Function Keys
+
+Managed Identity
+
+Key Vault integration
+
+az functionapp identity assign
+
+Caso de uso real
+
+👉 Zero secrets en código
+👉 Compliance
+
+🧩 MÓDULO 9 – Observabilidad y debugging
+Prácticas
+
+Application Insights
+
+Logs estructurados
+
+Tracing
+
+Failures & retries
+
+Caso de uso real
+
+👉 Diagnóstico en producción
+
+🧩 MÓDULO 10 – Performance y escalado (EXAMEN)
+Prácticas
+
+Consumption vs Premium
+
+Cold start
+
+Durable Functions (intro)
+
+Idempotencia
+
+Caso de uso real
+
+👉 Procesos largos
+👉 Orquestaciones
+
+🧩 MÓDULO 11 – CI/CD con Functions
+Prácticas
+
+Deploy con GitHub Actions
+
+Variables seguras
+
+Slots
+
+Rollback
+
+Caso de uso real
+
+👉 Deploy sin downtime
+
+🏗️ PROYECTO FINAL (REAL)
+Sistema: Order Processing Serverless
+Arquitectura
+
+HTTP Function → recibe orden
+
+Queue / Service Bus
+
+Processor Function
+
+Storage / Cosmos
+
+App Insights
+
+Key Vault
+
+Entregables
+
+✔ Código
+✔ Infra (Bicep opcional)
+✔ Pipeline
+✔ README técnico
+
+🧠 Cómo te evalúa el examen (importante)
+
+El examen pregunta:
+
+❓ “¿Qué trigger usarías y por qué?”
+
+Ejemplos:
+
+Evento → Queue / Service Bus
+
+Programado → Timer
+
+API → HTTP
+
+Flujo largo → Durable Functions
+
+📌 Cheat mental para Functions
+Necesidad	Usa
+Webhook	HTTP
+Async	Queue
+Enterprise	Service Bus
+Cron	Timer
+Estado	Durable
+Secrets	Key Vault
+Escala	Consumption
