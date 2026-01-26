@@ -1,0 +1,12 @@
+{
+    "version": "2.0",
+    "logging": {
+        "applicationInsights": {
+            "samplingSettings": {
+                "isEnabled": true, // muestreo activo
+                "excludedTypes": "Request" //muestreo ni o aplica para las requests. Solo para las solicitudes 
+            },
+            "enableLiveMetricsFilters": true
+        }
+    }
+}

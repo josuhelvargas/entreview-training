@@ -7,3 +7,4 @@ diseno baasado en eventos. ( reacciona  eventos)
 
 (No monolitos, proceso largos sin control y logica con estados multiples.)
 
+azurite es un proecto wue tambien sirve como extension de vs code (corre sobre nodejs) el cual sirve para desarrollar en mi entorno local y meimetizar la ducionalidad de storage de azur en e la nube localment e( por lo que levanta un servicdor que simula alojamiento en tablas, en )blob s y servicio de queue ( emula estos componentes localmente) De est amanera no se generan costos en la nube derivado de los tests.
