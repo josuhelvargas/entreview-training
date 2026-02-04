@@ -1,0 +1,122 @@
+🟪 TEMARIO 2 — SCSS / SASS PROFESIONAL Y ESCALABLE
+
+SCSS no es “más CSS”, es una herramienta de arquitectura
+
+
+
+
+Módulo 1 — SCSS Essentials
+
+Sintaxis SCSS moderna
+
+Variables
+
+Nesting (bien usado, no abusado)
+
+Imports vs @use / @forward
+
+Estructura de proyecto SCSS
+
+
+
+
+Módulo 2 — Arquitectura SCSS
+
+7-1 Pattern
+
+Separación por capas
+
+SCSS para Design Systems
+
+Convenciones de nombres
+
+📂 Ejemplo real:
+
+styles/
+ ├─ abstracts/
+ ├─ base/
+ ├─ components/
+ ├─ layout/
+ ├─ pages/
+ ├─ themes/
+ └─ vendors/
+
+
+
+
+Módulo 3 — Mixins, Functions y Maps
+
+Mixins reutilizables
+
+Functions para lógica
+
+Maps para escalabilidad
+
+Generación automática de clases
+
+🎯 Resultado: Menos código repetido
+
+
+
+
+Módulo 4 — Responsive con SCSS
+
+Breakpoints centralizados
+
+Mixins de media queries
+
+Responsive tokens
+
+Grid systems custom
+
+
+
+
+Módulo 5 — Theming avanzado
+
+Temas dinámicos
+
+SCSS + CSS variables
+
+Dark mode real
+
+Custom themes por cliente
+
+
+
+
+Módulo 6 — SCSS y Componentes
+
+SCSS en React / Angular
+
+Encapsulación
+
+Overrides controlados
+
+Librerías compartidas
+
+
+
+
+Módulo 7 — Migraciones y refactors
+
+Migrar CSS → SCSS
+
+Eliminar deuda técnica
+
+De monolito a modular
+
+Estrategias seguras
+
+
+
+
+Módulo 8 — SCSS en proyectos enterprise
+
+Convenciones de equipo
+
+Linters (Stylelint)
+
+Documentación de estilos
+
+Versionado de estilos

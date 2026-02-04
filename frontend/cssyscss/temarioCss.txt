@@ -1,0 +1,164 @@
+Perfecto 👍
+Te dejo 2 temarios modernos y prácticos, pensados como lo haría un front-end senior, enfocados en escalabilidad, mantenibilidad y diseño real de aplicaciones (no solo “saber CSS”).
+
+🧠 Enfoque: design systems, arquitectura, performance y DX
+🚀 Nivel: de fundamentos → producción → escala enterprise
+
+
+
+🟦 TEMARIO 1 — CSS MODERNO Y ESCALABLE (2026)
+Módulo 1 — Fundamentos sólidos (bien hechos)
+
+Cómo funciona realmente CSS (Render Tree, Cascade, Specificity)
+
+Box Model moderno (box-sizing: border-box)
+
+Unidades modernas: rem, em, %, vw, vh, dvw, dvh
+
+Flujo normal vs posicionamiento (static, relative, absolute, fixed, sticky)
+
+Debugging con DevTools (computed, layers, box model)
+
+🎯 Resultado: Entiendes por qué CSS se rompe y cómo evitarlo
+
+
+
+
+Módulo 2 — Layout moderno (lo que sí se usa hoy)
+
+Flexbox (patrones reales)
+
+Navbar
+
+Cards
+
+Forms
+
+CSS Grid
+
+Layouts de página
+
+Subgrid
+
+Responsive grids
+
+Cuándo usar Flex vs Grid (reglas claras)
+
+gap, minmax, auto-fit, auto-fill
+
+🎯 Resultado: Layouts robustos sin hacks
+
+
+
+
+
+
+
+Módulo 3 — Responsive Design profesional
+
+Mobile First (por qué y cómo)
+
+Media Queries modernas
+
+Container Queries
+
+Breakpoints semánticos (no mágicos)
+
+Tipografía fluida (clamp())
+
+🎯 Resultado: Diseños que escalan de móvil a desktop sin reescribir CSS
+
+
+
+
+
+
+
+
+Módulo 4 — Arquitectura CSS escalable
+
+Problemas clásicos del CSS tradicional
+
+Metodologías:
+
+BEM
+
+ITCSS
+
+Utility-First (Tailwind mindset)
+
+Cuándo usar cada una
+
+CSS Modules
+
+Scoped styles (framework-friendly)
+
+🎯 Resultado: CSS que no colapsa a los 6 meses
+
+
+
+
+
+
+Módulo 5 — Design Systems con CSS
+
+Tokens de diseño:
+
+colores
+
+spacing
+
+typography
+
+Variables CSS (:root)
+
+Theming (light / dark / custom)
+
+Estados: hover, focus, disabled, loading
+
+Accesibilidad (WCAG, focus-visible)
+
+🎯 Resultado: Estilos reutilizables y consistentes
+
+
+
+
+Módulo 6 — Animaciones y UX
+
+Transitions vs Animations
+
+transform, opacity (performance)
+
+Keyframes
+
+Motion design básico
+
+Preferencias del usuario (prefers-reduced-motion)
+
+
+
+
+
+Módulo 7 — Performance y buenas prácticas
+
+Repaint vs Reflow
+
+CSS crítico
+
+Evitar CSS muerto
+
+Organización por capas
+
+Nomenclatura consistente
+
+Módulo 8 — CSS en producción
+
+CSS en React / Angular / Vue
+
+CSS Modules vs Styled Components
+
+Integración con design tokens
+
+Debugging avanzado
+
+Refactors seguros
