@@ -1,0 +1,404 @@
+🧱 CURSO MAESTRO
+Sistemas Operativos para Hackers y Pentesters
+
+📆 Duración realista: 8–12 semanas
+🧠 Nivel: Fundamentos → Intermedio fuerte → Base avanzada
+🛠️ Enfoque: 100% aplicable a hacking
+
+
+
+🟫 MÓDULO 0 — Preparación del entorno (OBLIGATORIO)
+Qué instalar
+
+Kali Linux (VM)
+
+Ubuntu Server (VM)
+
+Windows 10/11 (VM)
+
+VirtualBox / VMware
+
+Snapshotting (clave para labs)
+
+Objetivo
+
+Tener laboratorios rotos sin miedo
+
+📚 Recursos:
+
+Kali Docs (oficial)
+
+TryHackMe: Linux Fundamentals
+
+OverTheWire (Bandit)
+
+
+
+
+
+
+🟦 MÓDULO 1 — Linux Internals (visión de hacker)
+Qué aprender
+
+Arquitectura Linux
+
+Userland vs Kernel
+
+Filesystem hierarchy (/proc, /sys, /dev)
+
+Permissions reales (rwx ≠ seguridad)
+
+Capabilities
+
+Namespaces (conceptual)
+
+Por qué importa para hacking
+
+Privilege escalation
+
+Container escape
+
+Kernel exploits
+
+🧪 Labs prácticos
+
+Abusar permisos
+
+Leer /proc/self/maps
+
+Identificar procesos vulnerables
+
+📚 Recursos
+
+📘 Linux Internals – Michael Kerrisk
+
+📺 YouTube: LiveOverflow
+
+📺 YouTube: 0x41414141
+
+🧠 OverTheWire: Bandit → Narnia
+
+
+
+
+
+
+🟦 MÓDULO 2 — Procesos, memoria y ejecución
+Qué aprender
+
+Process lifecycle
+
+Fork / exec
+
+PID, PPID
+
+Stack vs Heap
+
+Virtual memory
+
+mmap
+
+ASLR (conceptual)
+
+Por qué importa
+
+Buffer overflows
+
+Memory corruption
+
+Exploit dev
+
+🧪 Labs
+
+Observar stack y heap
+
+Crash controlado
+
+ASLR on/off
+
+Mapear memoria de un proceso
+
+📚 Recursos
+
+📘 Computer Systems: A Programmer’s Perspective
+
+📺 LiveOverflow — Memory videos
+
+📺 Gynvael Coldwind (Google Security)
+
+
+
+
+
+
+
+🟦 MÓDULO 3 — Syscalls y Kernel interaction
+Qué aprender
+
+Qué es una syscall
+
+User → Kernel transition
+
+strace, ltrace
+
+File descriptors
+
+Signals
+
+Por qué importa
+
+Sandbox escape
+
+Debugging malware
+
+Kernel attack surface
+
+🧪 Labs
+
+Traza syscalls de un binario
+
+Identificar llamadas peligrosas
+
+Crear wrapper vulnerable
+
+📚 Recursos
+
+man syscall
+
+strace docs
+
+Linux Kernel docs (intro)
+
+
+
+
+
+
+
+🟥 MÓDULO 4 — Linux Privilege Escalation (core)
+Qué aprender
+
+SUID abuse
+
+sudo misconfigurations
+
+Cron jobs
+
+PATH hijacking
+
+LD_PRELOAD
+
+Kernel version analysis
+
+🧪 Labs
+
+Escalar de user → root
+
+Enumeración manual
+
+Enumeración automática (linpeas)
+
+📚 Recursos
+
+GTFOBins
+
+HackTricks
+
+TryHackMe: Linux PrivEsc
+
+
+
+
+
+
+
+🟩 MÓDULO 5 — Windows Internals para hackers
+Qué aprender
+
+Windows architecture
+
+NT kernel
+
+Registry
+
+Services
+
+Processes & tokens
+
+UAC
+
+Por qué importa
+
+AD attacks
+
+Malware
+
+Windows privesc
+
+🧪 Labs
+
+Enumerar tokens
+
+Abusar servicios
+
+DLL hijacking
+
+📚 Recursos
+
+📘 Windows Internals (Part 1)
+
+📺 YouTube: IppSec
+
+📺 John Hammond
+
+HackTheBox Windows machines
+
+
+
+
+
+
+
+🟨 MÓDULO 6 — Windows Privilege Escalation
+Qué aprender
+
+Weak services
+
+Scheduled tasks
+
+Token impersonation
+
+Registry abuse
+
+Kernel exploits (conceptual)
+
+🧪 Labs
+
+User → Administrator
+
+Abusar servicios inseguros
+
+📚 Recursos
+
+WinPEAS
+
+HackTricks Windows
+
+TryHackMe: Windows PrivEsc
+
+
+
+
+
+
+
+
+🟪 MÓDULO 7 — Filesystems, permissions & abuse
+Qué aprender
+
+NTFS vs EXT4
+
+ACLs
+
+Alternate Data Streams
+
+File locks
+
+Temp directories
+
+Labs
+
+Exfiltration
+
+Persistence
+
+Log abuse
+
+
+
+
+
+
+
+
+🟧 MÓDULO 8 — Containers & OS isolation (base)
+Qué aprender
+
+Namespaces
+
+cgroups
+
+Docker internals
+
+Container escape (conceptual)
+
+🧪 Labs
+
+Break container assumptions
+
+Privileged container abuse
+
+📚 Recursos
+
+Docker security docs
+
+HackTricks containers
+
+
+
+
+
+
+
+
+🟥 MÓDULO 9 — OS como atacante (mentalidad)
+Qué aprender
+
+Qué expone el OS
+
+Qué confía el OS
+
+Qué asume el desarrollador
+
+Dónde romper la lógica
+
+🧠 Ejercicios mentales
+
+“¿Qué pasaría si…?”
+
+Threat modeling de OS
+
+🧠 RESULTADO FINAL DEL CURSO
+
+Al terminar:
+✔️ Entiendes Linux y Windows desde adentro
+✔️ Puedes enumerar, escalar y persistir
+✔️ Sabes por qué funcionan los exploits
+✔️ Estás listo para:
+
+Web Pentesting avanzado
+
+Ingeniería inversa
+
+Exploit development
+
+Red Team
+
+🔜 SIGUIENTE PASO (natural)
+
+Después de esta raíz, lo lógico es seguir con:
+
+👉 Redes para Hackers
+👉 Web Pentesting profundo
+
+Si quieres, en el próximo mensaje puedo:
+
+📅 Convertir esto en plan semana por semana
+
+🧪 Crear labs exactos por módulo
+
+📚 Hacer una lista mínima de libros + canales
+
+🧭 Ajustarlo a bug bounty / red team / exploit dev
+
+Dime cómo lo quieres continuar 🔥
