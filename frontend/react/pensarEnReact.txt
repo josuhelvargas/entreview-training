@@ -31,7 +31,7 @@ trabajando desde los componentes inferiores (como ProductRow).
 En ejemplos más sencillos, suele ser más fácil hacerlo de arriba abajo, y 
 en proyectos más grandes, de abajo arriba.
 
-
+000
 
 2.Luego piensa en como implementar la funcionalidad ( escribir poco y pensar mucho )
 

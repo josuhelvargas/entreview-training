@@ -1,0 +1,287 @@
+CURSO: Gestión de Estado en React con Redux Toolkit y Zustand
+🟦 MÓDULO 0 — Fundamentos (obligatorio)
+0.1 ¿Qué es el estado en React?
+
+Estado local (useState)
+
+Estado derivado
+
+Estado compartido
+
+Estado de servidor vs estado de UI
+
+0.2 Problemas comunes sin una librería
+
+Prop drilling
+
+Lógica duplicada
+
+useEffect desordenados
+
+Estados inconsistentes
+
+🟦 MÓDULO 1 — Redux moderno (Redux Toolkit)
+1.1 ¿Qué es Redux hoy?
+
+Redux clásico vs Redux Toolkit
+
+Principios:
+
+Single source of truth
+
+Inmutabilidad
+
+Reducers puros
+
+1.2 Redux Toolkit (RTK)
+
+¿Por qué existe RTK?
+
+Qué problemas resuelve:
+
+Boilerplate
+
+Verbosidad
+
+Mutaciones complejas
+
+🟦 MÓDULO 2 — Store y arquitectura
+2.1 configureStore()
+
+Qué hace
+
+Middlewares incluidos
+
+DevTools automáticos
+
+2.2 Organización de carpetas (feature-based)
+src/
+ └─ features/
+     └─ inventory/
+         ├─ inventorySlice.ts
+         ├─ inventorySelectors.ts
+         ├─ inventoryApi.ts
+         └─ types.ts
+
+2.3 Tipado correcto
+
+RootState
+
+AppDispatch
+
+Por qué importa
+
+🟦 MÓDULO 3 — Slices (corazón de Redux Toolkit)
+3.1 ¿Qué es un Slice?
+
+Estado + reducers + acciones
+
+Filosofía feature-first
+
+3.2 createSlice()
+
+name
+
+initialState
+
+reducers
+
+Mutación segura con Immer
+
+3.3 Acciones generadas automáticamente
+
+Qué se genera
+
+Cómo se exportan
+
+Buenas prácticas
+
+🟦 MÓDULO 4 — Selectors (lectura del estado)
+4.1 ¿Qué es un selector?
+
+Función pura
+
+Encapsula estructura del store
+
+4.2 Selectors simples y derivados
+
+selectItems
+
+selectItemById
+
+createSelector
+
+4.3 Performance y re-render
+
+Memoización
+
+Evitar renders innecesarios
+
+🟦 MÓDULO 5 — Thunks (async tradicional)
+5.1 ¿Qué es un thunk?
+
+Función async que despacha acciones
+
+Flujo async en Redux
+
+5.2 createAsyncThunk()
+
+pending / fulfilled / rejected
+
+Manejo de errores
+
+Cancelación y abort controllers
+
+5.3 Anti-patterns con thunks
+
+Thunks gigantes
+
+Lógica de UI en thunks
+
+🟦 MÓDULO 6 — RTK Query (estado de servidor)
+6.1 ¿Qué problema resuelve RTK Query?
+
+Fetching
+
+Caching
+
+Deduplicación
+
+Invalidación automática
+
+6.2 createApi()
+
+baseQuery
+
+endpoints
+
+query vs mutation
+
+6.3 Hooks generados
+
+useGetItemsQuery
+
+useCreateItemMutation
+
+6.4 Cache y tags
+
+providesTags
+
+invalidatesTags
+
+Re-fetch automático
+
+6.5 ¿Por qué RTK Query elimina el 80% de los thunks?
+🟦 MÓDULO 7 — UI State vs Server State
+7.1 Qué va en RTK Query
+
+Datos remotos
+
+Estado del backend
+
+7.2 Qué va en un Slice
+
+Modales
+
+Filtros
+
+Drafts
+
+Paginación
+
+7.3 Qué queda en useState
+
+Inputs simples
+
+Toggles locales
+
+🟦 MÓDULO 8 — Zustand (estado ligero)
+8.1 ¿Qué es Zustand?
+
+Store sin reducers
+
+Sin providers
+
+Minimalista
+
+8.2 Crear un store
+
+create()
+
+Estado + acciones
+
+8.3 Selectores en Zustand
+
+Re-render control
+
+Shallow comparison
+
+🟦 MÓDULO 9 — Comparación Redux Toolkit vs Zustand
+Aspecto	Redux Toolkit	Zustand
+Boilerplate	Medio	Muy bajo
+Escalabilidad	Alta	Media
+Server State	RTK Query	Manual
+DevTools	Excelente	Básico
+Arquitectura	Formal	Flexible
+Ideal para	Apps grandes	Apps medianas
+🟦 MÓDULO 10 — Mismo CRUD con ambos enfoques
+10.1 CRUD con Redux Toolkit + RTK Query
+
+Tabla de inventario
+
+Fetch
+
+Create / Update / Delete
+
+10.2 CRUD con Zustand
+
+Fetch manual
+
+Estado local
+
+Comparación de código
+
+🟦 MÓDULO 11 — Patrones avanzados
+
+Normalización (entityAdapter)
+
+Paginación
+
+Optimistic updates
+
+Error boundaries
+
+Testing de slices
+
+Testing de RTK Query
+
+🟦 MÓDULO 12 — Cuándo usar cada uno (guía real)
+Usa Redux Toolkit si:
+
+App enterprise
+
+Muchos devs
+
+Backend complejo
+
+Reglas claras
+
+Usa Zustand si:
+
+App pequeña/mediana
+
+UI-heavy
+
+Menos ceremony
+
+🎯 PROYECTO FINAL
+
+Sistema de Inventario
+
+Tabla CRUD
+
+Redux Toolkit + RTK Query
+
+Zustand (versión alternativa)
+
+Comparación de código y decisiones

@@ -1,0 +1,39 @@
+📊 Tabla comparativa de librerías en el ecosistema React
+Librería	Tipo de estado / rol	¿Para qué sirve?	Cuándo usarla	Ventajas principales	Cuándo NO usarla
+React (Core)	UI / Renderizado	Construir interfaces con componentes	Siempre	Modelo declarativo, ecosistema enorme	No maneja estado global ni datos remotos por sí solo
+React Context API	Estado global simple	Compartir estado sin prop drilling	Tema, auth, idioma, config	Nativa, simple, sin dependencias	Estado que cambia frecuentemente (causa re-renders)
+Zustand	Client State (global)	Estado global ligero	UI state, filtros, carrito, selección actual	Muy simple, performante, poco boilerplate	Estado muy complejo o enterprise con reglas estrictas
+Redux Toolkit (RTK)	Client State (global)	Estado global estructurado	Apps grandes, equipos grandes	Predictible, DevTools, escalable	Apps pequeñas o simples
+RTK Query	Server State (con Redux)	Fetch + cache + sync API	Si ya usas Redux	Integración total con Redux	Overkill si no usas Redux
+TanStack Query (React Query)	Server State	Fetching, cache, sync con backend	APIs, dashboards, listas, datos remotos	Cache inteligente, reintentos, DX excelente	No para estado de UI local
+TanStack Router	Routing	Navegación type-safe	Apps grandes en TypeScript	Tipado fuerte, control total	Apps pequeñas (React Router es suficiente)
+TanStack Table	UI data (tablas)	Tablas avanzadas	Data grids, filtros, paginación	Muy flexible y performante	Overkill para tablas simples
+TanStack Virtual	Performance	Virtualizar listas grandes	Miles de filas/ítems	Performance extrema	Listas pequeñas
+🧠 Regla mental rápida (muy importante)
+🔵 Server State (datos del backend) → TanStack Query / RTK Query
+🟢 Client State (UI / lógica local) → Zustand / Redux
+🟡 Configuración global estable → Context API
+
+🏦 Ejemplo aplicado (app financiera / bancaria)
+Necesidad	Librería correcta
+Lista de facturas desde API	TanStack Query
+Cache de pagos y refetch automático	TanStack Query
+Proveedor seleccionado	Zustand
+Filtros activos de UI	Zustand
+Usuario autenticado / permisos	Context API
+Reglas complejas y auditoría	Redux Toolkit
+Tablas grandes de transacciones	TanStack Table + Virtual
+✅ Recomendación moderna (stack equilibrado)
+React
++ TanStack Query (datos)
++ Zustand (estado UI)
++ Context API (auth / theme)
+
+
+Redux Toolkit solo si:
+
+equipo grande
+
+reglas estrictas
+
+necesidad de trazabilidad fuerte

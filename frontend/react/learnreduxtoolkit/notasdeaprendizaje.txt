@@ -1,0 +1,5 @@
+1.No comaprtir estado, es mejro tener una libreria que gestiona el estado de foram centralizada, ( a l finy al cabo hacer que un una prop sepas ea los hijo spued egenerar problemas ya uqeapsa pero muchso edos no lo utilizan)
+Esto lleva a guardar el estado derivaddao, el estado local no gestiona correactmanete . 
+
+Mas de 2 niveles sin uso directo ya represneta un problema.Esto lleva a modificar  ymantener de foram mas dificl, ( todos lo scomponentess necesitan actualiarse) 
+Esto lleva a test fragiles, 
