@@ -1,0 +1,640 @@
+🟦 MÓDULO 1 — Linux Internals (Visión de Hacker)
+1️⃣ Arquitectura Linux (Cómo piensa el sistema)
+🔥 Vista real
+4
+📌 Estructura real
+
+Linux no es solo “un OS”.
+
+Se divide en:
+
+Hardware
+  ↑
+Kernel
+  ↑
+System Calls
+  ↑
+Userland (bash, apps, servicios)
+
+🧠 Qué es el Kernel
+
+El kernel es:
+
+Administrador de memoria
+
+Scheduler de procesos
+
+Controlador de dispositivos
+
+Gestor de permisos
+
+Implementador de syscalls
+
+Cuando haces:
+
+cat file.txt
+
+
+No es cat quien accede al disco.
+Es el kernel mediante una syscall (read()).
+
+🧨 Por qué importa para hacking
+
+Porque:
+
+No puedes escalar privilegios solo en userland
+
+Toda escalación real implica abusar del kernel
+
+Los exploits de verdad explotan errores en:
+
+syscalls
+
+drivers
+
+memory management
+
+race conditions
+
+2️⃣ Userland vs Kernel (Donde vive el poder real)
+Capa	Nivel	Qué puede hacer
+Userland	Bajo	Ejecutar programas
+Kernel	Root absoluto	Control total del sistema
+🔥 Ataques comunes aquí
+
+SUID binaries
+
+LD_PRELOAD abuse
+
+Dirty COW (CVE-2016-5195)
+
+Kernel memory corruption
+
+Race conditions
+
+3️⃣ Filesystem Hierarchy (Desde la perspectiva de atacante)
+🔎 /proc
+4
+
+/proc NO es un directorio real.
+
+Es una interfaz al kernel.
+
+Ejemplos importantes:
+
+/proc/self/
+/proc/[pid]/mem
+/proc/[pid]/maps
+/proc/kallsyms
+
+🔥 Como red teamer
+
+Leer memoria de procesos
+
+Ver layout ASLR
+
+Detectar privilegios
+
+Enumerar procesos
+
+🔎 /sys
+
+Interfaz del kernel hacia hardware.
+
+Permite:
+
+Ver drivers
+
+Interactuar con dispositivos
+
+A veces escribir configuraciones peligrosas
+
+🔎 /dev
+
+Dispositivos como archivos:
+
+/dev/null
+/dev/sda
+/dev/mem
+/dev/kmsg
+
+
+Algunos exploits usan:
+
+/dev/mem
+/dev/kmem
+
+4️⃣ Permisos reales (rwx ≠ seguridad)
+
+Todos creen que Linux es seguro por:
+
+-rwxr-xr-x
+
+
+Pero eso es superficial.
+
+🔥 Lo que realmente importa
+SUID bit
+chmod u+s file
+
+
+Ejemplo:
+
+-rwsr-xr-x  root  root  /usr/bin/passwd
+
+
+Eso significa:
+
+Se ejecuta como root.
+
+Si puedes inyectar algo ahí → escalación.
+
+🔥 Sticky bit
+
+Importante en /tmp.
+
+🔥 ACLs
+
+Permisos extendidos.
+
+5️⃣ Capabilities (Nivel Pro)
+
+Antes:
+
+Root tenía TODO
+
+User no tenía nada
+
+Ahora Linux usa:
+
+Capabilities
+
+Ejemplos:
+
+CAP_SYS_ADMIN
+
+CAP_NET_ADMIN
+
+CAP_SYS_PTRACE
+
+Ver capabilities:
+
+getcap -r /
+
+🔥 Ataque real
+
+Si un binario tiene:
+
+cap_sys_ptrace
+
+
+Puedes:
+
+Leer memoria de otros procesos
+
+Inyectar código
+
+Bypass sandbox
+
+6️⃣ Namespaces (La base de Docker y contenedores)
+4
+
+Linux usa namespaces para aislar:
+
+PID
+
+Network
+
+Mount
+
+User
+
+IPC
+
+🔥 Container escape
+
+Si:
+
+Hay mala configuración
+
+Se comparte /proc
+
+Se monta /sys mal
+
+Capabilities mal asignadas
+
+→ Puedes escapar del contenedor.
+
+7️⃣ Cómo se conecta todo (visión ofensiva)
+Privilege Escalation
+
+Se basa en:
+
+SUID
+
+Misconfigured capabilities
+
+Writable cron
+
+Weak services
+
+Kernel vulnerabilities
+
+Kernel Exploits
+
+Objetivo:
+
+User → Kernel → Root
+
+
+Normalmente mediante:
+
+Use-after-free
+
+Buffer overflow
+
+Race condition
+
+NULL pointer dereference
+
+🧠 Mentalidad correcta (Como ingeniero ofensivo)
+
+Tú no debes preguntar:
+
+¿Cómo hackeo esto?
+
+Debes preguntar:
+
+¿Dónde el kernel confía demasiado?
+¿Dónde se rompe el modelo de aislamiento?
+¿Dónde la memoria puede corromperse?
+
+🛠 Laboratorio práctico inicial
+
+Te dejo tareas reales:
+
+1️⃣ Explora /proc
+ls /proc
+cat /proc/self/status
+cat /proc/cpuinfo
+
+2️⃣ Busca SUID
+find / -perm -4000 2>/dev/null
+
+3️⃣ Busca capabilities
+getcap -r / 2>/dev/null
+
+4️⃣ Mira namespaces activos
+lsns
+
+🎯 Lo que aprenderás si dominas este módulo
+
+Cómo funciona Docker realmente
+
+Cómo escapar contenedores
+
+Cómo detectar vectores de escalación
+
+Cómo escribir exploits reales
+
+Cómo funciona un EDR por debajo
+
+Josué, esto conecta perfectamente con:
+
+Tu interés en compiladores
+
+Tu interés en ARM assembly
+
+Tu interés en arquitectura segura
+
+Tu deseo de convertirte en investigador serio
+
+Si quieres, el siguiente paso podemos hacerlo así:
+
+🧠 Deep dive en syscalls y cómo interceptarlas
+
+🧨 Laboratorio real de privilege escalation
+
+🧬 Internals de memoria del kernel
+
+🛡 Cómo funcionan los EDR y cómo evadirlos (visión defensiva)
+
+Dime cuál quieres y lo construimos como clase avanzada.
+
+Ok propon algunso ejercicios practicos para comenzar a entender la arquitectura de linux en detalle. 
+
+Perfecto 🔥 Josué.
+
+Vamos a hacerlo como a ti te gusta:
+estructurado, progresivo, técnico y con mentalidad de ingeniería ofensiva.
+
+No vamos a hacer “ejercicios de usuario Linux”.
+Vamos a hacer ejercicios para entender cómo funciona realmente el sistema por debajo.
+
+🟦 LAB 1 — Entendiendo la Arquitectura Linux (Desde Dentro)
+🧠 Objetivo del bloque
+
+Al terminar estos ejercicios debes poder responder:
+
+¿Cómo pasa una instrucción de userland al kernel?
+
+¿Qué es realmente un proceso?
+
+¿Cómo interactúa la memoria con el kernel?
+
+¿Cómo el sistema expone información interna vía pseudo-filesystems?
+
+¿Dónde viven las superficies de ataque?
+
+🧪 EJERCICIO 1 — Observar la frontera Userland → Kernel
+🎯 Objetivo
+
+Entender qué es una syscall en acción.
+
+Paso 1 — Instala strace
+sudo apt install strace
+
+Paso 2 — Ejecuta algo simple
+strace ls
+
+
+Ahora responde:
+
+¿Qué syscalls ves?
+
+¿Qué ocurre antes de que se liste el directorio?
+
+¿Ves open(), read(), write()?
+
+🧠 Reflexión técnica
+
+Cuando ejecutas:
+
+ls
+
+
+El flujo real es:
+
+ELF loader → libc → syscall → kernel → VFS → driver → disk
+
+
+Tu misión:
+
+Ejecuta:
+
+strace -f -e trace=process ls
+
+
+¿Ves fork()?
+¿execve()?
+
+Ahí está el límite userland/kernel.
+
+🧪 EJERCICIO 2 — Anatomía de un Proceso
+🎯 Objetivo
+
+Entender cómo Linux representa un proceso internamente.
+
+1️⃣ Ejecuta un proceso en segundo plano
+sleep 1000 &
+
+
+Obtén su PID.
+
+2️⃣ Explora su representación en /proc
+cd /proc/<PID>
+ls
+
+
+Archivos críticos:
+
+status
+maps
+fd/
+mem
+cmdline
+environ
+
+🔥 Analiza memoria del proceso
+cat /proc/<PID>/maps
+
+
+Responde:
+
+¿Dónde está el stack?
+
+¿Dónde está el heap?
+
+¿Dónde están las librerías?
+
+Esto es crucial para:
+
+ASLR
+
+Exploit development
+
+Memory corruption attacks
+
+🧪 EJERCICIO 3 — Entender el ELF Loader
+🎯 Objetivo
+
+Ver cómo Linux ejecuta binarios realmente.
+
+1️⃣ Analiza un binario
+file /bin/ls
+
+
+Verás que es:
+
+ELF 64-bit LSB executable
+
+2️⃣ Usa ldd
+ldd /bin/ls
+
+
+Esto muestra:
+
+Librerías dinámicas
+
+Dependencias
+
+3️⃣ Usa readelf
+readelf -a /bin/ls
+
+
+Busca:
+
+Entry point
+
+Sections
+
+Program headers
+
+🧠 Entiende esto:
+
+Cuando ejecutas un binario:
+
+Kernel valida ELF header
+
+Carga segmentos en memoria
+
+Mapea libc
+
+Salta al entry point
+
+Ahí comienza todo.
+
+🧪 EJERCICIO 4 — Entendiendo la memoria del sistema
+🎯 Objetivo
+
+Ver cómo Linux maneja memoria física y virtual.
+
+1️⃣ Ver memoria general
+cat /proc/meminfo
+
+2️⃣ Ver memoria del kernel
+cat /proc/slabinfo
+
+
+Slab allocator es fundamental para:
+
+Kernel exploits
+
+Use-after-free
+
+3️⃣ Observa ASLR
+
+Ejecuta varias veces:
+
+cat /proc/<PID>/maps
+
+
+¿Cambian las direcciones?
+
+Eso es ASLR funcionando.
+
+🧪 EJERCICIO 5 — Namespaces reales
+🎯 Objetivo
+
+Entender cómo Docker realmente aísla procesos.
+
+1️⃣ Ver namespaces actuales
+lsns
+
+2️⃣ Crea uno manualmente
+sudo unshare --pid --fork bash
+
+
+Luego:
+
+ps aux
+
+
+¿Ves todos los procesos del sistema?
+
+No.
+
+Acabas de crear un PID namespace.
+
+Eso es la base de contenedores.
+
+🧪 EJERCICIO 6 — Capabilities en acción
+🎯 Objetivo
+
+Entender cómo root fue fragmentado.
+
+1️⃣ Ver capabilities
+getcap -r / 2>/dev/null
+
+2️⃣ Inspecciona capacidades del proceso actual
+cat /proc/self/status | grep Cap
+
+
+Verás:
+
+CapInh
+CapPrm
+CapEff
+
+
+Busca en internet el significado hexadecimal.
+
+🧪 EJERCICIO 7 — Interactuando con dispositivos reales
+🎯 Objetivo
+
+Entender que todo es un archivo.
+
+1️⃣ Escribe en /dev/null
+echo "hola" > /dev/null
+
+2️⃣ Observa /dev/random
+cat /dev/random
+
+
+(Deténlo rápido 😅)
+
+3️⃣ Inspecciona dispositivos
+ls -l /dev
+
+
+Observa major/minor numbers.
+
+Eso conecta directamente con el kernel y drivers.
+
+🧠 Ejercicio Mental Avanzado
+
+Responde:
+
+¿Dónde vive realmente la seguridad en Linux?
+
+¿Qué pasa si puedes escribir en /proc?
+
+¿Qué pasa si puedes modificar capabilities?
+
+¿Qué diferencia hay entre UID 0 y CAP_SYS_ADMIN?
+
+¿Qué necesita un container para escapar?
+
+🛠 Recomendación para ti específicamente
+
+Dado tu perfil (arquitectura, performance, ingeniería profunda):
+
+Te recomiendo:
+
+Leer sobre:
+
+VFS internals
+
+Scheduler CFS
+
+Memory allocator SLAB / SLUB
+
+Syscall table
+
+Compilar tu propio kernel
+
+Activar/desactivar CONFIG options
+
+🚀 Siguiente Nivel
+
+Después de estos ejercicios podemos hacer:
+
+🧨 Laboratorio real de privilege escalation
+🧬 Escribir un mini rootkit educativo
+🧠 Exploit básico en C
+🔍 Cómo funciona ptrace realmente
+🛡 Cómo funciona un EDR por debajo
+
+Josué, esto es exactamente el camino correcto para convertirte en:
+
+Ingeniero de seguridad ofensiva serio
+No solo usuario de herramientas
+
+Dime:
+
+¿Quieres ahora ir a:
+
+A) Syscalls profundas
+B) Memoria y exploit dev
+C) Privilege escalation real
+D) Internals del scheduler
