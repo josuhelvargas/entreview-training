@@ -1,0 +1,431 @@
+🟦 MÓDULO 1 — Fundamentos sólidos de CSS (bien hechos)
+
+Este módulo está diseñado como lo usaría un frontend senior, con foco en evitar CSS frágil, entender por qué se rompe, y cómo prevenirlo en proyectos reales y escalables.
+
+🟦 MÓDULO 1 — FUNDAMENTOS SÓLIDOS DE CSS
+
+⏱️ Duración sugerida: 1–2 semanas
+🎯 Nivel: Base → Profesional
+🧠 Mentalidad: CSS no es estilos, es un motor de layout
+
+1️⃣ Cómo funciona realmente CSS (por dentro)
+1.1 El pipeline de renderizado
+
+paso1:
+DOM :Arbol que sale del html, cada etiqueta se vuelve un nodo
+
+CSSOM: arbol que sale del css, browser parsea archivo(s) y crea reglas organizadas para aplciar lso estilos
+
+Juntos crean el arbol renderizable DOM + CSSOM = Render Tree 
+
+#display: none (nosalen en render tree)
+#visibility: hidden ( no se ven pero si salen en el render tree)
+
+paso2:
+Layout (reflow)
+Awqui se calcula el tamanio y posicion exacta de cada caja: ancho y  alto y como afecta otros elementos 
+Cuanto mide este elemento div y donde debe aparecer? 
+
+
+Reflow = recalcular layout
+(esto suele ser de lo más caro)
+
+paso3:
+Paint
+Se dibujan pixeles
+No muevas cajas , solo pinta.
+background-color: 
+
+
+paso4:
+Composite
+Etapa final: el navegador organiza capas (layers) y las “combina”.
+
+
+
+
+📌 Conceptos clave:
+
+Qué dispara un reflow
+
+Qué dispara un repaint
+
+Qué propiedades son “caras”
+
+
+
+
+
+
+2) Conceptos clave (lo que te hace “pro”)
+
+
+A) ¿Qué dispara un reflow? (layout recalculation)
+Un reflow ocurre cuando algo puede cambiar tamaños o posiciones.
+
+Disparadores comunes:
+
+Cambiar width, height
+
+padding, margin, border
+
+Cambiar font-size (cambia el tamaño del texto)
+
+Cambiar display
+
+Cambiar position que afecta flujo
+
+Cambios en layout de flex / grid
+
+Cambiar el contenido (texto largo, imágenes cargando)
+
+Cambiar tamaño de la ventana (resize)
+
+📌 Regla mental:
+
+Si afecta la geometría (tamaño/posición), hay reflow.
+
+
+
+----------------------------
+
+
+B) ¿Qué dispara un repaint? (solo repintar)
+
+Repaint pasa cuando no cambia el layout, solo cambia cómo se ve.
+
+Disparadores comunes:
+
+background-color
+
+color
+
+border-color
+
+outline-color
+
+box-shadow (normalmente paint, puede ser pesado)
+
+visibility (depende del caso, pero suele ser paint)
+
+📌 Regla mental:
+Si cambia el “look” pero no el tamaño/posición, es repaint.
+
+
+-------------------
+
+C) ¿Qué propiedades son “caras”?
+
+“Caras” = consumen más CPU/GPU y pueden bajar FPS.
+
+Muy caras (layout + paint)
+
+Cambios frecuentes en:
+
+width, height
+
+top, left, right, bottom
+
+margin, padding
+
+display
+
+✅ Si animas top/left → estás forzando layout constantemente.
+
+Caras de paint
+
+box-shadow grande
+
+filter: blur(...)
+
+backdrop-filter
+
+gradients complejos
+
+border-radius + sombras grandes en muchos elementos
+
+Baratas (ideal para animar)
+
+transform
+
+opacity
+
+-----------
+📌 Regla pro:
+
+Para animaciones suaves: usa transform y opacity.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+1.2 Cascade (la C de CSS)
+
+Origen de estilos:
+
+User agent
+
+User
+
+Author
+
+Orden de aplicación
+
+Importancia de !important (cuándo NO usarlo)
+
+1.3 Specificity (sin fórmulas mágicas)
+
+Cómo se calcula realmente
+
+Por qué los IDs rompen escalabilidad
+
+Clases vs elementos
+
+Inline styles
+
+📌 Regla profesional:
+
+Si necesitas !important, algo está mal diseñado.
+
+🧪 Ejercicios prácticos
+
+Rompe un layout usando especificidad alta
+
+Arregla el mismo layout sin usar !important
+
+Identifica qué regla gana y por qué (explicado en palabras)
+
+📚 Recursos
+
+MDN: Cascade & Specificity
+
+CSS-Tricks: How Browsers Render Pages
+
+YouTube: Kevin Powell – CSS Cascade explained
+
+2️⃣ Box Model moderno (como debe usarse hoy)
+2.1 Box Model real
+
+content
+
+padding
+
+border
+
+margin
+
+2.2 box-sizing
+
+content-box (por defecto)
+
+border-box (estándar profesional)
+
+📌 Regla real de producción:
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+2.3 Colapso de márgenes
+
+Cuándo ocurre
+
+Por qué confunde
+
+Cómo evitarlo correctamente
+
+🧪 Ejercicios prácticos
+
+Crea dos cajas que “crezcan” inesperadamente
+
+Arregla el problema usando border-box
+
+Demuestra el colapso de márgenes
+
+Solución profesional sin hacks
+
+📚 Recursos
+
+MDN: Box Model
+
+CSS-Tricks: Margin Collapsing
+
+3️⃣ Unidades modernas (y cuándo usar cada una)
+3.1 Unidades relativas
+
+rem → tipografía y spacing global
+
+em → componentes encapsulados
+
+% → contenedores
+
+3.2 Viewport units
+
+vw, vh
+
+Problemas en mobile
+
+Nuevas unidades:
+
+dvw
+
+dvh
+
+3.3 Uso profesional
+Caso	Unidad
+Font base	rem
+Padding interno	em
+Layout ancho	% / fr
+Pantalla completa	dvh
+🧪 Ejercicios prácticos
+
+Crea una página que rompa en mobile usando vh
+
+Arréglala usando dvh
+
+Refactoriza tamaños mágicos a rem
+
+📚 Recursos
+
+MDN: CSS Units
+
+Ahmad Shadeed: Modern CSS Units
+
+4️⃣ Flujo normal vs posicionamiento
+4.1 Normal Flow
+
+Cómo fluye el contenido
+
+Por qué romper el flujo es peligroso
+
+4.2 Positioning
+
+static
+
+relative
+
+absolute
+
+fixed
+
+sticky
+
+📌 Reglas de oro:
+
+absolute depende del primer ancestor posicionado
+
+fixed rompe el flujo
+
+sticky ≠ fixed
+
+🧪 Ejercicios prácticos
+
+Layout roto con absolute
+
+Arreglarlo usando flujo normal
+
+Implementar un header sticky correctamente
+
+Debuggear un elemento que “desaparece”
+
+📚 Recursos
+
+MDN: position
+
+Kevin Powell: Positioning demystified
+
+5️⃣ Debugging profesional con DevTools
+5.1 Panel Styles & Computed
+
+Ver reglas aplicadas
+
+Ver reglas sobrescritas
+
+Identificar conflictos
+
+5.2 Box Model visual
+
+Margin
+
+Padding
+
+Border
+
+5.3 Layers & Layout tools
+
+Grid overlays
+
+Flex overlays
+
+Scroll containers
+
+🧪 Ejercicios prácticos
+
+Encontrar por qué un margen no aplica
+
+Detectar qué regla gana en cascade
+
+Debuggear un layout sin tocar el CSS (solo DevTools)
+
+📚 Recursos
+
+Chrome DevTools CSS Guide
+
+Firefox DevTools Layout Tools
+
+🧠 EJERCICIO FINAL DEL MÓDULO
+🧩 Reto
+
+Se te entrega un layout roto (márgenes raros, tamaños inconsistentes, posiciones incorrectas)
+
+Debes:
+
+Diagnosticar el problema
+
+Explicar por qué ocurre
+
+Arreglarlo sin hacks
+
+Justificar cada decisión
+
+🎯 RESULTADO REAL DEL MÓDULO
+
+Al terminar este módulo, puedes decir con verdad:
+
+✔️ Entiendo cómo el navegador renderiza CSS
+✔️ Sé por qué un estilo se rompe
+✔️ Puedo debuggear layouts complejos
+✔️ Escribo CSS predecible y escalable
+
+Este módulo evita el 80% de los problemas de CSS en proyectos reales.

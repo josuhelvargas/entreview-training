@@ -1,0 +1,5 @@
+ launchctl load ~/Library/LaunchAgents/com.josuehelamanvargasrodriguez.keepawake.plist
+  sudo pmset repeat wakeorpoweron MTWRF 06:00:00
+  sudo pmset repeat shutdown MTWRF 23:30:00                                            
+launchctl unload ~/Library/LaunchAgents/com.josuehelamanvargasrodriguez.keepawake.plist
+

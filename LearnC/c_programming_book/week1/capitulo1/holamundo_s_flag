@@ -1,0 +1,25 @@
+	.section	__TEXT,__text,regular,pure_instructions ;acceso normal acceso normal , no hay datos mezclados, 
+	.build_version macos, 15, 0	sdk_version 15, 4 ; version miniuma dfe macOS
+	.globl	_main                           ; -- Begin function main
+	.p2align	2    ; que sigfnidfica alineal la intruccion ea 2x2 = 4 bytes?
+_main:                                  ; @main
+	.cfi_startproc  ; Call Frame Information, útil para el unwinding en excepciones y depuración
+; %bb.0:
+	stp	x29, x30, [sp, #-16]!           ; 2 registros jutnos asigandos a memoria 29 (frame pointer) y 20 (link regtister)
+	mov	x29, sp ; mover framepointer a x29
+	.cfi_def_cfa w29, 16   ;Canonical Frame Address está en x29 con un offset de 16.
+	.cfi_offset w30, -8   
+	.cfi_offset w29, -16 ;indica dónde quedaron guardados x30 y x29 dentro del frame.
+	adrp	x0, l_.str@PAGE  ;toma la dirección de página (4 KB) donde vive l_.str y la coloca en los bits altos de x0
+	add	x0, x0, l_.str@PAGEOFF ;suma el offset dentro de esa página para llegar a la dirección exacta.
+	bl	_printf  ; branch weith link  a la fduncion printf 
+	mov	w0, #0                           ;se pone 0 en w0 (la parte baja de x0), que es el valor de retorno de main (exit code 0).
+	ldp	x29, x30, [sp], #16             ;ldp (load pair): restaura x29 y x30 desde la pila. , primero lee los dos registros de la dirección apuntada por sp, y luego suma 16 a sp, deshaciendo el stack frame.
+	ret ;salta a la dirección en x30, retornando al sistema operativo.
+	.cfi_endproc ;marca el fin del bloque CFI para depuración.
+                                        ; -- End function
+	.section	__TEXT,__cstring,cstring_literals
+l_.str:                                 ; @.str
+	.asciz	"Hola mundo"
+
+.subsections_via_symbols

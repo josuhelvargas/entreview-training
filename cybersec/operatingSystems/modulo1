@@ -1,0 +1,40 @@
+🟦 MÓDULO 1 — Linux Internals (visión de hacker)
+Qué aprender
+
+Arquitectura Linux
+
+Userland vs Kernel
+
+Filesystem hierarchy (/proc, /sys, /dev)
+
+Permissions reales (rwx ≠ seguridad)
+
+Capabilities
+
+Namespaces (conceptual)
+
+Por qué importa para hacking
+
+Privilege escalation
+
+Container escape
+
+Kernel exploits
+
+🧪 Labs prácticos
+
+Abusar permisos
+
+Leer /proc/self/maps
+
+Identificar procesos vulnerables
+
+📚 Recursos
+
+📘 Linux Internals – Michael Kerrisk
+
+📺 YouTube: LiveOverflow
+
+📺 YouTube: 0x41414141
+
+🧠 OverTheWire: Bandit → Narnia

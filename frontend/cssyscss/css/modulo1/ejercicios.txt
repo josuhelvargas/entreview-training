@@ -1,0 +1,32 @@
+1. Si cambio display: none → ¿afecta Render Tree? ¿por qué? No  por que al ponder displásicas jnnone el ítem no afecta el árbol que se va a renderrizar, el emelemnto no aparece ( a diferencia de ponerlo como hieden, qu eso ocupa espacio en el redner tres solo se oculta) 
+2. ¿Cuál es la diferencia entre visibility: hidden y display: none en el pipeline? el primero afecta el render tree y el segundo no 
+3. ¿Cambiar width dispara reflow o repaint? reflow
+4. ¿Cambiar background-color dispara reflow o repaint? repaint
+5. ¿Qué es más seguro para animar: top o transform? ¿por qué? transform por que no afecta el redner tree.
+
+5) Ejercicios (prácticos y aplicables)
+Ejercicio 1 — Clasificación rápida
+Di si provoca reflow, repaint o composite:
+a) opacity: 0.5 repaintb) transform: scale(1.1) compositec) margin-top: 20px reflowd) color: blue repainte) left: 10px con position: relative reflow y composite
+
+Ejercicio 2 — Refactor pro
+Tienes este CSS lento. Cámbialo para que sea “composite-friendly”:
+
+.modal {
+  position: fixed;
+  top: -100px;
+  transition: top 300ms ease;
+}
+.modal.open {
+  top: 20px;
+}
+
+✅ Meta: que use transform.
+
+Ejercicio 3 — DevTools (si lo haces en Chrome)
+1. Abre DevTools
+2. Ve a “Rendering” (More Tools → Rendering)
+3. Activa “Paint flashing”
+4. Haz hover o cambia una clase
+5. Observa qué se repinta
+👉 Escríbeme qué notaste (aunque sea 2 líneas).
