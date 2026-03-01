@@ -31,3 +31,70 @@ echo "Welcome to DNS Hacking!"
 
 
 
+ifconfig 
+iwconfig
+
+
+#cambiar ipadress 
+ifconfig <interface> <ip value>
+
+#cambiar network mask y broadcast address
+ifconfig <interfafce> <ip value> netmas <value>  broadcast <value>
+
+
+#spoof macaddress de eternet
+ifconfig <interface> down
+ifconfig <interface> hw ether <mac address> 
+ifconfig <interface> up 
+
+
+
+
+#punto importante para hackers conocer dhcp ( ya que debees tener una direccionasignada si estas en una red) 
+dhclient <interface> 
+
+
+dig <domain> #get dns info
+
+
+#how to change dnsserver :
+leafpad /etc/resolv.conf
+
+#nameserver? 8.8.8.8 como funciona y que hace nameserver ? 
+
+leafpad /etc/hosts
+
+
+
+# 5️⃣ Reset IP to DHCP-assigned address
+# If using dhclient:
+# sudo dhclient -r eth0
+# sudo dhclient eth0
+# If using systemd-networkd:
+# sudo systemctl restart systemd-networkd
+# If using NetworkManager:
+# sudo systemctl restart NetworkManager
+nslookup example.com
+
+
+
+
+
+2806:2a0:2f::2
+2806:2a0:25::2
+
+#Eso pertenece a un ISP mexicano (probablemente Telmex/Infinitum u otro ISP).
+
+Seguridad:
+
+#Tu tráfico DNS está pasando por tu proveedor.
+
+#Pueden:
+
+#Loggear consultas
+
+#Filtrar dominios
+
+#Aplicar DNS hijacking
+
+#Inyectar NXDOMAIN redirects

@@ -1,0 +1,387 @@
+🧠 CURSO: JAVASCRIPT DESDE BÁSICO HASTA LOS INTERNALS DEL BROWSER
+
+Duración sugerida: 12–16 semanas (estudio profundo + experimentos prácticos)
+
+🔵 MÓDULO 1 — Cómo REALMENTE funciona JavaScript
+1.1 ¿Qué es JavaScript realmente?
+
+ECMAScript (spec)
+
+Engine (V8, SpiderMonkey, JavaScriptCore)
+
+Runtime (Browser vs Node)
+
+Single-threaded + event-driven
+
+Motores principales
+4
+Qué aprender aquí:
+
+JavaScript NO es el navegador
+
+El navegador provee Web APIs
+
+El engine ejecuta código
+
+El Call Stack vive en el engine
+
+El Event Loop es coordinado por el runtime
+
+1.2 Execution Context (la base de TODO)
+
+Global Execution Context
+
+Function Execution Context
+
+Creation phase
+
+Execution phase
+
+Variable Environment
+
+Outer Environment Reference
+
+This binding
+
+Internamente ocurre:
+1. Memory creation phase
+   - Variables → undefined
+   - Functions → full definition
+
+2. Execution phase
+   - Código corre línea por línea
+Ejercicio profundo:
+console.log(a);
+var a = 10;
+
+Explica exactamente:
+
+Qué está en memoria
+
+Qué está en el stack
+
+Qué ocurre en creation phase
+
+🔵 MÓDULO 2 — Scope & Lexical Environment (nivel interno)
+2.1 Scope ≠ Scope chain
+
+Lexical environment
+
+Environment record
+
+Outer reference
+
+Scope chain lookup algorithm
+
+Cómo lo resuelve el engine
+
+Cuando haces:
+
+function a() {
+  function b() {
+    console.log(myVar);
+  }
+  b();
+}
+var myVar = 1;
+a();
+
+El engine:
+
+Busca en local environment
+
+Luego outer reference
+
+Luego global
+
+Luego ReferenceError
+
+🔵 MÓDULO 3 — Hoisting (como lo hace el engine)
+
+Var hoisting
+
+Function hoisting
+
+Let/const y TDZ
+
+Diferencia real entre declaration vs expression
+
+TDZ internals
+console.log(a);
+let a = 5;
+
+Internamente:
+
+Se crea binding
+
+Pero se marca como “uninitialized”
+
+Acceso → ReferenceError
+
+🔵 MÓDULO 4 — THIS (la parte más mal entendida)
+4.1 Reglas reales de this binding
+
+Default binding
+
+Implicit binding
+
+Explicit binding (call/apply/bind)
+
+New binding
+
+Arrow functions (lexical this)
+
+Visualización mental
+4
+🔵 MÓDULO 5 — Closures (nivel motor)
+
+Closure no es magia.
+
+Es:
+
+Una función + referencia al environment donde fue creada.
+
+Qué guarda el engine
+
+Function object
+
+Hidden [[Environment]]
+
+Reference al lexical scope
+
+Ejemplo:
+
+function outer() {
+  let counter = 0;
+  return function inner() {
+    counter++;
+    console.log(counter);
+  };
+}
+
+const fn = outer();
+fn();
+fn();
+
+Internamente:
+
+outer sale del stack
+
+Pero environment NO se elimina
+
+Permanece en heap
+
+🔵 MÓDULO 6 — Objetos y prototipos (internals reales)
+6.1 Todo es objeto (casi)
+
+Primitives vs wrapper objects
+
+Autoboxing
+
+Internal [[Prototype]]
+
+proto vs prototype
+
+6.2 Cómo funciona la cadena de prototipos
+4
+Lookup algorithm:
+
+Cuando haces:
+
+obj.prop
+
+El engine:
+
+Busca en obj
+
+Si no → [[Prototype]]
+
+Repite hasta null
+
+🔵 MÓDULO 7 — El Event Loop (nivel browser)
+
+Este módulo cambia todo.
+
+7.1 Componentes
+
+Call Stack
+
+Web APIs
+
+Callback Queue
+
+Microtask Queue
+
+Event Loop
+
+4
+7.2 Microtasks vs Macrotasks
+
+Orden real:
+
+Stack vacío
+
+Ejecuta todas las microtasks
+
+Luego una macrotask
+
+Repite
+
+setTimeout(() => console.log("timeout"), 0);
+Promise.resolve().then(() => console.log("promise"));
+console.log("sync");
+
+Salida real:
+
+sync
+promise
+timeout
+🔵 MÓDULO 8 — Memory Management (Garbage Collector)
+8.1 Heap vs Stack
+
+Stack → execution contexts
+
+Heap → objects
+
+Closures viven en heap
+
+8.2 Garbage collection (Mark and Sweep)
+
+Reachability
+
+Roots (window, global)
+
+Reference graph
+
+8.3 Memory leaks reales
+
+Detached DOM nodes
+
+Closures reteniendo memoria
+
+Event listeners sin remover
+
+🔵 MÓDULO 9 — Cómo interactúa JS con el DOM
+9.1 DOM no es JS
+
+DOM es API
+
+Vive fuera del engine
+
+Es puente C++ <-> JS
+
+9.2 Rendering Pipeline del browser
+
+Parse HTML
+
+Build DOM
+
+Parse CSS
+
+Build CSSOM
+
+Render tree
+
+Layout
+
+Paint
+
+Composite
+
+JS puede bloquear render.
+
+🔵 MÓDULO 10 — Async profundo
+
+Promises internals
+
+Promise states
+
+Job queue
+
+Async/await transpilation mental
+
+Fetch API internals
+
+🔵 MÓDULO 11 — V8 Internals (nivel experto)
+
+Hidden classes
+
+Inline caching
+
+JIT compilation
+
+Deopt
+
+Shape transitions
+
+🔵 MÓDULO 12 — Performance avanzado
+
+Reflows
+
+Layout thrashing
+
+Debounce vs Throttle
+
+requestAnimationFrame
+
+Web Workers
+
+SharedArrayBuffer
+
+🔵 MÓDULO 13 — Seguridad y sandbox
+
+Same-origin policy
+
+CORS
+
+XSS
+
+Prototype pollution
+
+CSP
+
+🔵 MÓDULO 14 — ES6+ y futuro
+
+Modules internals
+
+ESM vs CommonJS
+
+Tree shaking
+
+Dynamic import
+
+Top-level await
+
+🔵 MÓDULO 15 — Arquitectura mental de experto
+
+Cómo pensar como engine:
+
+¿Dónde vive esto? (stack o heap)
+
+¿Cuándo se ejecuta?
+
+¿Quién lo referencia?
+
+¿Es microtask o macrotask?
+
+¿Rompe el layout?
+
+¿Genera hidden class nueva?
+
+🧠 Nivel final que deberías alcanzar
+
+Cuando termines este curso deberías poder:
+
+Explicar por qué algo ocurre antes de ejecutarlo
+
+Diagnosticar memory leaks
+
+Entender DevTools Memory panel
+
+Optimizar closures
+
+Evitar deopts en V8
+
+Entender React desde el event loop
+
+Leer el spec ECMAScript

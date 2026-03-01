@@ -1,0 +1,21 @@
+DNS hijacking puede ser:
+
+Router-level
+
+DNS cache poisoning
+
+BGP hijacking
+
+Transparent DNS proxying
+
+Evil twin WiFi attack
+
+Si quieres, puedo explicarte:
+
+Cómo detectar si tu ISP hace NXDOMAIN redirect
+
+Cómo simular DNS hijacking en laboratorio
+
+Cómo funciona DNSSEC contra esto
+
+Cómo funciona un ataque MITM con ARP + DNS spoofing

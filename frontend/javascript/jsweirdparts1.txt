@@ -1,0 +1,225 @@
+ECMASCRIPT: 
+El estándar formal que define cómo debe comportarse el lenguaje.
+“You Don’t Know JS” (Kyle Simpson)
+“Understanding ECMAScript 6” – Nicholas Zakas
+📘 Nivel hardcore:
+
+Leer directamente:
+
+Execution Contexts
+
+Environment Records
+
+Ordinary Object Internal Methods
+
+
+
+
+
+Arquitectura general de interpretacion de Javascript: 
+Pipeline interno (V8)
+  1.Parser → convierte JS en AST (abstract syntax tree)
+  2.Ignition → intérprete (bytecode)
+  3.TurboFan → JIT compiler
+  4.Garbage Collector
+
+Componentes internos importantes
+🔹 Call Stack
+Maneja execution contexts.
+
+🔹 Heap
+Donde viven objetos y closures.
+
+🔹 Hidden Classes (V8)
+Optimización de objetos dinámicos.
+
+🔹 Inline Caching
+Optimiza acceso a propiedades.
+
+
+
+
+Recursos para estudiar engines
+📘 V8 blog:
+https://v8.dev/
+
+📘 V8 design docs:
+https://v8.dev/docs
+
+📘 SpiderMonkey internals:
+https://firefox-source-docs.mozilla.org/js/
+
+📘 Libro:
+“JavaScript Engine Fundamentals” (varios artículos técnicos)
+
+📘 Código real:
+https://github.com/v8/v8
+
+
+
+
+
+
+
+-----------------
+Runtime del Browser
+Componentes:
+JS Engine (V8)
+Web APIs (C++ implementadas)
+Event Loop
+Rendering Engine (Blink en Chrome)
+
+
+----------------
+Runtime en Node
+Componentes:
+V8
+libuv (event loop)
+C++ bindings
+OS APIs
+No DOM
+
+
+
+
+
+
+
+
+
+Single-threaded + Event-driven
+
+JavaScript engine es single-threaded.
+
+Solo una cosa puede ejecutarse en el call stack a la vez.
+
+Pero…
+
+El runtime es concurrente.
+
+¿Cómo funciona realmente?
+
+
+
+Componentes reales
+
+Call Stack (engine)
+Web APIs (browser C++)
+Task Queue (macrotasks)
+Microtask Queue
+Event Loop
+
+Flujo real
+
+1.JS llama setTimeout
+2.setTimeout NO vive en JS
+3.Vive en Web APIs (C++)
+4.Cuando termina → callback a Task Queue
+5.Event Loop verifica stack vacío
+6.Mueve callback al stack
+
+
+
+
+
+Procesos en Chrome
+
+Chrome es multi-proceso.
+Browser Process
+Renderer Process
+GPU Process
+Network Process
+
+
+¿Dónde vive JavaScript?
+En el Renderer Process.
+
+
+
+
+
+
+Quién implementa Web APIs?
+En Chrome:
+
+Rendering Engine: Blink
+JS Engine: V8
+
+Las Web APIs como:
+setTimeout
+DOM
+fetch
+addEventListener
+Son implementadas en Blink (C++).
+
+
+V8 se comunica con Blink mediante bindings. <--!
+Flujo real DOM + JS
+JS llama document.getElementById
+V8 delega a Blink
+Blink accede al DOM
+Resultado vuelve a V8
+
+
+
+
+Render Pipeline (para entender la integración real)
+Cuando JS modifica el DOM:
+1.DOM tree update
+2.Style recalculation
+3.Layout
+4.Paint
+5.Composite
+Si JS bloquea el thread, el render se detiene.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Estudio avanzado recomendado
+Si quieres volverte experto real:
+
+🔹 Leer la spec:
+Execution contexts
+Job queues
+Promises
+
+🔹 Leer V8 blog técnico
+Especialmente:
+Hidden classes
+Inline caching
+Deoptimization
+
+
+🔹 Leer Blink docs
+https://chromium.googlesource.com/chromium/src/+/main/docs/
+
+
+🔹 Estudiar:
+libuv (Node)
+Multi-process browser architecture
+Memory leaks en DevTools
+
+
+
+Destripar el Event Loop a nivel C++
+2️⃣ Entender cómo V8 optimiza objetos
+3️⃣ Entender cómo Blink conecta con V8
+4️⃣ Cómo el browser maneja procesos y sandbox
+5️⃣ Cómo funciona el GC en V8 en detalle

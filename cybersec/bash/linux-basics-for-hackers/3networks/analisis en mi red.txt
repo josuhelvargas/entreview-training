@@ -1,0 +1,123 @@
+
+
+⚠️ Lo más importante en tu caso
+
+Tu resolv.conf dice:
+
+"This file is not consulted for DNS hostname resolution"
+
+Eso significa que macOS usa:
+
+scutil --dns
+
+Ejecuta eso para ver el DNS real.
+
+🧠 Seguridad — ¿Qué podrías mejorar?
+🔴 Problema actual
+
+Estás usando DNS del ISP / red local.
+Eso significa:
+
+Sin cifrado
+
+Sin privacidad
+
+Vulnerable a:
+
+DNS spoofing
+
+MITM
+
+DNS poisoning
+
+🔐 Mejora de Seguridad (Nivel Profesional)
+Opción 1 — Usar DNS over HTTPS (DoH)
+
+Ejemplo:
+
+Cloudflare: 1.1.1.1
+
+Google: 8.8.8.8
+
+Quad9: 9.9.9.9
+
+Pero mejor aún:
+
+👉 Activar DNS cifrado.
+
+En macOS:
+
+System Settings → Network → Details → DNS
+
+O usar:
+
+NextDNS
+
+AdGuard DNS
+
+Cloudflare WARP
+
+🔵 Mejor combinación Seguridad + Velocidad
+Opción recomendada:
+1.1.1.1
+1.0.0.1
+
+Cloudflare es:
+
+Muy rápido
+
+Privacidad mejor que ISP
+
+Soporta DNSSEC
+
+🟢 Si quieres más seguridad:
+9.9.9.9
+
+Quad9:
+
+Bloquea dominios maliciosos
+
+Ideal para seguridad
+
+🚀 Velocidad — ¿Cómo medirla?
+
+Puedes medir latencia:
+
+dig google.com @1.1.1.1
+dig google.com @8.8.8.8
+dig google.com @9.9.9.9
+
+Observa:
+
+Query time: X msec
+
+Menor = mejor.
+
+⚠️ Advertencia importante (Arquitectura macOS)
+
+Si modificas /etc/resolv.conf, el sistema lo sobreescribirá.
+
+Para cambiar DNS correctamente en macOS:
+
+networksetup -setdnsservers Wi-Fi 1.1.1.1 1.0.0.1
+🔥 Nivel Hacker (lo que deberías saber)
+
+Tu configuración actual:
+
+No usa DNS cifrado.
+
+Es vulnerable a:
+
+Rogue DHCP server
+
+Evil twin attack
+
+ARP poisoning + DNS spoof
+
+Para protegerte en WiFi pública:
+
+Usar VPN
+
+O usar DNS over HTTPS
+
+O usar Cloudflare WARP
