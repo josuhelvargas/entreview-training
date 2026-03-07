@@ -1,0 +1,408 @@
+CURSO: Ingeniería de Software Profesional en C++
+
+Objetivo:
+
+Aprender a diseñar, estructurar y construir software complejo en C++ (no solo escribir código).
+
+Enfocado en:
+
+arquitectura
+rendimiento
+memoria
+sistemas
+librerías reutilizables
+proyectos grandes
+
+Duración sugerida: 6–9 meses
+
+ESTRUCTURA GENERAL DEL CURSO
+Módulo 1 — Mentalidad de ingeniería en C++
+c++
+Cómo se piensa un programa en C++.
+Temas:
+
+C++ como lenguaje de sistemas
+Compilación real
+Toolchain
+Cómo se estructura un proyecto
+Librerías vs ejecutables
+ABI
+headers vs implementation
+
+
+Conceptos clave:
+translation units
+header files
+include guards
+linking
+static vs dynamic libraries
+
+Ejercicio:
+Crear un proyecto C++ sin IDE.
+
+Estructura:
+project/
+   src/
+      main.cpp
+      math.cpp
+   include/
+      math.h
+   build/
+
+Compilar manualmente:
+g++ main.cpp math.cpp -o program
+
+
+
+
+
+--------
+
+Módulo 2 — Modelo real de memoria
+
+Este módulo separa a los programadores web de los ingenieros C++.
+
+Temas:
+
+stack vs heap
+
+layout de memoria
+
+punteros
+
+referencias
+
+RAII
+
+destructores
+
+ownership
+
+Ejercicios:
+
+Ejercicio 1
+
+Implementar un vector dinámico.
+
+class Vector {
+private:
+    int* data;
+    size_t size;
+    size_t capacity;
+};
+
+Implementar:
+
+push_back
+pop_back
+resize
+operator[]
+
+Objetivo:
+
+entender heap management.
+
+Ejercicio 2
+
+Implementar smart pointer propio
+
+class UniquePtr
+
+Aprender:
+
+move semantics
+ownership
+destructores
+Módulo 3 — Diseño orientado a objetos en C++
+
+Aquí empiezas a diseñar sistemas reales.
+
+Temas:
+
+Rule of 3
+
+Rule of 5
+
+copy constructors
+
+move constructors
+
+virtual dispatch
+
+interfaces
+
+Ejercicio:
+
+Diseñar un sistema de archivos virtual.
+
+Clases:
+
+File
+Directory
+FileSystem
+
+Operaciones:
+
+create file
+delete file
+move file
+list directory
+Módulo 4 — Templates (poder real de C++)
+
+Esto es donde C++ se vuelve un lenguaje de metaprogramación.
+
+Temas:
+
+templates
+template specialization
+constexpr
+type traits
+SFINAE
+
+Ejercicio:
+
+Crear una librería genérica de contenedores.
+
+Implementar:
+
+template<class T>
+class Stack
+
+y
+
+template<class T>
+class Queue
+Módulo 5 — STL Internals
+
+Debes entender cómo funcionan:
+
+vector
+map
+unordered_map
+list
+deque
+
+Ejercicio:
+
+Implementar:
+
+HashMap
+
+propio.
+
+Módulo 6 — Arquitectura de programas grandes
+
+Aquí es donde aprenderás lo que pediste:
+
+cómo diseñar software complejo en C++.
+
+Temas:
+
+Arquitecturas comunes:
+
+Layered architecture
+Component architecture
+Library architecture
+Plugin architecture
+
+Ejercicio grande:
+
+Construir:
+
+Mini database engine
+
+Componentes:
+
+Storage engine
+Index
+Query parser
+Execution engine
+Módulo 7 — Concurrencia
+
+Temas:
+
+threads
+mutex
+locks
+atomics
+memory model
+lock-free programming
+
+Ejercicio:
+
+Implementar:
+
+ThreadPool
+Módulo 8 — Performance engineering
+
+Temas:
+
+cache locality
+memory alignment
+branch prediction
+SIMD
+profiling
+
+Herramientas:
+
+perf
+valgrind
+gprof
+
+Ejercicio:
+
+Optimizar un algoritmo de búsqueda.
+
+Módulo 9 — C++ moderno (C++17, 20, 23)
+
+Temas:
+
+auto
+constexpr
+concepts
+ranges
+coroutines
+modules
+
+Ejercicio:
+
+Crear pipeline funcional de datos usando ranges.
+
+Módulo 10 — Sistemas reales
+
+Aquí empiezas a construir cosas serias.
+
+Proyectos sugeridos:
+
+Proyecto 1
+
+HTTP server en C++.
+
+Aprender:
+
+sockets
+threads
+parsing
+Proyecto 2
+
+Game engine simple.
+
+Componentes:
+
+entity system
+render loop
+physics
+Proyecto 3
+
+Mini browser engine.
+
+Componentes:
+
+HTML parser
+DOM tree
+layout
+renderer
+Cómo saber tu nivel
+
+Haz estos ejercicios en orden.
+
+Nivel 1
+
+Implementar:
+
+Vector
+Stack
+Queue
+Nivel 2
+
+Implementar:
+
+SmartPointer
+HashMap
+Nivel 3
+
+Implementar:
+
+FileSystem
+ThreadPool
+Nivel 4
+
+Implementar:
+
+Mini database
+Libros recomendados (MUY importantes)
+Para ingeniería real
+
+Effective Modern C++
+
+Scott Meyers
+
+Diseño avanzado
+
+C++ Software Design
+
+Klaus Iglberger
+
+Internals
+
+C++ Concurrency in Action
+
+Anthony Williams
+
+Performance
+
+Optimized C++
+
+Kurt Guntheroth
+
+Repositorios reales para estudiar
+LLVM
+
+https://github.com/llvm/llvm-project
+
+Chromium
+
+https://github.com/chromium/chromium
+
+Redis
+
+https://github.com/redis/redis
+
+Cómo programadores web suelen fracasar en C++
+
+Errores comunes:
+
+1️⃣ usar new en todos lados
+2️⃣ no entender ownership
+3️⃣ copiar objetos grandes
+4️⃣ ignorar cache locality
+5️⃣ abusar de herencia
+
+Regla de oro en C++
+Prefer value semantics
+Avoid raw pointers
+Use RAII
+Algo importante sobre tu caso
+
+Tú ya tienes:
+
+arquitectura
+
+diseño
+
+sistemas grandes
+
+backend engineering
+
+Tu dificultad no será arquitectura.
+
+Será:
+
+memoria
+performance
+toolchains
+Si quieres, en el siguiente paso puedo darte:
+
+1️⃣ Un roadmap MUCHO más profundo (nivel ingeniero de sistemas)
+2️⃣ 10 proyectos reales que te vuelven experto en C++
+3️⃣ Un camino para llegar a trabajar en proyectos como Chromium o Unreal Engine
