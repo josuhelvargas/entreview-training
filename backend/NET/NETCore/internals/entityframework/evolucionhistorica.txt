@@ -1,0 +1,58 @@
+1) Evolución desde EF Core 2.0: qué cambió “de verdad”
+EF Core 2.x (.NET Core 2.0/2.1)
+
+Enfoque: “hacer que funcione” + features base.
+
+Query pipeline ya era nuevo vs EF6, pero todavía tenía client-eval silencioso en varios casos (cosas que no se traducían a SQL podían ejecutarse en memoria sin que te dieras cuenta).
+
+Include + tracking: mejor que EF6, pero no tan fino.
+
+Menos protección contra queries “peligrosas” (traer demasiado a memoria).
+
+Dolor típico: “Se siente bien… hasta que en prod explota por performance sin explicación.”
+
+EF Core 3.x (.NET Core 3.0/3.1) — el gran “breaking change”
+
+La revolución fue:
+
+Se elimina el client-eval silencioso: si algo no se puede traducir a SQL, lanza excepción (o te obliga a hacerlo explícito con AsEnumerable()).
+
+Reestructuración fuerte del query pipeline (más consistente y predecible).
+
+Mejor separación entre:
+
+traducción (LINQ → SQL)
+
+materialización (SQL rows → objetos)
+
+tracking
+
+Resultado: menos sorpresas, más performance real, y más control.
+
+EF Core 5.x
+
+Más paridad con EF6 (muchas features “faltantes” llegaron aquí).
+
+Mejoras en many-to-many, includes, mapping, etc.
+
+EF Core 6.x
+
+Mucha mejora de “calidad de vida” y performance.
+
+Más “conventions” y model-building refinado.
+
+Mejor diagnóstica.
+
+EF Core 7.x
+
+Batch / Bulk operations nativas (por ejemplo ExecuteUpdate, ExecuteDelete): evita el “load + loop + SaveChanges”.
+
+Mejoras de queries complejas.
+
+EF Core 8.x
+
+Entra fuerte JSON mapping (en proveedores que lo soportan).
+
+Más optimizaciones y features modernas.
+
+En resumen: 2.x era “usable”, 3.x fue el parteaguas de arquitectura/consistencia, 7/8 son “EF para sistemas grandes” (bulk/JSON/modern).

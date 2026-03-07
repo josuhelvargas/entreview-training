@@ -32,7 +32,7 @@ Donde viven objetos y closures.
 
 🔹 Hidden Classes (V8)
 Optimización de objetos dinámicos.
-
+Z
 🔹 Inline Caching
 Optimiza acceso a propiedades.
 

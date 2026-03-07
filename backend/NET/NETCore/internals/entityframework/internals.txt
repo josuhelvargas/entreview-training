@@ -1,0 +1,11 @@
+2) Internals: ¿qué es EF Core por dentro?
+
+Piensa EF Core como 4 subsistemas:
+
+Modeling (descubrir el modelo: entidades, llaves, relaciones, columnas)
+
+Query (LINQ → SQL → ejecutar → materializar)
+
+Change Tracking + SaveChanges (detectar cambios → generar comandos SQL)
+
+Provider + Relational (SQL Server/Postgres/SQLite/Cosmos: “dialecto” y capacidades)

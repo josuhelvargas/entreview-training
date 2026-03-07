@@ -13,6 +13,14 @@ ENtity framework
 │ .NET Framework CLR (Windows) │
 └──────────────────────────────┘
 
+Se generaban 3 modelos en un xml enorme = edmx que mapeaba los 3 modleos el de codigo , el de union y el de bd 
+EDMX
+ ├── CSDL  (Conceptual Schema) -codigo
+ ├── SSDL  (Store Schema) -bd real
+ └── MSL   (Mapping Schema) -conexion de codigo con db\
+Cambios pequeños → cambios gigantes en XML
+Conflictos imposibles de mergear
+
 
 🟩 EF Core (3.0 → 8)
 ┌─────────────────────────────────────┐
@@ -33,13 +41,18 @@ ENtity framework
 
 
 Qué cambia arquitectónicamente
-Aspecto	EF 6 / 4.8	EF Core
-Plataforma	Solo Windows	Windows / Linux / macOS
-Pipeline SQL	rígido	modular, optimizado
-LINQ	limitado	reescrito → más traducciones correctas
-Rendimiento	bajo	muy alto (compiled queries/models)
-Extensibilidad	baja	interceptors, conventions, plugins
-Bases modernas	no	SQL modern, PostgreSQL, SQLite, Cosmos
+Aspecto	EF 6 / 4.8	                               EF Core
+Plataforma	Solo Windows	                    Windows / Linux / macOS
+Pipeline SQL	  rígido	                   modular, optimizado
+LINQ	limitado	                          reescrito → más traducciones correctas
+Rendimiento	bajo	                         muy alto (compiled queries/models)
+Extensibilidad	baja	                   interceptors, conventions, plugins
+Bases modernas	no	SQL modern,                PostgreSQL, SQLite, Cosmos
+
+
+
+
+
 🧠 ¿Por qué EF Core es clave en .NET moderno?
 
 No depende de System.Data.Entity
@@ -55,3 +68,532 @@ JSON Column Mappings (EF8)
 Bulk Ops nativas (EF7+)
 
 Compiled Models (30x más rápido en arranque)
+
+
+
+
+
+
+
+
+
+
+========
+
+
+Ahora vamos a lo que tú quieres: preguntas profundas
+
+Para aprender EF Core como arquitecto, no como usuario.
+
+🔎 Sobre Query Pipeline
+
+¿Cómo transforma EF Core un Expression Tree en SQL?
+
+¿Qué es un Query Compilation Context?
+
+¿Cómo funciona la caché interna de queries?
+
+¿Qué diferencia hay entre IQueryable y IEnumerable en el pipeline?
+
+🔎 Sobre Change Tracker
+
+¿Qué es el Snapshot vs Notification-based tracking?
+
+¿Cómo funciona DetectChanges internamente?
+
+¿Qué impacto tiene AutoDetectChangesEnabled?
+
+¿Qué pasa cuando usas AsNoTrackingWithIdentityResolution?
+
+🔎 Sobre Performance
+
+¿Cuándo usar CompiledQuery?
+
+¿Qué es un CompiledModel realmente?
+
+¿Qué overhead elimina?
+
+¿Qué pasa si usas demasiadas Includes?
+
+🔎 Sobre Arquitectura
+
+¿EF Core viola el patrón Repository?
+
+¿DbContext es Unit of Work?
+
+¿Es correcto inyectar DbContext como Scoped?
+
+¿Qué pasa en alta concurrencia?
+
+🔎 Sobre Bases modernas
+
+¿Cómo mapea EF Core JSON Columns?
+
+¿Qué pasa con Value Converters?
+
+¿Cómo funciona el provider model?
+
+¿Cómo EF Core soporta Cosmos sin SQL real?
+
+🧠 Para ti específicamente
+
+Tú trabajas con:
+
+Arquitectura enterprise
+
+Microservicios
+
+Performance crítica
+
+Sistemas grandes
+
+Entonces deberías enfocarte en:
+
+Query pipeline interno
+
+Tracking vs NoTracking
+
+Compiled Models
+
+Batching
+
+Connection pooling
+
+Concurrency tokens
+
+Shadow properties
+
+Interceptors
+
+Value generators
+
+
+1️⃣ Modo interno hardcore → Analizamos cómo EF Core traduce una query paso a paso
+2️⃣ Modo performance engineer → Cómo optimizar EF para sistemas grandes
+3️⃣ Modo arquitecto → Cómo diseñar un sistema enterprise usando EF Core correctamente
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+3) Query Pipeline interno: de Expression Tree a SQL
+
+Cuando escribes:
+
+var q = ctx.Users
+  .Where(u => u.Age > 18)
+  .Select(u => new { u.Id, u.Name });
+
+
+Eso es IQueryable: no corre nada aún. Solo crea un Expression Tree.
+
+3.1 Etapas internas (vista de alto nivel)
+
+Construcción del Expression Tree (C# + LINQ)
+
+Preprocesamiento (normaliza, expande includes, aplica filtros globales, etc.)
+
+Traducción (Expression → “árbol SQL interno”)
+
+Postprocesamiento (optimizaciones, simplificaciones, parámetros)
+
+Compilación (se crea un “plan ejecutable” que produce resultados)
+
+Ejecución (DbCommand → DbDataReader)
+
+Materialización (rows → objetos / proyecciones)
+
+Tracking opcional (si aplica)
+
+¿Cómo “traduce” realmente?
+
+EF Core usa visitors (ExpressionVisitor) para caminar el árbol.
+
+Cuando encuentra algo traducible (comparaciones, funciones soportadas), lo convierte a nodos relacionales.
+
+Si encuentra algo NO traducible:
+
+En EF Core 2.x: podía intentar client-eval silencioso.
+
+En EF Core 3+: error a menos que tú cruces el boundary (AsEnumerable()).
+
+4) ¿Qué es QueryCompilationContext?
+
+Es el “contenedor de compilación” para una query:
+el lugar donde EF Core junta todo lo necesario para transformar un Expression Tree en un plan ejecutable.
+
+Incluye cosas como:
+
+El modelo (IModel)
+
+El provider (SQL Server, etc.)
+
+Opciones (tracking, split queries, timeouts, etc.)
+
+Logger/diagnósticos
+
+Parámetros y cómo se van a manejar
+
+Si se usará buffering, streaming, etc.
+
+Piensa: “contexto de compilación = settings + servicios + provider + modelo” para producir un “delegate” de ejecución.
+
+5) Cache interna de queries: ¿cómo funciona?
+
+EF Core cachea principalmente:
+
+El plan compilado de una query “con la misma forma” (misma estructura de Expression Tree).
+
+Separando valores como parámetros (parameterization).
+
+Ejemplo:
+
+ctx.Users.Where(u => u.Id == id)
+
+
+La forma es la misma aunque id cambie, entonces:
+
+EF compila una vez el plan
+
+Reusa el plan
+
+Cambia solo el parámetro
+
+Clave mental: EF Core cachea “shape”, no resultados.
+
+6) IQueryable vs IEnumerable en el pipeline
+
+IQueryable: “esto todavía se puede traducir a SQL”
+
+Todo lo que hagas aquí puede ir al server.
+
+IEnumerable: “ya estoy en memoria”
+
+Todo lo que hagas aquí ocurre en el cliente.
+
+El boundary real ocurre cuando:
+
+Llamas ToList(), First(), Count(), etc. (materializa)
+
+O fuerzas AsEnumerable() / ToList() temprano
+
+La regla:
+
+Mantén IQueryable hasta el último momento si te importa performance.
+
+7) Change Tracker: Snapshot vs Notification-based
+7.1 Snapshot tracking (default común)
+
+EF guarda un “snapshot” del estado original.
+Al guardar, compara “original vs actual”.
+
+Pros:
+
+No requiere que tus entidades implementen nada especial.
+Contras:
+
+Comparación cuesta (aunque EF Core lo ha optimizado mucho).
+
+7.2 Notification-based tracking
+
+Si tus entidades implementan notificaciones (como INotifyPropertyChanged), EF puede reaccionar a cambios sin comparar todo.
+
+Pros:
+
+Menos costo de DetectChanges.
+Contras:
+
+Más complejidad en entidades.
+
+8) DetectChanges internamente y AutoDetectChangesEnabled
+DetectChanges
+
+Recorre entidades trackeadas y marca estados:
+
+Unchanged, Modified, Added, Deleted
+
+Detecta cambios por property
+
+Lo ejecuta:
+
+Antes de SaveChanges() (si está habilitado)
+
+En algunos escenarios de tracking
+
+AutoDetectChangesEnabled = false
+
+Útil en cargas masivas (bulk insert con AddRange):
+
+Evitas llamar DetectChanges por cada entidad
+
+Luego llamas una vez al final (o dejas que SaveChanges lo haga)
+
+Tradeoff: si lo apagas, tú te haces responsable de no dejar estados inconsistentes.
+
+9) AsNoTrackingWithIdentityResolution: qué hace
+
+AsNoTracking():
+
+No tracking: más rápido, menos memoria
+
+Pero si el query produce el mismo entity varias veces (joins), podrías obtener objetos duplicados.
+
+AsNoTrackingWithIdentityResolution():
+
+Sigue siendo no tracking (no se queda en ChangeTracker)
+
+Pero usa un “identity map” temporal durante materialización
+
+Resultado: misma entidad = misma instancia dentro del resultado.
+
+Útil cuando:
+
+Tienes graph con joins e includes
+
+No quieres tracking pero sí consistencia de referencias
+
+10) Performance: CompiledQuery vs CompiledModel
+CompiledQuery
+
+Compila la ejecución de una query específica:
+
+Menos overhead por compilación repetida
+
+Útil en endpoints súper calientes (alta frecuencia)
+
+Úsalo cuando:
+
+Query se ejecuta muchísimo
+
+Forma estable
+
+Performance critical
+
+CompiledModel
+
+Precompila el modelo (mapping, metadata, conventions)
+
+Reduce costo de startup / primera query
+
+Excelente para microservicios con cold start o serverless
+
+Qué overhead elimina:
+
+Construcción del modelo en runtime
+
+Aplicación de conventions
+
+Descubrimiento de mappings por reflexión (gran parte)
+
+11) “Demasiadas Includes”: qué pasa realmente
+
+Include puede provocar:
+
+Joins enormes (cartesian explosion)
+
+Duplicación de rows (el reader devuelve filas repetidas para reconstruir graph)
+
+Mucha memoria y CPU en materialización
+
+Mitigaciones típicas:
+
+Proyecciones (Select) en vez de Include cuando solo necesitas DTO
+
+AsSplitQuery() (divide en varias queries para evitar explosion)
+
+Cargar por partes según caso (explicit loading o queries específicas)
+
+12) Arquitectura: Repository vs EF Core
+¿EF Core viola Repository?
+
+No “viola”, pero en la práctica:
+
+DbSet<TEntity> ya funciona como un repositorio.
+
+DbContext ya es Unit of Work.
+
+Crear repositorios genéricos encima de EF a veces:
+
+Solo agrega ruido
+
+Oculta IQueryable y mata composabilidad
+
+Complica performance
+
+Repository sí tiene sentido cuando:
+
+Tu dominio exige invariantes y métodos específicos
+
+Encapsulas queries complejas y consistentes
+
+Evitas que toda la app haga LINQ libre sin control
+
+13) DbContext como Unit of Work y Scoped DI
+
+Sí: DbContext es Unit of Work (trackea cambios + SaveChanges).
+En ASP.NET Core lo correcto es Scoped:
+
+1 request = 1 scope = 1 DbContext (generalmente)
+
+No debe ser Singleton.
+
+14) Alta concurrencia: qué pasa
+
+Problemas comunes:
+
+Dos requests actualizan el mismo registro
+
+Sin control, “last write wins”
+
+Solución típica: optimistic concurrency
+
+rowversion / timestamp
+
+Concurrency tokens en EF
+
+EF detecta conflicto y lanza DbUpdateConcurrencyException
+
+Además:
+
+Manejo correcto de transacciones
+
+Retries (en escenarios transient, no en lógica de conflicto real)
+
+15) Bases modernas: JSON, Value Converters, Provider Model, Cosmos
+JSON mapping (EF8)
+
+Algunas bases soportan columnas JSON con queries dentro del JSON.
+
+EF permite mapear partes del JSON a propiedades/owned types (depende del provider).
+
+Value Converters
+
+Transforman valores entre:
+
+Tipo del dominio (ej. Money, Email, StrongId)
+
+Tipo persistible (decimal/string/guid)
+
+Sirven para:
+
+Mantener dominio limpio
+
+Persistir sin ensuciar entidades
+
+Provider model
+
+EF Core define “abstracciones”
+y el provider implementa:
+
+Cómo generar SQL (dialecto)
+
+Qué funciones soporta
+
+Tipos, parámetros, limitaciones
+
+Translators específicos
+
+Cosmos sin SQL real
+
+EF Core usa un provider que:
+
+Traduce LINQ a la “forma de consulta” de Cosmos
+
+Maneja particiones y limitaciones propias
+
+16) Para ti: mapa de estudio (internals con intención)
+
+Si tú estás en enterprise/microservicios/performance, prioriza:
+
+Query pipeline + límites de traducción
+
+Tracking vs NoTracking + identity resolution
+
+ExecuteUpdate/Delete + batching
+
+Concurrency tokens + transacciones
+
+Interceptors + diagnostics (observabilidad)
+
+Model building + conventions + compiled model
+
+Provider behaviors (SQL Server vs Postgres)
+
+17) Mini-respuestas directas a tus preguntas profundas
+
+Expression Tree → SQL: visitors + translation pipeline → árbol relacional → SQL generator del provider.
+
+QueryCompilationContext: “bolsa” de servicios/model/provider/opciones para compilar el plan.
+
+Cache de queries: cachea la forma del árbol y parametriza valores.
+
+IQueryable vs IEnumerable: server-side vs client-side boundary.
+
+Snapshot vs Notification: comparar al final vs reaccionar a cambios.
+
+DetectChanges: recorre tracked graph, marca Modified/Added/Deleted.
+
+AutoDetectChangesEnabled: apágalo en cargas masivas.
+
+AsNoTrackingWithIdentityResolution: no tracking pero sin instancias duplicadas por joins.
+
+CompiledQuery: endpoints calientes.
+
+CompiledModel: reduce startup/metadata building.
+
+Includes: cartesian explosion; usa projection/split queries.
+
+Repository: DbSet ya es repo; haz repo solo si agrega reglas reales.
+
+DbContext: sí es Unit of Work; DI Scoped.
+
+Concurrencia: optimistic concurrency + tokens.
+
+JSON: mapping y query depende del provider.
+
+Value Converters: dominio limpio.
+
+Providers: traducen y generan SQL.
+
+Cosmos: provider traduce a su modelo/queries.
+
+Elige tu “camino” y te lo doy con ejemplo real
+
+1️⃣ Modo hardcore internals: desarmamos una query y vemos qué se convierte en qué (con pseudo-pipeline y ejemplos de “esto se traduce / esto truena”).
+2️⃣ Modo performance engineer: checklist y patrones para microservicios (tracking, compiled model, pooling, split query, retries, interceptors).
+3️⃣ Modo arquitecto: diseño de capas (domain vs persistence), repositorios específicos, UoW, transacciones, migraciones, multi-tenant.
+
+Si no eliges, yo empezaría por el 1️⃣ (hardcore) porque te da “visión de rayos X” y luego todo lo demás cae en su lugar.
