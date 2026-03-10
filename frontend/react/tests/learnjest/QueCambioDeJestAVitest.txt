@@ -1,0 +1,272 @@
+Primero veamos la idea central:
+
+👉 Vitest es básicamente un “Jest moderno construido sobre Vite.
+
+Eso cambia completamente la velocidad, la forma de compilar y el manejo de módulos.
+
+Ahora analicemos cada punto técnico que mencionaste.
+
+1. Configuración lenta en Jest → Vitest usa Vite internamente
+Problema en Jest
+
+Cuando ejecutas Jest, ocurre esto internamente:
+
+Test runner
+   ↓
+Babel / ts-jest
+   ↓
+Transformación de archivos
+   ↓
+Resolver módulos
+   ↓
+Ejecutar tests
+
+Cada archivo debe ser transformado antes de correr.
+
+Por ejemplo:
+
+TypeScript
+↓
+Babel o ts-jest
+↓
+JavaScript
+↓
+Jest runtime
+
+Esto genera:
+
+arranque lento
+
+transformación pesada
+
+mucha configuración
+
+Ejemplo típico de Jest:
+
+module.exports = {
+  transform: {
+    "^.+\\.tsx?$": "ts-jest"
+  }
+}
+Solución en Vitest
+
+Vitest usa el pipeline de Vite.
+
+Vite ya tiene:
+
+ESBuild
+
+cache
+
+graph de dependencias
+
+compilación rápida
+
+Flujo real:
+
+Test
+ ↓
+Vitest
+ ↓
+Vite dev server
+ ↓
+ESBuild
+ ↓
+Test ejecutado
+
+Ventaja clave:
+
+⚡ ESBuild es ~20-30x más rápido que Babel
+
+Por eso Vitest arranca casi instantáneamente.
+
+2. ESM complicado en Jest → Vitest es ESM-first
+Problema
+
+Jest fue diseñado cuando Node usaba CommonJS.
+
+require()
+module.exports
+
+Pero el ecosistema moderno usa:
+
+import
+export
+
+Ejemplo moderno:
+
+import { sum } from './math'
+
+En Jest esto requiere configuraciones complejas:
+
+"type": "module"
+transform
+babel
+extensions
+
+Y muchas veces aparecen errores como:
+
+SyntaxError: Cannot use import statement outside a module
+Vitest
+
+Vitest fue diseñado directamente para ESM.
+
+Porque Vite usa ESM internamente.
+
+Entonces puedes escribir:
+
+import { describe, it, expect } from 'vitest'
+import { sum } from './math'
+
+Sin configuración extra.
+
+Arquitectura:
+
+Browser-style modules
+↓
+Native ESM
+↓
+Vitest runner
+
+Mucho más limpio.
+
+3. Mocks verbosos en Jest → vi simple
+En Jest
+
+Los mocks pueden volverse largos.
+
+Ejemplo:
+
+jest.mock('./api', () => ({
+  getUser: jest.fn()
+}))
+
+Spy:
+
+const spy = jest.spyOn(obj, 'method')
+
+Reset:
+
+jest.clearAllMocks()
+jest.resetModules()
+jest.restoreAllMocks()
+
+Mucho API legacy acumulado.
+
+En Vitest
+
+El API es más minimalista:
+
+import { vi } from 'vitest'
+
+Mock:
+
+vi.mock('./api')
+
+Spy:
+
+const spy = vi.spyOn(obj, 'method')
+
+Reset:
+
+vi.clearAllMocks()
+
+Todo está agrupado bajo vi.
+
+4. TypeScript lento en Jest → TS nativo en Vitest
+Jest
+
+Jest no entiende TypeScript directamente.
+
+Necesitas:
+
+ts-jest
+babel
+ts-node
+
+Ejemplo típico:
+
+ts-jest
+
+o
+
+babel + typescript preset
+
+Esto significa:
+
+doble compilación
+
+más overhead
+
+más configuración
+
+Vitest
+
+Vitest usa ESBuild.
+
+ESBuild compila TypeScript directamente:
+
+TS
+↓
+ESBuild
+↓
+JS
+↓
+test
+
+Sin herramientas extras.
+
+Ejemplo:
+
+npm install vitest
+
+Y listo.
+
+5. No HMR en Jest → HMR en tests
+
+Aquí hay algo muy interesante técnicamente.
+
+HMR = Hot Module Replacement
+
+Significa que cuando cambias código:
+
+archivo cambiado
+↓
+solo ese módulo se recompila
+↓
+solo esos tests se re-ejecutan
+Jest
+
+Jest ejecuta:
+
+test runner
+↓
+re-run completo
+
+No usa graph de módulos.
+
+Vitest
+
+Vitest hereda el module graph de Vite.
+
+Entonces:
+
+Archivo modificado
+↓
+Vite detecta dependencia
+↓
+Vitest corre solo tests afectados
+
+Resultado:
+
+⚡ feedback inmediato
+
+Comparación real de arquitectura
+Característica	Jest	Vitest
+arquitectura	runner propio	basado en Vite
+compilador	Babel	ESBuild
+módulos	CommonJS legacy	ESM-first
+TS	ts-jest	nativo
+velocidad	media	muy alta
+HMR	no	sí
+configuración	pesada	mínima
