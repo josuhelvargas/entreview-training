@@ -28,13 +28,13 @@ public:
     }
     std::string[] tokens = {left, operator, right };
     return tokens;
-  }
+  };
 
   struct ResultResponse
   {
     std::string message;
     double result;
-  }
+  };
 
   ResultResponse executeOperation(const std::array<std::string, 3> &tokens)
   {
@@ -96,4 +96,4 @@ public:
 
     return response;
   }
-}
+};
